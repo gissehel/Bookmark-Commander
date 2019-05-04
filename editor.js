@@ -73,7 +73,7 @@ editor.view = function (id) {
 
     document.body.innerHTML = s;
 
-    key_mapping = editor.key_mapping;
+    editor.mapping_builder.activate();
 
     //Put focus on the title, at the end
     const title = document.getElementById("title");
@@ -167,7 +167,7 @@ editor.quit = function () {
     } else {
         commander.draw();
     }
-    key_mapping = commander.key_mapping;
+    commander.mapping_builder.activate();
     commander.editing = false;
 }
 

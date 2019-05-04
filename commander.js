@@ -383,7 +383,7 @@ commander.view = function () {
         //we require it for decorating the elements, kludgy, I know
         commander.draw();
 
-        key_mapping = commander.key_mapping;
+        commander.mapping_builder.activate();
     }
 }
 
@@ -411,7 +411,7 @@ commander.menu = function () {
     //Tricky, hide the selected item
     $(".selected").removeClass('selected')
     //Define keyboard behaviour
-    key_mapping = menu.key_mapping;
+    menu.mapping_builder.activate();
     //One for the money..
     menu.show();
 }

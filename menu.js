@@ -179,7 +179,7 @@ menu.exit = function () {
     document.getElementById("menu").innerHTML = menu.original;
 
     commander.boot();
-    key_mapping = commander.key_mapping;
+    commander.mapping_builder.activate();
 }
 
 const fontSizesChange = fontSizesText.reduce(( acc, [label, size]) => { 

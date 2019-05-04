@@ -65,7 +65,7 @@ viewer.view = function (id) {
 
     document.body.innerHTML = s;
 
-    key_mapping = viewer.key_mapping;
+    viewer.mapping_builder.activate();
 }
 
 viewer.test = function () {
