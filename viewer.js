@@ -2,7 +2,7 @@
   Bookmark Commander by Tom J Demuyt is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
   Permissions beyond the scope of this license are available by contacting konijn@gmail.com
 */
-var viewer = {};
+const viewer = {};
 
 //This is where the magic happens, so to say
 viewer.view = function (id) {
@@ -21,13 +21,15 @@ viewer.view = function (id) {
             { id: 10, description: "Quit  " },
         ];
 
-    var bookmark = findBookmarkId(commander.bookmarks, id);
+    let bookmark = findBookmarkId(commander.bookmarks, id);
 
-    if (!bookmark)
+    if (!bookmark) {
         bookmark = { title: 'Something went terribly wrong', url: '' };
+    }
 
-    if (!bookmark.title)
+    if (!bookmark.title) {
         bookmark.title = 'Something went terribly wrong';
+    }
 
     if (!bookmark.url) {
         //Avoid the dreaded undefined ;]
@@ -40,9 +42,10 @@ viewer.view = function (id) {
     viewer.bookmark = bookmark;
 
     //Show javascript nicely, clone into content as to not mess up the original object, this is view after all
-    var content = bookmark.url;
-    if (content.startsWith("j"))
+    let content = bookmark.url;
+    if (content.startsWith("j")) {
         content = js_beautify(content, { 'indent_size': 2 });
+    }
 
     s = "<table><tr><td style='background: rgb(0,0,128);'><pre>";
     //Menu
@@ -53,10 +56,11 @@ viewer.view = function (id) {
     s = s + "<textarea class='blue' cols='118' rows='24' readonly='readonly'>" + content + "</textarea>\n"
 
 
-    for (key in viewer.function_keys) {
-        var f = viewer.function_keys[key];
+    for (let key in viewer.function_keys) {
+        const f = viewer.function_keys[key];
         s = s + ("<span class='fcode'>F" + f.id + "</span><span class='menu'>" + f.description + "</span><span class='fcode'> </span>");
     }
+
     s = s + ("<span id='end' class='fcode'>" + " ".repeat(screenwidth - 91) + "</span>\n");
 
     document.body.innerHTML = s;
@@ -65,6 +69,7 @@ viewer.view = function (id) {
 }
 
 viewer.test = function () {
-    if (viewer.bookmark.url.length > 0)
+    if (viewer.bookmark.url.length > 0) {
         chrome.tabs.create({ 'url': viewer.bookmark.url }, null);
+    }
 }

@@ -82,7 +82,8 @@ control_key_mapping[79] = commander.showLogs;
 escape_mapping = {};
 //49 is keyboard 1 , 58 is one above keyboard 9
 //112 is F1, 113 is F2 etc
-for (var counter = 49; counter < 58; counter++)
+for (let counter = 49; counter < 58; counter++) {
     escape_mapping[counter] = (112 - 49) + counter; //1 ->F1 till 9->F9
+}
 escape_mapping[48] = 121; //0 -> F10 does not follow the pattern
 escape_mapping[27] = 27; //0 -> F10 does not follow the pattern

@@ -1,21 +1,23 @@
 {
-  "name": "Bookmark Commander II",
-  "short_name": "BC2",
-  "version": "2.0",
-  "manifest_version": 2,
-  "description": "Commanding Bookmarks, Old Skool",
-  "background": {"page": "background.html"},
-  "icons": {
-    "16" : "bc-16x16.png",
-    "48" : "bc-48x48.png",
-    "128": "bc-128x128.png"
-  },
-  "browser_action": {
-    "default_title": "Manage Bookmarks II",
-    "default_icon" : "bc-32x32.png"
-  },
-  "permissions": [
-    "bookmarks",    
-    "tabs"
-  ]
+    "name": "Bookmark Commander II",
+    "short_name": "BC2",
+    "version": "2.0",
+    "manifest_version": 2,
+    "description": "Commanding Bookmarks, Old Skool",
+    "background": {
+        "page": "background.html"
+    },
+    "icons": {
+        "16": "bc-16x16.png",
+        "48": "bc-48x48.png",
+        "128": "bc-128x128.png"
+    },
+    "browser_action": {
+        "default_title": "Manage Bookmarks II",
+        "default_icon": "bc-32x32.png"
+    },
+    "permissions": [
+        "bookmarks",
+        "tabs"
+    ]
 }

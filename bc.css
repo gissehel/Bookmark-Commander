@@ -8,7 +8,7 @@
   blue      : rgb(   0,   0, 128 )
 */
 
-//Link to Vera
+/* Link to Vera */
 @font-face {
     font-family: "Vera";
     src: url(VeraMono.ttf) format("truetype");
@@ -83,14 +83,14 @@ textarea {
 }
 
 /*Not sure this is required*/
-::-webkit-scrollbar {
+::scrollbar {
     height: 0px;
     width: 0px;
     background-color: inherit;
 }
 
 
-@-webkit-keyframes blink {
+@keyframes blink {
     0% {
         opacity: 0
     }
@@ -127,18 +127,18 @@ textarea {
 }
 
 blink {
-    -webkit-animation: blink 0.7s infinite linear alternate;
+    animation: blink 0.7s infinite linear alternate;
     -webkit-font-smoothing: antialiased;
 }
 
 .blink {
-    -webkit-animation: blink 0.7s infinite linear alternate;
+    animation: blink 0.7s infinite linear alternate;
     -webkit-font-smoothing: antialiased;
     color: orange;
 }
 
 .underblink {
-    -webkit-animation: underblink 0.7s infinite linear alternate;
+    animation: underblink 0.7s infinite linear alternate;
     -webkit-font-smoothing: antialiased;
     display: inline-block;
     border-bottom-color: black;

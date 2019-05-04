@@ -2,7 +2,7 @@
   Bookmark Commander by Tom J Demuyt is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
   Permissions beyond the scope of this license are available by contacting konijn@gmail.com
 */
-var commander = {};
+const commander = {};
 
 commander.left = { id: "1", selected: 0, scroll: 0, active: true, prefix: "left", info: false };
 commander.right = { id: "2", selected: 0, scroll: 0, active: false, prefix: "rite", info: false };
@@ -39,7 +39,7 @@ commander.draw = function () {
     }
 
     //First draw the active one
-    var panel = commander.left.active ? commander.left : commander.right;
+    const panel = commander.left.active ? commander.left : commander.right;
     commander.setPanel(panel);
     commander.setPanel(panel.other);
     //mouse.init();
@@ -51,12 +51,12 @@ commander.setPanel = function (panelConfig) {
     if (panelConfig.info)
         return commander.setInfoPanel(panelConfig);
 
-    var o = findBookmarkId(commander.bookmarks, panelConfig.id);
+    let o = findBookmarkId(commander.bookmarks, panelConfig.id);
 
     //Are we clear ?
-    if (!document.getElementById("end"))
+    if (!document.getElementById("end")) {
         return;
-
+    }
     //Deal with trouble
     if (!o || !o.children) {
         //If we are looking at a dead folder by any chance, just go to the root
@@ -64,26 +64,25 @@ commander.setPanel = function (panelConfig) {
             panelConfig.id = "0";
             commander.setPanel(panelConfig);
             return;
-        }
-        else {
+        } else {
             //This should never happen as well
             alert("Bookmark Commander regrets to inform you that it cannot display your bookmarks,\n please hit refresh and try again.");
         }
     }
 
     //Set the folder structure on top
-    var title = findBookmarkTitle(panelConfig.id);
+    const title = findBookmarkTitle(panelConfig.id);
 
     document.getElementById(panelConfig.prefix + "root").innerHTML = "╔" + (title + doublebar.repeat(panelwidth)).left(panelwidth) + "╗";
 
     //Clear out the children
-    for (var counter = 0; counter < panelheight; counter++) {
+    for (let counter = 0; counter < panelheight; counter++) {
         document.getElementById(panelConfig.prefix + counter).innerHTML = (" ".repeat(panelwidth));
         document.getElementById(panelConfig.prefix + counter).setAttribute("class", "border");
     }
 
     //We merely do this to facilitate the following trick
-    var children = [].concat(filterBookmarks(o.children, panelConfig.filter));
+    const children = [].concat(filterBookmarks(o.children, panelConfig.filter));
 
     //Do we have a parent ?, if so top the entries with '..'
     if (o.parentId) {
@@ -96,7 +95,7 @@ commander.setPanel = function (panelConfig) {
     panelConfig.itemcount = children.length;
 
     //Keep counter post-loop for sanity checks
-    var counter;
+    let counter;
 
     //Delete any reference to selectedBookmark, it might just go wrong with the info panel
     delete panelConfig.selectedBookmark;
@@ -104,59 +103,60 @@ commander.setPanel = function (panelConfig) {
     //Go over the children ( folders + bookmarks )
     for (counter = 0; counter < panelheight && counter + panelConfig.scroll < children.length; counter++) {
         //Get the child
-        var child = children[counter + panelConfig.scroll];
+        let child = children[counter + panelConfig.scroll];
         //Default bookmark prefix and style
-        var prefix = " ";
-        var style = "border";
+        let prefix = " ";
+        let style = "border";
 
         //This should never happen ™
-        if (!child)
+        if (!child) {
             child = { url: '', title: '' }
+        }
 
         //If there are no children though, take out the slash
-        if (child.children)
+        if (child.children) {
             prefix = "/";
+        }
 
         //Are we dealing with a tree ? Then we have a slightly more complicated prefix
         if (panelConfig.id == "tree") {
-            if (!child.depth & child.depth !== 0)
+            if (!child.depth & child.depth !== 0) {
                 prefix = "!ERROR(no depth)"
-            else if (child.depth === 0)
+            } else if (child.depth === 0) {
                 prefix = "/"
-            else
+            } else {
                 prefix = " ".repeat(child.depth - 2) + "|-"
+            }
         }
 
         //Are we looking at a javascript ?
-        if (child.url && child.url.startsWith("javascript"))
+        if (child.url && child.url.startsWith("javascript")) {
             style = "js"
-
+        }
         //If we look at the selected one the style is different
         if (counter == panelConfig.selected && panelConfig.active) {
             style = "selected"
             //Lets also show the url
             if (child.url) {
-                var url = child.url.left(((panelwidth + 1) * 2)).extend((panelwidth + 1) * 2);
+                let url = child.url.left(((panelwidth + 1) * 2)).extend((panelwidth + 1) * 2);
                 document.getElementById("url").innerHTML = url;
-            }
-            else if (panelConfig.id == "tree") {
-                var url = findBookmarkTitle(child.id).left(((panelwidth + 1) * 2)).extend((panelwidth + 1) * 2);
+            } else if (panelConfig.id == "tree") {
+                let url = findBookmarkTitle(child.id).left(((panelwidth + 1) * 2)).extend((panelwidth + 1) * 2);
                 document.getElementById("url").innerHTML = url;
-            }
-            else {
+            } else {
                 document.getElementById("url").innerHTML = " ".repeat((panelwidth + 1) * 2);
             }
             panelConfig.selectedBookmark = child.id;
         }
 
         //Get the element
-        var element = document.getElementById(panelConfig.prefix + counter);
+        const element = document.getElementById(panelConfig.prefix + counter);
 
         //set the style
         element.setAttribute("class", style);
 
         //Set the content
-        var innerHTML = (prefix + child.title).extend(panelwidth);
+        let innerHTML = (prefix + child.title).extend(panelwidth);
 
         //Highlight filter if any
         if (panelConfig.filter) {
@@ -166,8 +166,9 @@ commander.setPanel = function (panelConfig) {
 
         //Highlight filter if any
         if (panelConfig.selector) {
-            if ((innerHTML.has(panelConfig.selector) || panelConfig.selector == "*") && child.title != "..")
+            if ((innerHTML.has(panelConfig.selector) || panelConfig.selector == "*") && child.title != "..") {
                 innerHTML = "<span class='yellow'>" + innerHTML + "</span>";
+            }
         }
 
         //Set the final innerHTML only now to prevent potential flickering
@@ -176,9 +177,11 @@ commander.setPanel = function (panelConfig) {
         //Set the new index
         element.commander = { id: child.id };
     }
+
     //Since speed is of no concern, I just redraw the screen if we missed the selected item due to deletion ;)
-    if (panelConfig.selected >= counter)
+    if (panelConfig.selected >= counter) {
         commander.end();
+    }
 }
 
 /****
@@ -187,11 +190,12 @@ commander.setPanel = function (panelConfig) {
  **
  ****/
 commander.setInfoPanel = function (panelConfig) {
-    var o = findBookmarkId(commander.bookmarks, panelConfig.other.selectedBookmark);
+    const o = findBookmarkId(commander.bookmarks, panelConfig.other.selectedBookmark);
 
     //Are we clear ?
-    if (!document.getElementById("end"))
+    if (!document.getElementById("end")) {
         return;
+    }
 
     //Deal with trouble
     if (!o) {
@@ -203,10 +207,11 @@ commander.setInfoPanel = function (panelConfig) {
         }
         else {
             //This should never happen as well, except if we are in the menu ( other panel is inactive as well )
-            if (!panelConfig.other.active)
+            if (!panelConfig.other.active) {
                 return;
-            else
+            } else {
                 alert("Bookmark Commander regrets to inform you that it cannot display the info on this bookmark,\n please hit refresh and try again.");
+            }
         }
     }
 
@@ -214,7 +219,7 @@ commander.setInfoPanel = function (panelConfig) {
     document.getElementById(panelConfig.prefix + "root").innerHTML = "╔" + doublebar.repeat(panelwidth) + "╗";
 
     //Clear out the children
-    for (var counter = 0; counter < panelheight; counter++) {
+    for (let counter = 0; counter < panelheight; counter++) {
         document.getElementById(panelConfig.prefix + counter).innerHTML = (" ".repeat(panelwidth));
         document.getElementById(panelConfig.prefix + counter).setAttribute("class", "border");
     }
@@ -226,24 +231,26 @@ commander.setInfoPanel = function (panelConfig) {
         o.parentId = 0;
     }
 
-    var line = 0;
+    let line = 0;
 
-    var element = document.getElementById(panelConfig.prefix + line++);
-    if (o.title)
+    let element = document.getElementById(panelConfig.prefix + line++);
+
+    if (o.title) {
         element.innerHTML = (o.title).extend(panelwidth);
+    }
 
     line++;
 
     if (o.dateAdded) {
         element = document.getElementById(panelConfig.prefix + line++);
-        var d = new Date()
+        let d = new Date()
         d.setTime(o.dateAdded);
         element.innerHTML = ("  added:    " + d.format()).extend(panelwidth);
     }
 
     if (o.dateGroupModified) {
         element = document.getElementById(panelConfig.prefix + line++);
-        var d = new Date()
+        let d = new Date()
         d.setTime(o.dateGroupModified);
         element.innerHTML = ("  changed:  " + d.format()).extend(panelwidth);
     }
@@ -260,10 +267,9 @@ commander.setInfoPanel = function (panelConfig) {
     element = document.getElementById(panelConfig.prefix + line++);
     if (o.children) {
         element.innerHTML = ("  children: " + o.children.length).extend(panelwidth);
-    }
-    else {
+    } else {
         //Sugar
-        var url = o.url;
+        let url = o.url;
 
         while (url.length > panelwidth) {
             //Get the victim, leave implicit space for first entry
@@ -284,10 +290,11 @@ commander.setInfoPanel = function (panelConfig) {
 
 /* TAB, SWAP */
 commander.swapPanel = function () {
-    var panel = commander.left.active ? commander.left : commander.right;
+    let panel = commander.left.active ? commander.left : commander.right;
     //Dont make an info panel active
-    if (panel.other.info)
+    if (panel.other.info) {
         return;
+    }
 
     commander.left.active = !commander.left.active;
     commander.right.active = !commander.right.active;
@@ -296,11 +303,12 @@ commander.swapPanel = function () {
 
 /* Prelude to SELECT, ENTER */
 commander.delve = function () {
-    var panel = commander.left.active ? commander.left : commander.right;
-    var id = document.getElementById(panel.prefix + panel.selected).commander.id;
+    const panel = commander.left.active ? commander.left : commander.right;
+    const id = document.getElementById(panel.prefix + panel.selected).commander.id;
 
-    if (panel.id != "tree")
+    if (panel.id != "tree") {
         return commander.select(id);
+    }
 
     //So, we are dealing with a tree
     commander.left.active = !commander.left.active;
@@ -313,10 +321,10 @@ commander.delve = function () {
 
 /* SELECT, ENTER */
 commander.select = function (index) {
-    var panel = commander.left.active ? commander.left : commander.right;
+    const panel = commander.left.active ? commander.left : commander.right;
 
     //Do we want to select this for real ?
-    var bookmark = findBookmarkId(commander.bookmarks, index);
+    const bookmark = findBookmarkId(commander.bookmarks, index);
     //Go deeper if its a folder, or as the case may be, higher
     if (bookmark.children) {
         panel.id = index;
@@ -324,9 +332,8 @@ commander.select = function (index) {
         panel.scroll = 0;
         panel.selector = "";
         commander.draw();
-    }
-    //Open if its a bookmark
-    else if (bookmark.url && bookmark.url.startsWith(["http", "file"])) {
+    } else if (bookmark.url && bookmark.url.startsWith(["http", "file"])) {
+        //Open if its a bookmark
         chrome.tabs.getCurrent(function (tab) { chrome.tabs.create({ 'url': bookmark.url, 'index': tab.index }, null) });
     }
     //Yes, do nuttin if its js, them evil hackers cannought be trusted
@@ -343,9 +350,9 @@ commander.quit = function () {
         delete commander.query;
         delete commander.results;
         commander.back();
-    }
-    else
+    } else {
         chrome.tabs.getCurrent(function (tab) { chrome.tabs.remove(tab.id) });
+    }
 }
 
 /* VIEW */
@@ -355,13 +362,14 @@ commander.view = function () {
     if (commander.viewing) {
         commander.backup = document.body.innerHTML;
 
-        var panel = commander.left.active ? commander.left : commander.right;
-        var id = document.getElementById(panel.prefix + panel.selected).commander.id;
+        const panel = commander.left.active ? commander.left : commander.right;
+        const id = document.getElementById(panel.prefix + panel.selected).commander.id;
 
-        if (id != "0")
+        if (id != "0") {
             viewer.view(id);
-        else
+        } else {
             commander.viewing = false;
+        }
     }
     else {
         document.body.innerHTML = commander.backup;
@@ -377,12 +385,13 @@ commander.view = function () {
 commander.edit = function () {
     commander.backup = document.body.innerHTML;
 
-    var panel = commander.left.active ? commander.left : commander.right;
+    const panel = commander.left.active ? commander.left : commander.right;
 
-    if (panel.id == 0)
+    if (panel.id == 0) {
         return;
+    }
 
-    var id = document.getElementById(panel.prefix + panel.selected).commander.id;
+    const id = document.getElementById(panel.prefix + panel.selected).commander.id;
 
     if (id != "0") {
         commander.editing = true;
@@ -403,44 +412,50 @@ commander.menu = function () {
 
 /* BACKSPACE */
 commander.back = function () {
-    var panel = commander.left.active ? commander.left : commander.right;
+    const panel = commander.left.active ? commander.left : commander.right;
 
-    if (panel.id == "search")
+    if (panel.id == "search") {
         return commander.select("0");
+    }
 
-    var element = document.getElementById(panel.prefix + "0");
-    var text = jQuery.trim(element.innerHTML);
+    const element = document.getElementById(panel.prefix + "0");
+    const text = jQuery.trim(element.innerHTML);
 
-    if (text == "/..")
+    if (text == "/..") {
         commander.select(element.commander.id);
+    }
 }
 
 /* DOWN */
 commander.down = function () {
-    var panel = commander.left.active ? commander.left : commander.right;
+    const panel = commander.left.active ? commander.left : commander.right;
 
-    if (panel.selected == panelheight - 1)
+    if (panel.selected == panelheight - 1) {
         panel.scroll++;
-    else
+    } else {
         panel.selected++;
+    }
 
-    if (!(panel.scroll + panel.selected < panel.itemcount))
+    if (!(panel.scroll + panel.selected < panel.itemcount)) {
         return commander.end();
+    }
 
     commander.draw();
 }
 
 /* PAGE DOWN */
 commander.pageDown = function () {
-    var panel = commander.left.active ? commander.left : commander.right;
+    const panel = commander.left.active ? commander.left : commander.right;
 
-    if (panel.selected < panelheight - 1)
+    if (panel.selected < panelheight - 1) {
         panel.selected = panelheight - 1;
-    else
+    } else {
         panel.scroll = panel.scroll + panelheight - 1;
+    }
 
-    if (!(panel.scroll + panel.selected < panel.itemcount))
+    if (!(panel.scroll + panel.selected < panel.itemcount)) {
         return commander.end();
+    }
 
     commander.draw();
 }
@@ -449,16 +464,19 @@ commander.pageDown = function () {
 /* UP */
 commander.up = function () {
     //Get active panel
-    var panel = commander.left.active ? commander.left : commander.right;
+    const panel = commander.left.active ? commander.left : commander.right;
     //if we are already physically in slot 0, see if we can still scroll up
     //Otherwise go up a physical slot
-    if (panel.selected == 0)
+    if (panel.selected == 0) {
         panel.scroll--;
-    else
+    } else {
         panel.selected--;
+    }
+
     //Sanity fix the scroll value
-    if (panel.scroll == -1)
+    if (panel.scroll == -1) {
         panel.scroll = 0
+    }
     //Draw the commander again
     commander.draw();
 }
@@ -466,23 +484,26 @@ commander.up = function () {
 /* PAGE UP */
 commander.pageUp = function () {
     //Get active panel
-    var panel = commander.left.active ? commander.left : commander.right;
+    const panel = commander.left.active ? commander.left : commander.right;
     //if we are already physically in slot 0, see if we can still scroll up
     //Otherwise go up a physical slot
-    if (panel.selected != 0)
+    if (panel.selected != 0) {
         panel.selected = 0;
-    else
+    } else {
         panel.scroll = panel.scroll - panelheight + 1;
+    }
+
     //Sanity fix the scroll value
-    if (panel.scroll < 0)
+    if (panel.scroll < 0) {
         panel.scroll = 0
+    }
     //Draw the commander again
     commander.draw();
 }
 
 /* HOME */
 commander.home = function () {
-    var panel = commander.left.active ? commander.left : commander.right;
+    const panel = commander.left.active ? commander.left : commander.right;
     panel.selected = 0;
     panel.scroll = 0;
     commander.draw();
@@ -490,13 +511,12 @@ commander.home = function () {
 
 /* END */
 commander.end = function () {
-    var panel = commander.left.active ? commander.left : commander.right;
+    const panel = commander.left.active ? commander.left : commander.right;
 
     if (panel.itemcount < panelheight + 1) {
         panel.scroll = 0;
         panel.selected = panel.itemcount - 1;
-    }
-    else {
+    } else {
         panel.scroll = panel.itemcount - panelheight;
         panel.selected = panelheight - 1;
     }
@@ -505,8 +525,8 @@ commander.end = function () {
 
 /* COPY */
 commander.copy = function () {
-    var from = commander.left.active ? commander.left : commander.right;
-    var to = !commander.left.active ? commander.left : commander.right;
+    const from = commander.left.active ? commander.left : commander.right;
+    const to = !commander.left.active ? commander.left : commander.right;
 
     if (to.id == "0") {
         alert("Can not copy bookmarks into the root")
@@ -524,41 +544,46 @@ commander.copy = function () {
     }
 
     //Are we copying a selection ?
-    if (from.selector && from.selector != "")
+    if (from.selector && from.selector != "") {
         return commander.copySelection(from, to);
+    }
 
     //Copying from
-    var from_id = document.getElementById(from.prefix + from.selected).commander.id;
-    var bookmark = findBookmarkId(commander.bookmarks, from_id);
+    const from_id = document.getElementById(from.prefix + from.selected).commander.id;
+    const bookmark = findBookmarkId(commander.bookmarks, from_id);
 
-    var newbookmark = { parentId: to.id };
+    const newbookmark = { parentId: to.id };
     //Create the bookmark object
-    if (bookmark.title)
+    if (bookmark.title) {
         newbookmark.title = bookmark.title;
-    if (bookmark.url)
+    }
+    if (bookmark.url) {
         newbookmark.url = bookmark.url;
+    }
 
     chrome.bookmarks.create(newbookmark, commander.boot);
 }
 
 /* COPY SELECTION */
 commander.copySelection = function (from, to) {
-    var o = findBookmarkId(commander.bookmarks, from.id);
+    const o = findBookmarkId(commander.bookmarks, from.id);
 
     //Minimal paranoia
-    if (!o || !o.children)
+    if (!o || !o.children) {
         return
+    }
 
-    var children = [].concat(filterBookmarks(o.children, from.filter));
+    const children = [].concat(filterBookmarks(o.children, from.filter));
 
-    for (var counter = 0; counter < children.length; counter++) {
+    for (let counter = 0; counter < children.length; counter++) {
         if (children[counter].url && children[counter].url.has(from.selector) || from.selector == "*") {
-            var bookmark = children[counter];
-            var newbookmark = { parentId: to.id };
+            let bookmark = children[counter];
+            let newbookmark = { parentId: to.id };
 
             newbookmark.title = bookmark.title;
-            if (bookmark.url)
+            if (bookmark.url) {
                 newbookmark.url = bookmark.url;
+            }
             chrome.bookmarks.create(newbookmark);
         }
     }
@@ -568,11 +593,11 @@ commander.copySelection = function (from, to) {
 
 /* MOVE */
 commander.move = function () {
-    var panel = commander.left.active ? commander.left : commander.right;
-    var id = document.getElementById(panel.prefix + panel.selected).commander.id;
-    var bookmark = findBookmarkId(commander.bookmarks, id);
+    const panel = commander.left.active ? commander.left : commander.right;
+    const id = document.getElementById(panel.prefix + panel.selected).commander.id;
+    const bookmark = findBookmarkId(commander.bookmarks, id);
 
-    var to = !commander.left.active ? commander.left : commander.right;
+    const to = !commander.left.active ? commander.left : commander.right;
 
     if (to.id == "0") {
         alert("Can not copy bookmarks into the root")
@@ -590,25 +615,27 @@ commander.move = function () {
     }
 
     //Are we copying a selection ?
-    if (panel.selector && panel.selector != "")
+    if (panel.selector && panel.selector != "") {
         return commander.moveSelection(panel, to);
+    }
 
     chrome.bookmarks.move(bookmark.id, { parentId: to.id }, commander.boot);
 }
 
 /* MOVE SELECTION */
 commander.moveSelection = function (from, to) {
-    var o = findBookmarkId(commander.bookmarks, from.id);
+    const o = findBookmarkId(commander.bookmarks, from.id);
 
     //Minimal paranoia
-    if (!o || !o.children)
+    if (!o || !o.children) {
         return
+    }
 
-    var children = [].concat(filterBookmarks(o.children, from.filter));
+    const children = [].concat(filterBookmarks(o.children, from.filter));
 
-    for (var counter = 0; counter < children.length; counter++) {
+    for (let counter = 0; counter < children.length; counter++) {
         if (children[counter].url && children[counter].url.has(from.selector) || from.selector == "*") {
-            var bookmark = children[counter];
+            const bookmark = children[counter];
 
             chrome.bookmarks.move(bookmark.id, { parentId: to.id }, commander.boot);
         }
@@ -619,41 +646,45 @@ commander.moveSelection = function (from, to) {
 
 /* DELETE */
 commander.delete = function () {
-    var panel = commander.left.active ? commander.left : commander.right;
-    var id = document.getElementById(panel.prefix + panel.selected).commander.id;
-    var bookmark = findBookmarkId(commander.bookmarks, id);
+    const panel = commander.left.active ? commander.left : commander.right;
+    const id = document.getElementById(panel.prefix + panel.selected).commander.id;
+    const bookmark = findBookmarkId(commander.bookmarks, id);
 
     //Are we copying a selection ?
-    if (panel.selector && panel.selector != "")
+    if (panel.selector && panel.selector != "") {
         return commander.deleteSelection(panel);
+    }
 
     //What is interesting, is that removeTree works on non-trees as well
     //I am not going to count on that though ;]
-    if (bookmark.children)
+    if (bookmark.children) {
         chrome.bookmarks.removeTree(bookmark.id, commander.boot);
-    else
+    } else {
         chrome.bookmarks.remove(bookmark.id, commander.boot);
+    }
 }
 
 /* DELETE SELECTION */
 commander.deleteSelection = function (from) {
-    var o = findBookmarkId(commander.bookmarks, from.id);
+    const o = findBookmarkId(commander.bookmarks, from.id);
 
     //Minimal paranoia
-    if (!o || !o.children)
+    if (!o || !o.children) {
         return
+    }
 
-    var children = [].concat(filterBookmarks(o.children, from.filter));
+    const children = [].concat(filterBookmarks(o.children, from.filter));
 
-    for (var counter = 0; counter < children.length; counter++) {
+    for (let counter = 0; counter < children.length; counter++) {
         if (children[counter].url && children[counter].url.has(from.selector) || from.selector == "*") {
-            var bookmark = children[counter];
+            const bookmark = children[counter];
             //What is interesting, is that removeTree works on non-trees as well
             //I am not going to count on that though ;]
-            if (bookmark.children)
+            if (bookmark.children) {
                 chrome.bookmarks.removeTree(bookmark.id, commander.boot);
-            else
+            } else {
                 chrome.bookmarks.remove(bookmark.id, commander.boot);
+            }
         }
     }
     commander.boot();
@@ -662,19 +693,19 @@ commander.deleteSelection = function (from) {
 
 /* CREATE FOLDER */
 commander.createfolder = function () {
-    var panel = commander.left.active ? commander.left : commander.right;
-    var foldertext = prompt("Enter folder name", "");
+    const panel = commander.left.active ? commander.left : commander.right;
+    const foldertext = prompt("Enter folder name", "");
 
     if (foldertext) {
-        var newbookmark = { parentId: panel.id, title: foldertext };
+        const newbookmark = { parentId: panel.id, title: foldertext };
         chrome.bookmarks.create(newbookmark, commander.boot);
     }
 }
 
 /* EQUALIZE */
 commander.equalize = function () {
-    var active = commander.left.active ? commander.left : commander.right;
-    var sleepy = !commander.left.active ? commander.left : commander.right;
+    const active = commander.left.active ? commander.left : commander.right;
+    const sleepy = !commander.left.active ? commander.left : commander.right;
 
     sleepy.id = active.id;
     sleepy.selected = 0;
@@ -685,23 +716,27 @@ commander.equalize = function () {
 
 /* PLUS , MOVE UP */
 commander.moveup = function () {
-    var panel = commander.left.active ? commander.left : commander.right;
-    var id = document.getElementById(panel.prefix + panel.selected).commander.id;
-    var bookmark = findBookmarkId(commander.bookmarks, id);
+    const panel = commander.left.active ? commander.left : commander.right;
+    const id = document.getElementById(panel.prefix + panel.selected).commander.id;
+    const bookmark = findBookmarkId(commander.bookmarks, id);
 
-    if (panel.id == 0)
+    if (panel.id == 0) {
         return;
+    }
 
-    if (panel.selected == 0 && panel.scroll == 0)
+    if (panel.selected == 0 && panel.scroll == 0) {
         return;
+    }
 
-    if (bookmark.index == 0)
+    if (bookmark.index == 0) {
         return;
+    }
 
-    if (panel.selected == 0)
+    if (panel.selected == 0) {
         panel.scroll--;
-    else
+    } else {
         panel.selected--;
+    }
 
     chrome.bookmarks.move(id, { parentId: panel.id, index: (bookmark.index - 1) }, commander.boot);
 
@@ -709,25 +744,28 @@ commander.moveup = function () {
 
 /* DOWN, MOVE DOWN */
 commander.movedown = function () {
-    var panel = commander.left.active ? commander.left : commander.right;
-    var id = document.getElementById(panel.prefix + panel.selected).commander.id;
-    var bookmark = findBookmarkId(commander.bookmarks, id);
+    const panel = commander.left.active ? commander.left : commander.right;
+    const id = document.getElementById(panel.prefix + panel.selected).commander.id;
+    let bookmark = findBookmarkId(commander.bookmarks, id);
 
-    if (panel.id == 0)
+    if (panel.id == 0) {
         return;
+    }
 
-    if (panel.selected == 0 && panel.scroll == 0)
+    if (panel.selected == 0 && panel.scroll == 0) {
         return;
+    }
 
     //now see who is under their
-    var parent = findBookmarkId(commander.bookmarks, panel.id);
-    var bookmark = parent.children[bookmark.index + 1];
+    const parent = findBookmarkId(commander.bookmarks, panel.id);
+    bookmark = parent.children[bookmark.index + 1];
     if (bookmark) {
         //We are evilly counting on the 'hmmm I think this got deleted feature', muhaha is in order
-        if (panel.selected == panelheight - 1)
+        if (panel.selected == panelheight - 1) {
             panel.scroll++;
-        else
+        } else {
             panel.selected++;
+        }
 
         chrome.bookmarks.move(bookmark.id, { parentId: panel.id, index: (bookmark.index - 1) }, commander.boot);
     }
@@ -736,13 +774,14 @@ commander.movedown = function () {
 /* SEARCH */
 commander.search = function (searchtext) {
     if (!searchtext) {
-        if (commander.query)
+        if (commander.query) {
             searchtext = commander.query;
-        else
+        } else {
             searchtext = prompt("Enter search string", ""); //"" is the default
+        }
     }
     chrome.bookmarks.search(searchtext, function (o) {
-        var panel = commander.left.active ? commander.left : commander.right;
+        const panel = commander.left.active ? commander.left : commander.right;
         panel.id = "search";
         commander.results = o;
         commander.query = searchtext;
@@ -752,8 +791,9 @@ commander.search = function (searchtext) {
 
 /* FILTER */
 commander.filter = function (panel) {
-    if (!panel)
+    if (!panel) {
         panel = commander.left.active ? commander.left : commander.right;
+    }
 
     panel.filter = prompt("Enter filter string", panel.filter); //"" is the default
 
@@ -765,13 +805,13 @@ commander.filter = function (panel) {
 /* SELECT */
 commander.selector = function (panel) {
     //Panel will actually be an event when called via the '*' key
-    if (panel instanceof jQuery.Event)
+    if (panel instanceof jQuery.Event) {
         panel = commander.left.active ? commander.left : commander.right;
+    }
 
     if (!panel.selector) {
         panel.selector = "*";
-    }
-    else if (panel.selector == "*") {
+    } else if (panel.selector == "*") {
         panel.selector = "";
     }
 

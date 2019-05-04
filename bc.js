@@ -10,30 +10,36 @@ String.prototype.repeat = function (num) {
 
 //Extend String with extend, muhahah
 String.prototype.extend = function (till) {
-    if (!till)
+    if (!till) {
         till = screenwidth;
+    }
     return (this + " ".repeat(till)).substring(0, till);
 }
 
 //Need moar sugar
 //Note that this takes also an array with possible prefixes
 String.prototype.startsWith = function (str) {
-    if (typeof str == "string")
+    if (typeof str == "string") {
         return (this.indexOf(str) === 0);
+    }
 
-    var any = false;
+    let any = false;
 
-    if (typeof str == "object")
-        for (var key in str)
-            if (this.startsWith(str[key]))
+    if (typeof str == "object") {
+        for (let key in str) {
+            if (this.startsWith(str[key])) {
                 any = true;
+            }
+        }
+    }
     return any;
 }
 
 String.prototype.replaceAll = function (needle, prick) {
-    var s = this;
-    while (s.indexOf(needle) >= 0)
+    let s = this;
+    while (s.indexOf(needle) >= 0) {
         s = s.replace(needle, prick);
+    }
     return s;
 }
 
@@ -50,9 +56,9 @@ String.prototype.trim = function () {
 
 //BASIC for the win
 String.prototype.left = function (n) {
-    if (n > this.length)
+    if (n > this.length) {
         return this;
-
+    }
     return this.substring(0, n);
 }
 
@@ -68,9 +74,9 @@ String.prototype.has = function (s) {
 
 
 Date.prototype.format = function () {
-    var day = this.getDate();
-    var month = this.getMonth() + 1;
-    var year = this.getYear() + 1900;
+    let day = this.getDate();
+    let month = this.getMonth() + 1;
+    let year = this.getYear() + 1900;
 
     return (month + "/" + day + "/" + year);
 }
@@ -78,8 +84,8 @@ Date.prototype.format = function () {
 //Linking to an external icon due to existing chrome bug
 //http://code.google.com/p/chromium/issues/detail?id=84373
 
-var iconURL = "http://bc.demuyt.net/mc-32x32.png";
-var link = document.createElement("link");
+const iconURL = "http://bc.demuyt.net/mc-32x32.png";
+const link = document.createElement("link");
 link.type = "image/x-icon";
 link.rel = "shortcut icon";
 link.href = iconURL;

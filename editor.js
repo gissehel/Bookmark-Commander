@@ -2,7 +2,7 @@
   Bookmark Commander by Tom J Demuyt is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
   Permissions beyond the scope of this license are available by contacting konijn@gmail.com
 */
-var editor = {};
+const editor = {};
 editor.width = screenwidth - 2;
 
 //This is where the magic happens, so to say
@@ -22,13 +22,15 @@ editor.view = function (id) {
             { id: 10, description: "Quit  " },
         ];
 
-    var bookmark = findBookmarkId(commander.bookmarks, id);
+    let bookmark = findBookmarkId(commander.bookmarks, id);
 
-    if (!bookmark)
+    if (!bookmark) {
         bookmark = { title: 'Something went terribly wrong', url: '' };
+    }
 
-    if (!bookmark.title)
+    if (!bookmark.title) {
         bookmark.title = 'Something went terribly wrong';
+    }
 
     if (!bookmark.url) {
         //Avoid the dreaded undefined ;]
@@ -36,8 +38,7 @@ editor.view = function (id) {
         //Dont show test for folders
         editor.function_keys[4].description = '      ';
         editor.urlreadonly = "readonly='readonly'";
-    }
-    else {
+    } else {
         editor.urlreadonly = "";
     }
 
@@ -47,15 +48,15 @@ editor.view = function (id) {
     editor.saved = false;
 
     //Show javascript nicely, clone into content as to not mess up the original object, this is view after all
-    var content = bookmark.url;
-    if (content.startsWith("j"))
+    let content = bookmark.url;
+    if (content.startsWith("j")) {
         content = js_beautify(content, { 'indent_size': 2 });
-
+    }
     editor.bookmark.content = content;
 
 
     //Table due to general textarea weirdness
-    var s = "<table><tr><td style='background: rgb(0,0,128);'><pre>";
+    let s = "<table><tr><td style='background: rgb(0,0,128);'><pre>";
     //Menu
     s = s + ("<span class='menu'>" + ("  Folder/Bookmark").extend() + "</span>\n");
     //Its a mess, but a short mess ;\
@@ -64,8 +65,8 @@ editor.view = function (id) {
     s = s + "<textarea class='blue' cols='" + editor.width + "' rows='24' id='url'" + editor.urlreadonly + ">" + content + "</textarea>\n"
 
 
-    for (key in editor.function_keys) {
-        var f = editor.function_keys[key];
+    for (let key in editor.function_keys) {
+        let f = editor.function_keys[key];
         s = s + ("<span class='fcode'>F" + f.id + "</span><span class='menu'>" + f.description + "</span><span class='fcode'> </span>");
     }
     s = s + ("<span id='end' class='fcode'>" + " ".repeat(screenwidth - 91) + "</span>\n");
@@ -75,25 +76,24 @@ editor.view = function (id) {
     key_mapping = editor.key_mapping;
 
     //Put focus on the title, at the end
-    var title = document.getElementById("title");
+    const title = document.getElementById("title");
     title.focus();
-    var position = title.value.length * 2;
+    const position = title.value.length * 2;
     title.setSelectionRange(position, position);
 
 }
 
 editor.considerTextAreas = function () {
-    var titleElement = document.getElementById("title")
-    var urlElement = document.getElementById("url")
+    const titleElement = document.getElementById("title")
+    const urlElement = document.getElementById("url")
 
-    var _changed = false;
+    let _changed = false;
 
     //Consider the title
     if (titleElement.value != editor.bookmark.title) {
         _changed = true;
         titleElement.style.fontStyle = "italic"
-    }
-    else {
+    } else {
         titleElement.style.fontStyle = "normal"
     }
 
@@ -101,8 +101,7 @@ editor.considerTextAreas = function () {
     if (urlElement.value != editor.bookmark.content) {
         _changed = true;
         urlElement.style.fontStyle = "italic"
-    }
-    else {
+    } else {
         urlElement.style.fontStyle = "normal"
     }
 
@@ -115,14 +114,13 @@ editor.test = function () {
 }
 
 editor.save = function () {
-    var o = { title: document.getElementById("title").value };
+    const o = { title: document.getElementById("title").value };
 
-    var url = document.getElementById("url").value.trim();
+    const url = document.getElementById("url").value.trim();
 
-    if (url.length > 0)
-        //o.url = url;
+    if (url.length > 0) {        //o.url = url;
         o.url = editor.condense(url);
-
+    }
     chrome.bookmarks.update(editor.id, o);
 
     editor.saved = true;
@@ -138,20 +136,21 @@ editor.save = function () {
 }
 
 editor.condense = function (url) {
-    var s = "";
+    let s = "";
 
     //This only is needed with js bookmarklets
-    if (!url.startsWith("j"))
+    if (!url.startsWith("j")) {
         return url;
+    }
+    const ta = url.split("\n");
 
-    var ta = url.split("\n");
-
-    for (var key in ta) {
+    for (let key in ta) {
         //The beautifier inlines comment
         //So we need to explitly outline those
-        var line = ta[key].trim();
-        if (line.startsWith("/*"))
+        let line = ta[key].trim();
+        if (line.startsWith("/*")) {
             line = "\n" + line;
+        }
         s = s + line;
     }
 
@@ -163,11 +162,11 @@ editor.quit = function () {
     document.body.innerHTML = commander.backup;
 
     //We need to boot (reread bookmarks from Chome ) if we changed something
-    if (editor.saved)
+    if (editor.saved) {
         commander.boot();
-    else
+    } else {
         commander.draw();
-
+    }
     key_mapping = commander.key_mapping;
     commander.editing = false;
 }

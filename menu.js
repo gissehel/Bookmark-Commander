@@ -3,21 +3,21 @@
   Permissions beyond the scope of this license are available by contacting konijn@gmail.com
 */
 
-var menu = {};
+const menu = {};
 
 
 //Nuts about parsing
 menu.itemize = function (indent, s) {
     //Skeleton object
-    var o = { maxText: 0, maxKey: 0, maxKeyText: 0 };
+    const o = { maxText: 0, maxKey: 0, maxKeyText: 0 };
     //Split out the parameter into menu items
-    var ta = s.split(",")
+    const ta = s.split(",")
     //Go over each menu item
     for (key in ta) {
         //Init
         o[key] = {};
         //Split text and key
-        var textkey = ta[key].split("|")
+        const textkey = ta[key].split("|")
         //Set text, no risk
         o[key].text = textkey[0];
         //Is this the longest one so far ?
@@ -30,17 +30,17 @@ menu.itemize = function (indent, s) {
             //Assign
             o[key].key = textkey[1];
             //Measure
-            if (o[key].key.length > o.maxKeyText)
+            if (o[key].key.length > o.maxKeyText) {
                 o.maxKeyText = o[key].key.length;
+            }
         }
         //See if we have a shortcut by splitting
-        var prepost = o[key].text.split("&")
+        const prepost = o[key].text.split("&")
         //Do we have a shortcut
         if (prepost.length == 2) {
             //Deal with the shortcut
             o[key].html = prepost[0] + "<span class='speed'>" + prepost[1].left(1) + "</span>" + prepost[1].substring(1);
-        }
-        else {
+        } else {
             //Or dont deal with it
             o[key].html = o[key].text.remove("&");
         }
@@ -98,7 +98,7 @@ menu.show = function () {
     menu.top = document.getElementById("menu")
 
     //We are filling in a pre
-    var s = "<pre style='margin: 0px 0px 0px 0px'>\n\n";
+    let s = "<pre style='margin: 0px 0px 0px 0px'>\n\n";
 
     //We need the top, and it needs to be indented
     s = s + "<hidden>" + "X".repeat(menu.current.indent) + "</hidden>";
@@ -108,8 +108,7 @@ menu.show = function () {
     for (key = 0; key <= menu.current.items.maxKey; key++) {
         if (menu.current.items[key].text == "_") {
             s = s + "<hidden>" + "X".repeat(menu.current.indent) + "</hidden>" + "<span class='menu'>╠" + doublebar.repeat(menu.current.items.maxText + menu.current.items.maxKeyText + 1) + "╣</span>\n";
-        }
-        else {
+        } else {
             s = s + menu.current.items[key].html;
         }
     }
@@ -148,10 +147,10 @@ menu.goRight = function () {
 menu.goDown = function () {
     menu.selection++;
     if (menuItem = menu.current.items[menu.selection]) {
-        if (menuItem.text == "_")
+        if (menuItem.text == "_") {
             menu.goDown();
-    }
-    else {
+        }
+    } else {
         menu.selection = 0;
     }
     menu.show();
@@ -162,10 +161,10 @@ menu.goDown = function () {
 menu.goUp = function () {
     menu.selection--;
     if (menuItem = menu.current.items[menu.selection]) {
-        if (menuItem.text == "_")
+        if (menuItem.text == "_") {
             menu.goUp();
-    }
-    else {
+        }
+    } else {
         menu.selection = menu.current.items.maxKey;
     }
     menu.show();
@@ -180,15 +179,15 @@ menu.exit = function () {
 }
 
 menu.dispatch = function (event) {
-    var command = menuItem = menu.current.items[menu.selection].text;
+    const command = menuItem = menu.current.items[menu.selection].text;
 
     //We should always exit the menu
     //So no code required for Rescan since menu.exit rescans automatically
     menu.exit();
 
     //pre-work reduces rework
-    var panel = (menu.current.caption == "Left") ? commander.left : commander.right;
-    var id = (menu.current.caption == "Left") ? commander.left.id : commander.right.id;
+    const panel = (menu.current.caption == "Left") ? commander.left : commander.right;
+    const id = (menu.current.caption == "Left") ? commander.left.id : commander.right.id;
 
     if (command == "Help") commander.help();
     if (command == "Mirror") commander.equalize();
@@ -218,13 +217,13 @@ menu.dispatch = function (event) {
         panel.info = false;
 
         if (panel.id == "tree") {
-            var id = document.getElementById(panel.prefix + panel.selected).commander.id;
+            const id = document.getElementById(panel.prefix + panel.selected).commander.id;
             commander.select(id);
         }
     }
 
     if (command == "Swap panels") {
-        var temp = commander.left;
+        const temp = commander.left;
         commander.left = commander.right;
         commander.right = temp;
 
@@ -235,17 +234,19 @@ menu.dispatch = function (event) {
 
     /* Note the different calls according to File vs. Left/Right */
     if (command == "Filter") {
-        if (menu.current.caption == "File")
+        if (menu.current.caption == "File") {
             commander.filter();
-        else
+        } else {
             commander.filter(panel);
+        }
     }
 
     if (command == "Select") {
-        if (menu.current.caption == "File")
+        if (menu.current.caption == "File") {
             commander.selector();
-        else
+        } else {
             commander.selector(panel);
+        }
     }
 
     if (command == "Tree") {
@@ -253,9 +254,9 @@ menu.dispatch = function (event) {
         panel.id = "tree"
     }
 
-    if (command == "Options")
+    if (command == "Options") {
         options.show();
-
+    }
     commander.boot();
 }
 

@@ -33,7 +33,7 @@ options = {};
 	Feel free to submit a patch
 */
 options.init = function () {
-    var s = $("#options")[0].innerHTML;
+    const s = $("#options")[0].innerHTML;
 
     s = s.replace("( )", "(<span id='always_sort_recursively'  class='underblink'> </span>)");
     s = s.replace("( )", "(<span id='ask_sort_recursively'    > </span>)")
@@ -54,10 +54,10 @@ options.init = function () {
 }
 
 options.show = function () {
-    var div = options.div = $("#options")[0];
-    var pane = options.pane = $("#glasspane")[0];
-    var commanderWidth = $("#menu")[0].offsetWidth
-    var commanderHeight = $("#menu")[0].offsetHeight + $(".border")[0].offsetHeight;
+    const div = options.div = $("#options")[0];
+    const pane = options.pane = $("#glasspane")[0];
+    const commanderWidth = $("#menu")[0].offsetWidth
+    const commanderHeight = $("#menu")[0].offsetHeight + $(".border")[0].offsetHeight;
 
     div.style.display = pane.style.display = "block";
 
@@ -70,8 +70,9 @@ options.show = function () {
     }
 
     //Initial the options if they were not set yet
-    if (!localStorage.options)
+    if (!localStorage.options) {
         options.setDefaults();
+    }
 
     options.setRecursiveSorting();
 
@@ -79,12 +80,10 @@ options.show = function () {
 
 options.setRecursiveSorting = function (newValue) {
     //Take care of new value if any
-    if (newValue)
+    if (newValue) {
         localStorage.options.recursiveSorting = newValue;
-
+    }
     //recursive
-
-
 }
 
 options.setDefaults = function () {

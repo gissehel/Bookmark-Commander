@@ -16,8 +16,9 @@ $(document).ready(function () {
         //document.getElementById("end").innerHTML = ("Key: " + event.which).extend( screenwidth - 91 );
 
         if (key_mapping.escape && event.which != 27) {
-            if (escape_mapping[event.which])
+            if (escape_mapping[event.which]) {
                 event.which = escape_mapping[event.which];
+            }
         }
 
         //Remember whether we presssed escape for the next time
@@ -33,8 +34,9 @@ $(document).ready(function () {
 
     /* Cleaning of js code and other salient stuff happens here */
     $(document).keyup(function (event) {
-        if (commander.editing)
+        if (commander.editing) {
             editor.considerTextAreas();
+        }
     });
 
     /* Evil mouse code*/
