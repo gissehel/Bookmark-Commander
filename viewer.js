@@ -47,7 +47,7 @@ viewer.view = function (id) {
         content = js_beautify(content, { 'indent_size': 2 });
     }
 
-    s = "<table><tr><td style='background: rgb(0,0,128);'><pre>";
+    s = "<table><tr><td style='background: rgb(0,0,128);'><pre id='viewerScreen'>";
     //Menu
     s = s + ("<span class='menu'>" + findBookmarkTitle(id).extend() + "</span>\n");
 
@@ -61,7 +61,7 @@ viewer.view = function (id) {
         s = s + ("<span class='fcode'>F" + f.id + "</span><span class='menu'>" + f.description + "</span><span class='fcode'> </span>");
     }
 
-    s = s + ("<span id='end' class='fcode'>" + " ".repeat(screenwidth - 91) + "</span>\n");
+    s = s + ("<span id='end' class='fcode'>" + " ".repeat(screenParams.screenwidth - 91) + "</span>\n");
 
     document.body.innerHTML = s;
 

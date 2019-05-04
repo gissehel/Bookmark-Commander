@@ -11,7 +11,7 @@ String.prototype.repeat = function (num) {
 //Extend String with extend, muhahah
 String.prototype.extend = function (till) {
     if (!till) {
-        till = screenwidth;
+        till = screenParams.screenwidth;
     }
     return (this + " ".repeat(till)).substring(0, till);
 }

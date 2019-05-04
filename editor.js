@@ -3,7 +3,7 @@
   Permissions beyond the scope of this license are available by contacting konijn@gmail.com
 */
 const editor = {};
-editor.width = screenwidth - 2;
+editor.width = screenParams.screenwidth - 2;
 
 //This is where the magic happens, so to say
 editor.view = function (id) {
@@ -56,7 +56,7 @@ editor.view = function (id) {
 
 
     //Table due to general textarea weirdness
-    let s = "<table><tr><td style='background: rgb(0,0,128);'><pre>";
+    let s = "<table><tr><td style='background: rgb(0,0,128);'><pre id='editorScreen'>";
     //Menu
     s = s + ("<span class='menu'>" + ("  Folder/Bookmark").extend() + "</span>\n");
     //Its a mess, but a short mess ;\
@@ -69,7 +69,7 @@ editor.view = function (id) {
         let f = editor.function_keys[key];
         s = s + ("<span class='fcode'>F" + f.id + "</span><span class='menu'>" + f.description + "</span><span class='fcode'> </span>");
     }
-    s = s + ("<span id='end' class='fcode'>" + " ".repeat(screenwidth - 91) + "</span>\n");
+    s = s + ("<span id='end' class='fcode'>" + " ".repeat(screenParams.screenwidth - 91) + "</span>\n");
 
     document.body.innerHTML = s;
 
@@ -125,7 +125,7 @@ editor.save = function () {
 
     editor.saved = true;
 
-    document.getElementById("end").innerHTML = ("<span style='color: yellow'>" + ("SAVED!").extend(screenwidth - 91) + "</span>");
+    document.getElementById("end").innerHTML = ("<span style='color: yellow'>" + ("SAVED!").extend(screenParams.screenwidth - 91) + "</span>");
 
     editor.bookmark = o;
 

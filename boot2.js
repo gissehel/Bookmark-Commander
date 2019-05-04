@@ -1,4 +1,7 @@
 $(document).ready(function () {
+    initMainSreen();
+
+    options.reload();
 
     commander.boot()
     menu.init();

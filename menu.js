@@ -94,8 +94,6 @@ menu.init = function () {
     menu.selection = 0;
 
     menu.original = menu.top.innerHTML;
-
-    options.reload();
 }
 
 menu.show = function () {
@@ -104,16 +102,16 @@ menu.show = function () {
     menu.top = document.getElementById("menu")
 
     //We are filling in a pre
-    let s = "<pre style='margin: 0px 0px 0px 0px'>\n\n";
+    let s = "<pre id='currentMenu' style='margin: 0px 0px 0px 0px'>\n\n";
 
     //We need the top, and it needs to be indented
     s = s + "<hidden>" + "X".repeat(menu.current.indent) + "</hidden>";
     //The top
-    s = s + "<span class='menu'>╔" + doublebar.repeat(menu.current.items.maxText + menu.current.items.maxKeyText + 1) + "╗</span>\n";
+    s = s + "<span class='menu'>╔" + screenParams.doublebar.repeat(menu.current.items.maxText + menu.current.items.maxKeyText + 1) + "╗</span>\n";
 
     for (key = 0; key <= menu.current.items.maxKey; key++) {
         if (menu.current.items[key].text == "_") {
-            s = s + "<hidden>" + "X".repeat(menu.current.indent) + "</hidden>" + "<span class='menu'>╠" + doublebar.repeat(menu.current.items.maxText + menu.current.items.maxKeyText + 1) + "╣</span>\n";
+            s = s + "<hidden>" + "X".repeat(menu.current.indent) + "</hidden>" + "<span class='menu'>╠" + screenParams.doublebar.repeat(menu.current.items.maxText + menu.current.items.maxKeyText + 1) + "╣</span>\n";
         } else {
             s = s + menu.current.items[key].html;
         }
@@ -122,7 +120,7 @@ menu.show = function () {
     //We need the bottom, and it needs to be indented
     s = s + "<hidden>" + "X".repeat(menu.current.indent) + "</hidden>";
     //The bottom
-    s = s + "<span class='menu'>╚" + doublebar.repeat(menu.current.items.maxText + menu.current.items.maxKeyText + 1) + "╝</span>\n";
+    s = s + "<span class='menu'>╚" + screenParams.doublebar.repeat(menu.current.items.maxText + menu.current.items.maxKeyText + 1) + "╝</span>\n";
     //Close
     s = s + "</pre>";
 

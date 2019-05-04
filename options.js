@@ -98,17 +98,35 @@ options.setDefaults = function () {
     localStorage.options = defaults;
 }
 
-
-
 options.hide = function () {
     options.div.style.display = options.pane.style.display = "none";
 }
 
+options.onSizeChanged = () => {
+    const calibre = window.calibre;
+    const calibreRect = calibre.getBoundingClientRect();
+    const body = document.body;
+    const bh = body.clientHeight;
+    const ch = calibreRect.height;
+    const bw = body.clientWidth;
+    const cw = calibreRect.width;
+    const nlines = Math.floor((bh-4)/ch);
+    const ncols = Math.floor((bw-4)/cw);
+    screenParams.screenwidth = Math.floor(ncols/2)*2;
+    screenParams.panelheight = nlines - 6;
+
+    screenParams.panelwidth = Math.floor((screenParams.screenwidth - 4) / 2);
+    screenParams.screenheight = screenParams.panelheight+6;
+    initMainSreen();
+}
+
+window.addEventListener('resize', (e) => options.onSizeChanged());
 
 const _setSize = (size) => {
     const $body = $('body');
     [...$body[0].classList].filter(x => x.startsWith('size-')).forEach(x => $body.removeClass(x));
     $body.addClass(`size-${size}`);
+    options.onSizeChanged();
 }
 
 options.setSize = (size) => {

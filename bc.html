@@ -4,50 +4,51 @@
  -->
 <!DOCTYPE hmtl>
 <html>
-  <head>
-  <title> Bookmark Commander II</title>
 
-  <meta http-equiv="content-type" content="text/html; charset=utf8">
+<head>
+    <title> Bookmark Commander II</title>
 
-  <meta name="Author"   content="Tom J Demuyt">
-  <meta name="Keywords" content="Bookmarks">
+    <meta http-equiv="content-type" content="text/html; charset=utf8">
 
-  <script type="text/javascript" src="jquery.1.6.js"></script>
-  <script type="text/javascript" src="boot.js"></script>
+    <meta name="Author" content="Tom J Demuyt">
+    <meta name="Keywords" content="Bookmarks">
 
-  <!-- My humps, my humps, scripts, I mean scripts ;) -->
-  <script type="text/javascript" src="bc.js"></script>
-  <script type="text/javascript" src="commander.js"></script>
-  <script type="text/javascript" src="bookmarks.js"></script>
-  <script type="text/javascript" src="viewer.js"></script>
-  <script type="text/javascript" src="editor.js"></script>
-  <script type="text/javascript" src="menu.js"></script>
-  <script type="text/javascript" src="mouse.js"></script>
-  <script type="text/javascript" src="options.js"></script>
-  <!-- Keymaps must be the last non-3rd-party script, it modifies the var in the prior scripts -->
-  <script type="text/javascript" src="keymaps.js"></script>
+    <script type="text/javascript" src="jquery.1.6.js"></script>
+    <script type="text/javascript" src="boot.js"></script>
 
-  <link type="text/css" rel="stylesheet" href="bc.css" />
+    <!-- My humps, my humps, scripts, I mean scripts ;) -->
+    <script type="text/javascript" src="bc.js"></script>
+    <script type="text/javascript" src="commander.js"></script>
+    <script type="text/javascript" src="bookmarks.js"></script>
+    <script type="text/javascript" src="viewer.js"></script>
+    <script type="text/javascript" src="editor.js"></script>
+    <script type="text/javascript" src="menu.js"></script>
+    <script type="text/javascript" src="mouse.js"></script>
+    <script type="text/javascript" src="options.js"></script>
+    <!-- Keymaps must be the last non-3rd-party script, it modifies the var in the prior scripts -->
+    <script type="text/javascript" src="keymaps.js"></script>
 
-  <!-- "You are free to use this in any way you want" license -->
-  <script type="text/javascript" src="js/beautify.js" ></script>
-  <script type="text/javascript" src="js/beautify-html.js" ></script>
-  <script type="text/javascript" src="js/tests/sanitytest.js" ></script>
-  <script type="text/javascript" src="js/tests/beautify-tests.js" ></script>
-  <script type="text/javascript" src="js/unpackers/javascriptobfuscator_unpacker.js" ></script>
-  <script type="text/javascript" src="js/unpackers/urlencode_unpacker.js" ></script>
-  <script type="text/javascript" src="js/unpackers/p_a_c_k_e_r_unpacker.js" ></script>
-  <script type="text/javascript" src="js/unpackers/myobfuscate_unpacker.js" ></script>
+    <link type="text/css" rel="stylesheet" href="bc.css" />
 
+    <!-- "You are free to use this in any way you want" license -->
+    <script type="text/javascript" src="js/beautify.js"></script>
+    <script type="text/javascript" src="js/beautify-html.js"></script>
+    <script type="text/javascript" src="js/tests/sanitytest.js"></script>
+    <script type="text/javascript" src="js/tests/beautify-tests.js"></script>
+    <script type="text/javascript" src="js/unpackers/javascriptobfuscator_unpacker.js"></script>
+    <script type="text/javascript" src="js/unpackers/urlencode_unpacker.js"></script>
+    <script type="text/javascript" src="js/unpackers/p_a_c_k_e_r_unpacker.js"></script>
+    <script type="text/javascript" src="js/unpackers/myobfuscate_unpacker.js"></script>
+</head>
 
-  </head>
+<body onmousewheel="return mouse.scroll(evt)">
+    <div id="glasspane" style="position:absolute; display: none; z-index:3;width:100%;height:100%"></div>
+    <pre id='calibre'>X</pre>
+    <pre id='mainScreen'></pre>
 
-<body style="font-family: Vera;" onmousewheel="return mouse.scroll(evt)">
-<div id="glasspane" style="position:absolute; display: none; z-index:3;width:100%;height:100%"></div><pre><script type="text/javascript" src="glasspane.js"></script>
+  <div id="dropdown" style="position: absolute; top: 0px ; left : 0px;margin: 0px 0px 0px 0px; display: none;z-index:1">
 
-  <div id="dropdown" style="position: absolute; top: 8px ; left : 0px;margin: 0px 0px 0px 0px; display: none;z-index:1">
-
-    <pre style='margin: 0px 0px 0px 0px'>
+    <pre id='popupConfig' style='margin: 0px 0px 0px 0px'>
       <hidden>XX</hidden><span class="menu">╔════════════════════╗</span>
       <hidden>XX</hidden><span class="menu">║Re-scan             ║</span>
       <hidden>XX</hidden><span class="menu">║Info                ║</span>
@@ -56,12 +57,13 @@
       <hidden>XX</hidden><span class="menu">║Sort alphabetically ║</span>
       <hidden>XX</hidden><span class="menu">╚════════════════════╝</span>
     </pre>
-  </div>
+    </div>
 
-<!-- This gets later enhanced in options.js , this looks terible on Mac and good on Windows, I know..-->
-<!-- Also, changing this MUST be followed by reviewing options.init() in options.js -->
-  <div id="options" class="options" style="position: absolute; top: 8px ; left : 0px;margin: 0px 0px 0px 0px; display: none;z-index:4"><pre style='margin: 0px 0px 0px 0px'
->╔═ Options ══════════════════════════════════╗
+    <!-- This gets later enhanced in options.js , this looks terible on Mac and good on Windows, I know..-->
+    <!-- Also, changing this MUST be followed by reviewing options.init() in options.js -->
+    <div id="options" class="options"
+        style="position: absolute; top: 0px ; left : 0px;margin: 0px 0px 0px 0px; display: none;z-index:4">
+        <pre id='popupOption' style='margin: 0px 0px 0px 0px'>╔═ Options ══════════════════════════════════╗
 ║                   Always   Ask   Ctrl Key  ║
 ║ Recursive Sorting  ( )     ( )      (x)    ║
 ║ Recursive Copying  ( )     ( )      (x)    ║
@@ -69,11 +71,14 @@
 ║ Use Trashcan       [ ]                     ║
 ╠════════════════════════════════════════════╣
 ║          [&lt;OK&gt;]         [ Cancel ]         ║
-╚════════════════════════════════════════════╝</pre></div>
+╚════════════════════════════════════════════╝</pre>
+    </div>
 
-<!-- the abused glass pane to block events -->
+    <!-- the abused glass pane to block events -->
 
 </body>
 
 <script type="text/javascript" src="boot2.js"></script>
+<script type="text/javascript" src="glasspane.js"></script>
+
 </html>

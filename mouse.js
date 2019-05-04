@@ -18,43 +18,52 @@ const bindTopMenu = (_menu) => {
     });
 }
 
-mouse.init = function () {
+mouse.init = () => mouse.reinit();
 
-    //We go for each item and give it a mouse click event listener
-    //Note the very cool 'live' which means listener also counts for newly created divs
-    //which happens all the time in bookmark commander
-    //if an item was already clicked then we assume the user wants to execute it (delve)
-    for (let i = 0; i < panelheight; i++) {
-        $("#left" + i).live("click",
-            (e) => {
-                if (menu.dropdown.style.display == "block") menu.exit();
-                const n = e.srcElement.id.substring(4)
-                if (commander.left.active && commander.left.selected == n) {
-                    commander.delve();
-                } else {
-                    commander.left.info = false;
-                    commander.left.active = true;
-                    commander.right.active = false;
-                    commander.left.selected = n;
-                    commander.draw();
+mouse.reinit_if_already_init = () => {
+    if (mouse._is_init) {
+        mouse.reinit();
+    }
+}
+
+mouse.reinit = () => {
+    if (! mouse._is_init) {
+        //We go for each item and give it a mouse click event listener
+        //Note the very cool 'live' which means listener also counts for newly created divs
+        //which happens all the time in bookmark commander
+        //if an item was already clicked then we assume the user wants to execute it (delve)
+        for (let i = 0; i < screenParams.panelheight; i++) {
+            $("#left" + i).live("click",
+                (e) => {
+                    if (menu.dropdown.style.display == "block") menu.exit();
+                    const n = e.srcElement.id.substring(4)
+                    if (commander.left.active && commander.left.selected == n) {
+                        commander.delve();
+                    } else {
+                        commander.left.info = false;
+                        commander.left.active = true;
+                        commander.right.active = false;
+                        commander.left.selected = n;
+                        commander.draw();
+                    }
                 }
-            }
-        )
-        $("#rite" + i).live("click",
-            (e) => {
-                if (menu.dropdown.style.display == "block") menu.exit();
-                const n = e.srcElement.id.substring(4)
-                if (commander.right.active && commander.right.selected == n) {
-                    commander.delve();
-                } else {
-                    commander.right.info = false;
-                    commander.right.active = true;
-                    commander.left.active = false;
-                    commander.right.selected = n;
-                    commander.draw();
+            )
+            $("#rite" + i).live("click",
+                (e) => {
+                    if (menu.dropdown.style.display == "block") menu.exit();
+                    const n = e.srcElement.id.substring(4)
+                    if (commander.right.active && commander.right.selected == n) {
+                        commander.delve();
+                    } else {
+                        commander.right.info = false;
+                        commander.right.active = true;
+                        commander.left.active = false;
+                        commander.right.selected = n;
+                        commander.draw();
+                    }
                 }
-            }
-        )
+            )
+        }
     }
 
     //Do the top menu
@@ -70,24 +79,27 @@ mouse.init = function () {
     // Yes, this is very evil, crossing mouse and menu concerns..
     menu.original = menu.top.innerHTML;
 
-    //Do the actual menu items, which have a very imaginative id system ( 0 -> panelheight -1 )
+    if (! mouse._is_init) {
+        //Do the actual menu items, which have a very imaginative id system ( 0 -> panelheight -1 )
 
-    for (let i = 0; i < panelheight; i++) {
-        $("#" + i).live("click",
-            (e) => {
-                const n = e.srcElement.id * 1;
-                if (menu.selection == n) {
-                    menu.dispatch(e);
-                } else {
-                    menu.selection = n;
-                    menu.show();
+        for (let i = 0; i < screenParams.panelheight; i++) {
+            $("#" + i).live("click",
+                (e) => {
+                    const n = e.srcElement.id * 1;
+                    if (menu.selection == n) {
+                        menu.dispatch(e);
+                    } else {
+                        menu.selection = n;
+                        menu.show();
+                    }
                 }
-            }
-        )
-    }
+            )
+        }
 
-    //Do the glasspane
-    $("#glasspane").live("click", (e) => true);
+        //Do the glasspane
+        $("#glasspane").live("click", (e) => true);
+    }
+    mouse._is_init = true;
 }
 
 /* If we ever get enough user feedback, we might change this

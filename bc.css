@@ -14,9 +14,22 @@
     src: url(VeraMono.ttf) format("truetype");
 }
 
+#calibre{
+    display: inline;
+}
+
+#mainScreen {
+    position: absolute;
+}
+
 pre {
     font-family: monospace;
     font-size: 11px;
+    top: 0;
+    left: 0;
+    margin: 2px;
+    border: 0;
+    padding: 0;
 }
 
 .size-10 pre {
