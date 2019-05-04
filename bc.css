@@ -14,12 +14,20 @@
     src: url(VeraMono.ttf) format("truetype");
 }
 
-#calibre{
-    display: inline;
+#calibre {
+    display: inline-block;
 }
 
+#editorScreen textarea,
+#viewerScreen textarea {
+    font: inherit;
+}
+
+#editorScreen,
+#viewerScreen,
 #mainScreen {
     position: absolute;
+    background: rgb(0, 0, 128);
 }
 
 pre {
@@ -30,6 +38,7 @@ pre {
     margin: 2px;
     border: 0;
     padding: 0;
+    line-height: 1em;
 }
 
 .size-10 pre {

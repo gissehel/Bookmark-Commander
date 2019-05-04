@@ -335,7 +335,7 @@ commander.select = function (index) {
     //Go deeper if its a folder, or as the case may be, higher
     if (bookmark.children) {
         let nextSelected = 0;
-        bookmark.children.map(child=>child.id).forEach((id, pos) => {if (panel.id === id) { nextSelected = pos+(index === "0" ? 0 : 1); }});
+        bookmark.children.map(child => child.id).forEach((id, pos) => { if (panel.id === id) { nextSelected = pos + (index === "0" ? 0 : 1); } });
         panel.id = index;
         panel.selected = nextSelected;
         panel.scroll = 0;
@@ -379,8 +379,7 @@ commander.view = function () {
         } else {
             commander.viewing = false;
         }
-    }
-    else {
+    } else {
         document.body.innerHTML = commander.backup;
 
         //we require it for decorating the elements, kludgy, I know

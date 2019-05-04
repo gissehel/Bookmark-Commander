@@ -3,7 +3,6 @@
   Permissions beyond the scope of this license are available by contacting konijn@gmail.com
 */
 const editor = {};
-editor.width = screenParams.screenwidth - 2;
 
 //This is where the magic happens, so to say
 editor.view = function (id) {
@@ -56,13 +55,13 @@ editor.view = function (id) {
 
 
     //Table due to general textarea weirdness
-    let s = "<table><tr><td style='background: rgb(0,0,128);'><pre id='editorScreen'>";
+    let s = "<pre id='editorScreen'>";
     //Menu
-    s = s + ("<span class='menu'>" + ("  Folder/Bookmark").extend() + "</span>\n");
+    s = s + "<span class='menu'>" + ("  Folder/Bookmark").extend() + "</span>\n";
     //Its a mess, but a short mess ;\
-    s = s + "<textarea class='blue' cols='" + editor.width + "' rows='3' id='title'>" + bookmark.title + "</textarea>\n"
-    s = s + ("<span class='menu'>" + ("  URL").extend() + "</span>\n");
-    s = s + "<textarea class='blue' cols='" + editor.width + "' rows='24' id='url'" + editor.urlreadonly + ">" + content + "</textarea>\n"
+    s = s + "<textarea class='blue' cols='" + (screenParams.screenwidth - 2) + "' rows='3' id='title'>" + bookmark.title + "</textarea>\n"
+    s = s + "<span class='menu'>" + ("  URL").extend() + "</span>\n";
+    s = s + "<textarea class='blue' cols='" + (screenParams.screenwidth - 2) + "' rows='"+(screenParams.panelheight)+"' id='url'" + editor.urlreadonly + ">" + content + "</textarea>\n"
 
 
     for (let key in editor.function_keys) {

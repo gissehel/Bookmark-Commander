@@ -110,7 +110,7 @@ options.onSizeChanged = () => {
     const ch = calibreRect.height;
     const bw = body.clientWidth;
     const cw = calibreRect.width;
-    const nlines = Math.floor((bh-4)/ch);
+    const nlines = Math.floor((bh-8)/ch);
     const ncols = Math.floor((bw-4)/cw);
     screenParams.screenwidth = Math.floor(ncols/2)*2;
     screenParams.panelheight = nlines - 6;

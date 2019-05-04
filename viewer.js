@@ -47,21 +47,21 @@ viewer.view = function (id) {
         content = js_beautify(content, { 'indent_size': 2 });
     }
 
-    s = "<table><tr><td style='background: rgb(0,0,128);'><pre id='viewerScreen'>";
+    s = "<pre id='viewerScreen'>";
     //Menu
-    s = s + ("<span class='menu'>" + findBookmarkTitle(id).extend() + "</span>\n");
+    s = s + "<span class='menu'>" + findBookmarkTitle(id).extend() + "</span>\n";
 
-    s = s + "<textarea class='blue' cols='118' rows='3' readonly='readonly'>" + bookmark.title + "</textarea>\n"
-    s = s + ("<span class='menu'>" + ("  URL").extend() + "</span>\n");
-    s = s + "<textarea class='blue' cols='118' rows='24' readonly='readonly'>" + content + "</textarea>\n"
+    s = s + "<textarea class='blue' cols='" + (screenParams.screenwidth - 2) + "' rows='3' readonly='readonly'>" + bookmark.title + "</textarea>\n"
+    s = s + "<span class='menu'>" + ("  URL").extend() + "</span>\n";
+    s = s + "<textarea class='blue' cols='" + (screenParams.screenwidth - 2) + "' rows='"+(screenParams.panelheight)+"' readonly='readonly'>" + content + "</textarea>\n"
 
 
     for (let key in viewer.function_keys) {
         const f = viewer.function_keys[key];
-        s = s + ("<span class='fcode'>F" + f.id + "</span><span class='menu'>" + f.description + "</span><span class='fcode'> </span>");
+        s = s + "<span class='fcode'>F" + f.id + "</span><span class='menu'>" + f.description + "</span><span class='fcode'> </span>";
     }
 
-    s = s + ("<span id='end' class='fcode'>" + " ".repeat(screenParams.screenwidth - 91) + "</span>\n");
+    s = s + "<span id='end' class='fcode'>" + " ".repeat(screenParams.screenwidth - 91) + "</span>\n";
 
     document.body.innerHTML = s;
 
