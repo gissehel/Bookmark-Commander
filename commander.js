@@ -331,10 +331,13 @@ commander.select = function (index) {
 
     //Do we want to select this for real ?
     const bookmark = findBookmarkId(commander.bookmarks, index);
+
     //Go deeper if its a folder, or as the case may be, higher
     if (bookmark.children) {
+        let nextSelected = 0;
+        bookmark.children.map(child=>child.id).forEach((id, pos) => {if (panel.id === id) { nextSelected = pos+(index === "0" ? 0 : 1); }});
         panel.id = index;
-        panel.selected = 0;
+        panel.selected = nextSelected;
         panel.scroll = 0;
         panel.selector = "";
         commander.draw();
