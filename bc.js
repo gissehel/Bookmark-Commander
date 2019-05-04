@@ -81,10 +81,7 @@ Date.prototype.format = function () {
     return (month + "/" + day + "/" + year);
 }
 
-//Linking to an external icon due to existing chrome bug
-//http://code.google.com/p/chromium/issues/detail?id=84373
-
-const iconURL = "http://bc.demuyt.net/mc-32x32.png";
+const iconURL = chrome.extension.getURL("/bc-32x32.png");
 const link = document.createElement("link");
 link.type = "image/x-icon";
 link.rel = "shortcut icon";
