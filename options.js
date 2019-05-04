@@ -51,6 +51,13 @@ options.init = function () {
 
 
     $("#options")[0].innerHTML = s;
+    options.reload();
+}
+
+options.reload = () => {
+    if (localStorage.size) {
+        options._setSize(localStorage.size);
+    }
 }
 
 options.show = function () {
@@ -95,4 +102,20 @@ options.setDefaults = function () {
 
 options.hide = function () {
     options.div.style.display = options.pane.style.display = "none";
+}
+
+
+const _setSize = (size) => {
+    const $body = $('body');
+    [...$body[0].classList].filter(x => x.startsWith('size-')).forEach(x => $body.removeClass(x));
+    $body.addClass(`size-${size}`);
+}
+
+options.setSize = (size) => {
+    localStorage.size = size;
+    _setSize(size);
+}
+
+options._setSize = (size) => {
+    _setSize(size);
 }

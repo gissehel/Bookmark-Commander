@@ -58,6 +58,10 @@ menu.itemize = function (indent, s) {
     return o;
 }
 
+const fontSizes = [...Array(11).keys()].map(x=>10+x);
+const fontSizesText = fontSizes.map(size => [ `${size}px`, size ]);
+const fontSizesInMenu = fontSizesText.map(x=>x[0]).join(',');
+
 menu.init = function () {
     menu.dropdown = document.getElementById("dropdown")
     menu.top = document.getElementById("menu")
@@ -67,7 +71,7 @@ menu.init = function () {
     menu.left = { caption: "Left", indent: 2, items: menu.itemize(2, "&List,&Info,&Tree,_,Sort by &Date,&Sort by Length,Sort &Alphabetically,_,&Filter|/,Select|*,_,&Rescan|C-r") };
     menu.file = { caption: "File", indent: 12, items: menu.itemize(12, "&Help|F1,Mirror|F2,View|F3,Edit|F4,Copy|F5,Move|F6,Create Folder |F7,Delete|F8,Quit|F10,_,Move up|+,Move down|-,Select|*,Filter|/") };
     menu.command = { caption: "Command", indent: 21, items: menu.itemize(21, "&Search,S&wap panels") };
-    menu.options = { caption: "Options", indent: 33, items: menu.itemize(33, "&Options") };
+    menu.options = { caption: "Options", indent: 33, items: menu.itemize(33, "&Options,_,"+fontSizesInMenu) };
     menu.right = { caption: "Right", indent: 45, items: menu.itemize(45, "&List,&Info,&Tree,_,Sort by &Date,&Sort by Length,Sort &Alphabetically,_,&Filter|/,Select|*,_,&Rescan|C-r") };
 
     menu.left.left = menu.right;
@@ -90,6 +94,8 @@ menu.init = function () {
     menu.selection = 0;
 
     menu.original = menu.top.innerHTML;
+
+    options.reload();
 }
 
 menu.show = function () {
@@ -178,6 +184,11 @@ menu.exit = function () {
     key_mapping = commander.key_mapping;
 }
 
+const fontSizesChange = fontSizesText.reduce(( acc, [label, size]) => { 
+    acc[label] = () => options.setSize(size);
+    return acc;
+}, {});
+
 menu.dispatch = function (event) {
     const command = menuItem = menu.current.items[menu.selection].text;
 
@@ -256,6 +267,9 @@ menu.dispatch = function (event) {
 
     if (command == "Options") {
         options.show();
+    }
+    if (fontSizesChange[command] !== undefined) {
+        fontSizesChange[command]();
     }
     commander.boot();
 }

@@ -14,7 +14,55 @@
     src: url(VeraMono.ttf) format("truetype");
 }
 
-/*Can you tell I like ordered tables in my code ;] */
+pre {
+    font-family: monospace;
+    font-size: 11px;
+}
+
+.size-10 pre {
+    font-size: 10px;
+}
+
+.size-11 pre {
+    font-size: 11px;
+}
+
+.size-12 pre {
+    font-size: 12px;
+}
+
+.size-13 pre {
+    font-size: 13px;
+}
+
+.size-14 pre {
+    font-size: 14px;
+}
+
+.size-15 pre {
+    font-size: 15px;
+}
+
+.size-16 pre {
+    font-size: 16px;
+}
+
+.size-17 pre {
+    font-size: 17px;
+}
+
+.size-18 pre {
+    font-size: 18px;
+}
+
+.size-19 pre {
+    font-size: 19px;
+}
+
+.size-20 pre {
+    font-size: 20px;
+}
+
 
 .border {
     color: rgb(192, 192, 192);
