@@ -8,30 +8,68 @@
   blue      : rgb(   0,   0, 128 )
 */
 
-  //Link to Vera
-  @font-face
-  {
+//Link to Vera
+@font-face {
     font-family: "Vera";
     src: url(VeraMono.ttf) format("truetype");
-  }
+}
 
-  /*Can you tell I like ordered tables in my code ;] */
+/*Can you tell I like ordered tables in my code ;] */
 
-  .border   { color: rgb(192,192,192); background: rgb(0,0,128);  }
-  .blue     { color: rgb(255,255,255); background: rgb(0,0,128);  }
-  .menu     { color: rgb(0,0,0);       background: rgb(0,128,128);}
-  .options  { color: rgb(0,0,0);       background: rgb(192,192,192);}
-  .white    { color: rgb(255,255,255); background: rgb(0,128,128);}
-  .selected { color: rgb(0,0,0);       background: rgb(0,128,128);}
-  .paars    { color: rgb(223,  0,255);                            }
-  .yellow   { color: rgb(255,255,  0);                            }
-  .js       { color: rgb(0,255,0);     background: rgb(0,0,128);  }
-  .fcode    { color: rgb(192,192,192); background: rgb(0,0,0);    }
-  .speed    { color: rgb(255,255,0);                              }
+.border {
+    color: rgb(192, 192, 192);
+    background: rgb(0, 0, 128);
+}
 
-  /* Vera font for textarea's did not work for textarea's b*/
-  textarea
-  {
+.blue {
+    color: rgb(255, 255, 255);
+    background: rgb(0, 0, 128);
+}
+
+.menu {
+    color: rgb(0, 0, 0);
+    background: rgb(0, 128, 128);
+}
+
+.options {
+    color: rgb(0, 0, 0);
+    background: rgb(192, 192, 192);
+}
+
+.white {
+    color: rgb(255, 255, 255);
+    background: rgb(0, 128, 128);
+}
+
+.selected {
+    color: rgb(0, 0, 0);
+    background: rgb(0, 128, 128);
+}
+
+.paars {
+    color: rgb(223, 0, 255);
+}
+
+.yellow {
+    color: rgb(255, 255, 0);
+}
+
+.js {
+    color: rgb(0, 255, 0);
+    background: rgb(0, 0, 128);
+}
+
+.fcode {
+    color: rgb(192, 192, 192);
+    background: rgb(0, 0, 0);
+}
+
+.speed {
+    color: rgb(255, 255, 0);
+}
+
+/* Vera font for textarea's did not work for textarea's b*/
+textarea {
     font-family: "Lucida Console", Monaco, monospace;
     font-size: inherit;
     -webkit-appearance: textfield;
@@ -42,51 +80,74 @@
     overflow-x: hidden;
     outline: none;
     resize: none;
-  }
+}
 
-  /*Not sure this is required*/
-  ::-webkit-scrollbar
-  {
+/*Not sure this is required*/
+::-webkit-scrollbar {
     height: 0px;
     width: 0px;
     background-color: inherit;
-  }
+}
 
 
-  @-webkit-keyframes blink {
-    0%     { opacity: 0 } 50% { opacity: 0 }
-    50.01% { opacity: 1 } 100% { opacity: 1 }
-  }
+@-webkit-keyframes blink {
+    0% {
+        opacity: 0
+    }
 
-  @-webkit-keyframes underblink {
-    0%     { border-bottom-color: silver; }
-    50%    { border-bottom-color: silver; }
-    50.01% { border-bottom-color: black; }
-    100%   { border-bottom-color: black; }
-  }
+    50% {
+        opacity: 0
+    }
 
-  blink {
+    50.01% {
+        opacity: 1
+    }
+
+    100% {
+        opacity: 1
+    }
+}
+
+@-webkit-keyframes underblink {
+    0% {
+        border-bottom-color: silver;
+    }
+
+    50% {
+        border-bottom-color: silver;
+    }
+
+    50.01% {
+        border-bottom-color: black;
+    }
+
+    100% {
+        border-bottom-color: black;
+    }
+}
+
+blink {
     -webkit-animation: blink 0.7s infinite linear alternate;
     -webkit-font-smoothing: antialiased;
-  }
+}
 
-  .blink {
+.blink {
     -webkit-animation: blink 0.7s infinite linear alternate;
     -webkit-font-smoothing: antialiased;
-	color: orange;
-  }
+    color: orange;
+}
 
-  .underblink {
+.underblink {
     -webkit-animation: underblink 0.7s infinite linear alternate;
     -webkit-font-smoothing: antialiased;
-    display:inline-block;
-    border-bottom-color:black;
-    border-bottom-width:2px;
-    border-bottom-style:solid;
-	  z-index:5;
-  }
+    display: inline-block;
+    border-bottom-color: black;
+    border-bottom-width: 2px;
+    border-bottom-style: solid;
+    z-index: 5;
+}
 
-  hidden {
-    color : green;
+hidden {
+    color: green;
     opacity: 0;
-  }
+}
