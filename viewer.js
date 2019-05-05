@@ -53,7 +53,7 @@ viewer.view = function (id) {
 
     s = s + "<textarea class='blue' cols='" + (screenParams.screenwidth - 2) + "' rows='3' readonly='readonly'>" + bookmark.title + "</textarea>\n"
     s = s + "<span class='menu'>" + ("  URL").extend() + "</span>\n";
-    s = s + "<textarea class='blue' cols='" + (screenParams.screenwidth - 2) + "' rows='"+(screenParams.panelheight)+"' readonly='readonly'>" + content + "</textarea>\n"
+    s = s + "<textarea class='blue' cols='" + (screenParams.screenwidth - 2) + "' rows='" + (screenParams.panelheight) + "' readonly='readonly'>" + content + "</textarea>\n"
 
 
     for (let key in viewer.function_keys) {
@@ -65,7 +65,11 @@ viewer.view = function (id) {
 
     document.body.innerHTML = s;
 
-    viewer.mapping_builder.activate();
+    // Ugly quirk, because width in columns for a textarea isn't enought
+    const width = $('.menu').width();
+    $('textarea').attr('style', `width: ${width}px`);
+
+    viewer.key_mapping_builder.activate();
 }
 
 viewer.test = function () {

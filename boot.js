@@ -1,9 +1,15 @@
+$(document).ready(function () {
+    glasspane.init();
 
-const screenParams = {};
+    data.init();
 
-screenParams.screenwidth = 120;
-screenParams.panelwidth = (screenParams.screenwidth - 4) / 2
-screenParams.panelheight = 30
-screenParams.doublebar = "═"
-screenParams.screenheight = screenParams.panelheight+6;
+    commander.boot();
 
+    menu.init();
+
+    keyboard.init();
+
+    mouse.init();
+
+    commander.key_mapping_builder.activate();
+});

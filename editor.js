@@ -72,7 +72,11 @@ editor.view = function (id) {
 
     document.body.innerHTML = s;
 
-    editor.mapping_builder.activate();
+    // Ugly quirk, because width in columns for a textarea isn't enought
+    const width = $('.menu').width();
+    $('textarea').attr('style',`width: ${width}px`);
+
+    editor.key_mapping_builder.activate();
 
     //Put focus on the title, at the end
     const title = document.getElementById("title");
@@ -166,7 +170,7 @@ editor.quit = function () {
     } else {
         commander.draw();
     }
-    commander.mapping_builder.activate();
+    commander.key_mapping_builder.activate();
     commander.editing = false;
 }
 

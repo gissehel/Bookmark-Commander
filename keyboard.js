@@ -72,11 +72,12 @@ class KeyboardMappingBuilder {
 
 keyboard.addMapping = (obj) => {
     const builder = new KeyboardMappingBuilder();
-    obj.mapping_builder = builder;
+    obj.key_mapping_builder = builder;
     return builder;
 }
 
 keyboard.escape_mapping = {};
+
 [...'123456789'].forEach(c => {
     keyboard.escape_mapping[`Digit${c}`] = `F${c}`;
     keyboard.escape_mapping[c] = `F${c}`;

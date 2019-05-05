@@ -6,12 +6,15 @@
  └─┴─┘  ╚═╩═╝
 */
 
-// EVIL Mac Fix
-if (navigator.userAgent.has("Mac")) {
-    screenParams.doublebar = '=';
-}
+const glasspane = {};
 
-const initMainSreen = (reload) => {
+glasspane.init = () => {
+    // EVIL Mac Fix
+    if (navigator.userAgent.has("Mac")) {
+        screenParams.doublebar = '=';
+        screenParams.shouldReplaceHBar = true;
+    }
+
     let mainSreenContent = '';
     //Menu
     //Note the relative position and z-index, without this the dropdown would overlap the menu
@@ -63,6 +66,12 @@ const initMainSreen = (reload) => {
     window.mainScreen.innerHTML = mainSreenContent;
     mouse.reinit_if_already_init();
     commander.boot();
-}
 
-// initMainSreen();
+    /* EVIL Mac Fix */
+    if (screenParams.shouldReplaceHBar) {
+        //Replace ═ with =, cause silly Mac OS
+        $("#h2").text(function (index, oldtext) { return oldtext.replace(/═/gi, screenParams.doublebar) });
+        $("#h3").text(function (index, oldtext) { return oldtext.replace(/═/gi, screenParams.doublebar) });
+        $("#options").text(function (index, oldtext) { return oldtext.replace(/═/gi, screenParams.doublebar) });
+    }
+}

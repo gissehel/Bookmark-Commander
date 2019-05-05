@@ -33,7 +33,7 @@ options = {};
 	Feel free to submit a patch
 */
 options.init = function () {
-    const s = $("#options")[0].innerHTML;
+    let s = $("#options")[0].innerHTML;
 
     s = s.replace("( )", "(<span id='always_sort_recursively'  class='underblink'> </span>)");
     s = s.replace("( )", "(<span id='ask_sort_recursively'    > </span>)")
@@ -51,13 +51,6 @@ options.init = function () {
 
 
     $("#options")[0].innerHTML = s;
-    options.reload();
-}
-
-options.reload = () => {
-    if (localStorage.size) {
-        options._setSize(localStorage.size);
-    }
 }
 
 options.show = function () {
@@ -82,7 +75,6 @@ options.show = function () {
     }
 
     options.setRecursiveSorting();
-
 }
 
 options.setRecursiveSorting = function (newValue) {
@@ -100,40 +92,4 @@ options.setDefaults = function () {
 
 options.hide = function () {
     options.div.style.display = options.pane.style.display = "none";
-}
-
-options.onSizeChanged = () => {
-    const calibre = window.calibre;
-    const calibreRect = calibre.getBoundingClientRect();
-    const body = document.body;
-    const bh = body.clientHeight;
-    const ch = calibreRect.height;
-    const bw = body.clientWidth;
-    const cw = calibreRect.width;
-    const nlines = Math.floor((bh-8)/ch);
-    const ncols = Math.floor((bw-4)/cw);
-    screenParams.screenwidth = Math.floor(ncols/2)*2;
-    screenParams.panelheight = nlines - 6;
-
-    screenParams.panelwidth = Math.floor((screenParams.screenwidth - 4) / 2);
-    screenParams.screenheight = screenParams.panelheight+6;
-    initMainSreen();
-}
-
-window.addEventListener('resize', (e) => options.onSizeChanged());
-
-const _setSize = (size) => {
-    const $body = $('body');
-    [...$body[0].classList].filter(x => x.startsWith('size-')).forEach(x => $body.removeClass(x));
-    $body.addClass(`size-${size}`);
-    options.onSizeChanged();
-}
-
-options.setSize = (size) => {
-    localStorage.size = size;
-    _setSize(size);
-}
-
-options._setSize = (size) => {
-    _setSize(size);
 }

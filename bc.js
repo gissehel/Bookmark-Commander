@@ -13,7 +13,7 @@ String.prototype.extend = function (till) {
     if (!till) {
         till = screenParams.screenwidth;
     }
-    return (this + " ".repeat(till)).substring(0, till);
+    return (this + " ".repeat(till)).substring(0, till).replaceAll('<','&lt;').replaceAll('>','&gt;');
 }
 
 //Need moar sugar
@@ -79,6 +79,14 @@ Date.prototype.format = function () {
     let year = this.getYear() + 1900;
 
     return (month + "/" + day + "/" + year);
+}
+
+// Don't add this to Array.prototype or all calls to 'for (... in ...)' will see that as a key of an array (while Object.keys(...).forEach won't)
+const pairToObject = function (array) {
+    return array.reduce((acc, [key, value]) => {
+        acc[key] = value;
+        return acc;
+    }, {});
 }
 
 const iconURL = chrome.extension.getURL("/bc-16x16-l.png");
