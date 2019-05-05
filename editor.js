@@ -5,7 +5,7 @@
 const editor = {};
 
 //This is where the magic happens, so to say
-editor.view = function (id) {
+editor.view = (id) => {
     //Function keys
     editor.function_keys =
         [
@@ -86,7 +86,7 @@ editor.view = function (id) {
 
 }
 
-editor.considerTextAreas = function () {
+editor.considerTextAreas = () => {
     const titleElement = document.getElementById("title")
     const urlElement = document.getElementById("url")
 
@@ -112,11 +112,11 @@ editor.considerTextAreas = function () {
 
 }
 
-editor.test = function () {
+editor.test = () => {
     chrome.tabs.create({ 'url': document.getElementById("url").value }, null);
 }
 
-editor.save = function () {
+editor.save = () => {
     const o = { title: document.getElementById("title").value };
 
     const url = document.getElementById("url").value.trim();
@@ -138,7 +138,7 @@ editor.save = function () {
 
 }
 
-editor.condense = function (url) {
+editor.condense = (url) => {
     let s = "";
 
     //This only is needed with js bookmarklets
@@ -161,7 +161,7 @@ editor.condense = function (url) {
 }
 
 //TODO, ask whether the user wants to save ?
-editor.quit = function () {
+editor.quit = () => {
     document.body.innerHTML = commander.backup;
 
     //We need to boot (reread bookmarks from Chome ) if we changed something

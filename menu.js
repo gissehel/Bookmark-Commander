@@ -7,7 +7,7 @@ const menu = {};
 
 {
     //Nuts about parsing
-    menu.itemize = function (indent, s) {
+    menu.itemize = (indent, s) => {
         //Skeleton object
         const o = { maxText: 0, maxKey: 0, maxKeyText: 0 };
         //Split out the parameter into menu items
@@ -63,7 +63,7 @@ const menu = {};
     const fontSizesInMenu = fontSizesText.map(x => x[0]).join(',');
     const fontSizesChange = pairToObject(fontSizesText.map(([label, size]) => [label, () => data.setSize(size)]));
 
-    menu.init = function () {
+    menu.init = () => {
         menu.dropdown = document.getElementById("dropdown")
         menu.top = document.getElementById("menu")
 
@@ -97,7 +97,7 @@ const menu = {};
         menu.original = menu.top.innerHTML;
     }
 
-    menu.show = function () {
+    menu.show = () => {
         /* This could be ruined */
         menu.dropdown = document.getElementById("dropdown")
         menu.top = document.getElementById("menu")
@@ -137,19 +137,19 @@ const menu = {};
         $('#' + menu.selection).removeClass('menu').addClass('fcode');
     }
 
-    menu.goLeft = function () {
+    menu.goLeft = () => {
         menu.current = menu.current.left;
         menu.selection = 0;
         menu.show();
     }
 
-    menu.goRight = function () {
+    menu.goRight = () => {
         menu.current = menu.current.right;
         menu.selection = 0;
         menu.show();
     }
 
-    menu.goDown = function () {
+    menu.goDown = () => {
         menu.selection++;
         if (menuItem = menu.current.items[menu.selection]) {
             if (menuItem.text == "_") {
@@ -163,7 +163,7 @@ const menu = {};
 
     //Yes, this is an evil clone of goDown
     //probably this should have been 1 function with an argument..
-    menu.goUp = function () {
+    menu.goUp = () => {
         menu.selection--;
         if (menuItem = menu.current.items[menu.selection]) {
             if (menuItem.text == "_") {
@@ -175,7 +175,7 @@ const menu = {};
         menu.show();
     }
 
-    menu.exit = function () {
+    menu.exit = () => {
         document.getElementById("dropdown").style.display = "none"
         document.getElementById("menu").innerHTML = menu.original;
 
@@ -183,7 +183,7 @@ const menu = {};
         commander.key_mapping_builder.activate();
     }
 
-    menu.dispatch = function (event) {
+    menu.dispatch = (event) => {
         const command = menuItem = menu.current.items[menu.selection].text;
 
         //We should always exit the menu

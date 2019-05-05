@@ -32,7 +32,7 @@ options = {};
 	due to coupling UI and control so tightly
 	Feel free to submit a patch
 */
-options.init = function () {
+options.init = () => {
     let s = $("#options")[0].innerHTML;
 
     s = s.replace("( )", "(<span id='always_sort_recursively'  class='underblink'> </span>)");
@@ -53,7 +53,7 @@ options.init = function () {
     $("#options")[0].innerHTML = s;
 }
 
-options.show = function () {
+options.show = () => {
     const div = options.div = $("#options")[0];
     const pane = options.pane = $("#glasspane")[0];
     const commanderWidth = $("#menu")[0].offsetWidth
@@ -77,7 +77,7 @@ options.show = function () {
     options.setRecursiveSorting();
 }
 
-options.setRecursiveSorting = function (newValue) {
+options.setRecursiveSorting = (newValue) => {
     //Take care of new value if any
     if (newValue) {
         localStorage.options.recursiveSorting = newValue;
@@ -85,11 +85,11 @@ options.setRecursiveSorting = function (newValue) {
     //recursive
 }
 
-options.setDefaults = function () {
+options.setDefaults = () => {
     var defaults = { recursiveSorting: 'control', recursiveCopying: 'control', trashcan: false }
     localStorage.options = defaults;
 }
 
-options.hide = function () {
+options.hide = () => {
     options.div.style.display = options.pane.style.display = "none";
 }

@@ -5,7 +5,7 @@
 const viewer = {};
 
 //This is where the magic happens, so to say
-viewer.view = function (id) {
+viewer.view = (id) => {
     //Function keys
     viewer.function_keys =
         [
@@ -72,7 +72,7 @@ viewer.view = function (id) {
     viewer.key_mapping_builder.activate();
 }
 
-viewer.test = function () {
+viewer.test = () => {
     if (viewer.bookmark.url.length > 0) {
         chrome.tabs.create({ 'url': viewer.bookmark.url }, null);
     }

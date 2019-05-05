@@ -19,17 +19,17 @@ commander.editing = false;
  ****/
 
 /* INIT, RE-INIT */
-commander.boot = function () {
-    chrome.bookmarks.getTree(function (stuff) {
+commander.boot = () => {
+    chrome.bookmarks.getTree((stuff) => {
         commander.bookmarks = stuff;
         commander.draw();
     });
 }
 
 /* HELPER, DRAW IT */
-commander.draw = function () {
+commander.draw = () => {
     if (commander.left.id == "search") {
-        chrome.bookmarks.search(commander.query, function (o) {
+        chrome.bookmarks.search(commander.query, (o) => {
             commander.results = o;
             commander.setPanel(commander.left);
             commander.setPanel(commander.right);
@@ -46,7 +46,7 @@ commander.draw = function () {
 }
 
 /* Core wild magic */
-commander.setPanel = function (panelConfig) {
+commander.setPanel = (panelConfig) => {
     //Show we be here ?
     if (panelConfig.info)
         return commander.setInfoPanel(panelConfig);
@@ -192,7 +192,7 @@ commander.setPanel = function (panelConfig) {
  * Info panel
  **
  ****/
-commander.setInfoPanel = function (panelConfig) {
+commander.setInfoPanel = (panelConfig) => {
     const o = findBookmarkId(commander.bookmarks, panelConfig.other.selectedBookmark);
 
     //Are we clear ?
@@ -295,7 +295,7 @@ commander.setInfoPanel = function (panelConfig) {
 }
 
 /* TAB, SWAP */
-commander.swapPanel = function () {
+commander.swapPanel = () => {
     let panel = commander.left.active ? commander.left : commander.right;
     //Dont make an info panel active
     if (panel.other.info) {
@@ -308,7 +308,7 @@ commander.swapPanel = function () {
 }
 
 /* Prelude to SELECT, ENTER */
-commander.delve = function () {
+commander.delve = () => {
     const panel = commander.left.active ? commander.left : commander.right;
     const id = document.getElementById(panel.prefix + panel.selected).commander.id;
 
@@ -326,7 +326,7 @@ commander.delve = function () {
 }
 
 /* SELECT, ENTER */
-commander.select = function (index) {
+commander.select = (index) => {
     const panel = commander.left.active ? commander.left : commander.right;
 
     //Do we want to select this for real ?
@@ -343,29 +343,29 @@ commander.select = function (index) {
         commander.draw();
     } else if (bookmark.url && bookmark.url.startsWith(["http", "file"])) {
         //Open if its a bookmark
-        chrome.tabs.getCurrent(function (tab) { chrome.tabs.create({ 'url': bookmark.url, 'index': tab.index }, null) });
+        chrome.tabs.getCurrent((tab) => chrome.tabs.create({ 'url': bookmark.url, 'index': tab.index }, null));
     }
     //Yes, do nuttin if its js, them evil hackers cannought be trusted
 }
 
 /* HELP */
-commander.help = function () {
+commander.help = () => {
     chrome.tabs.create({ 'url': chrome.extension.getURL('help.html') }, null);
 }
 
 /* QUIT */
-commander.quit = function () {
+commander.quit = () => {
     if (commander.left.id == "search") {
         delete commander.query;
         delete commander.results;
         commander.back();
     } else {
-        chrome.tabs.getCurrent(function (tab) { chrome.tabs.remove(tab.id) });
+        chrome.tabs.getCurrent((tab) => { chrome.tabs.remove(tab.id) });
     }
 }
 
 /* VIEW */
-commander.view = function () {
+commander.view = () => {
     commander.viewing = !commander.viewing;
 
     if (commander.viewing) {
@@ -390,7 +390,7 @@ commander.view = function () {
 }
 
 /* EDIT */
-commander.edit = function () {
+commander.edit = () => {
     commander.backup = document.body.innerHTML;
 
     const panel = commander.left.active ? commander.left : commander.right;
@@ -408,7 +408,7 @@ commander.edit = function () {
 }
 
 /* MENU */
-commander.menu = function () {
+commander.menu = () => {
     commander.backup = document.body.innerHTML;
     //Tricky, hide the selected item
     $(".selected").removeClass('selected')
@@ -419,7 +419,7 @@ commander.menu = function () {
 }
 
 /* BACKSPACE */
-commander.back = function () {
+commander.back = () => {
     const panel = commander.left.active ? commander.left : commander.right;
 
     if (panel.id == "search") {
@@ -435,7 +435,7 @@ commander.back = function () {
 }
 
 /* DOWN */
-commander.down = function () {
+commander.down = () => {
     const panel = commander.left.active ? commander.left : commander.right;
 
     if (panel.selected == screenParams.panelheight - 1) {
@@ -452,7 +452,7 @@ commander.down = function () {
 }
 
 /* PAGE DOWN */
-commander.pageDown = function () {
+commander.pageDown = () => {
     const panel = commander.left.active ? commander.left : commander.right;
 
     if (panel.selected < screenParams.panelheight - 1) {
@@ -470,7 +470,7 @@ commander.pageDown = function () {
 
 
 /* UP */
-commander.up = function () {
+commander.up = () => {
     //Get active panel
     const panel = commander.left.active ? commander.left : commander.right;
     //if we are already physically in slot 0, see if we can still scroll up
@@ -490,7 +490,7 @@ commander.up = function () {
 }
 
 /* PAGE UP */
-commander.pageUp = function () {
+commander.pageUp = () => {
     //Get active panel
     const panel = commander.left.active ? commander.left : commander.right;
     //if we are already physically in slot 0, see if we can still scroll up
@@ -510,7 +510,7 @@ commander.pageUp = function () {
 }
 
 /* HOME */
-commander.home = function () {
+commander.home = () => {
     const panel = commander.left.active ? commander.left : commander.right;
     panel.selected = 0;
     panel.scroll = 0;
@@ -518,7 +518,7 @@ commander.home = function () {
 }
 
 /* END */
-commander.end = function () {
+commander.end = () => {
     const panel = commander.left.active ? commander.left : commander.right;
 
     if (panel.itemcount < screenParams.panelheight + 1) {
@@ -532,7 +532,7 @@ commander.end = function () {
 }
 
 /* COPY */
-commander.copy = function () {
+commander.copy = () => {
     const from = commander.left.active ? commander.left : commander.right;
     const to = !commander.left.active ? commander.left : commander.right;
 
@@ -573,7 +573,7 @@ commander.copy = function () {
 }
 
 /* COPY SELECTION */
-commander.copySelection = function (from, to) {
+commander.copySelection = (from, to) => {
     const o = findBookmarkId(commander.bookmarks, from.id);
 
     //Minimal paranoia
@@ -600,7 +600,7 @@ commander.copySelection = function (from, to) {
 }
 
 /* MOVE */
-commander.move = function () {
+commander.move = () => {
     const panel = commander.left.active ? commander.left : commander.right;
     const id = document.getElementById(panel.prefix + panel.selected).commander.id;
     const bookmark = findBookmarkId(commander.bookmarks, id);
@@ -631,7 +631,7 @@ commander.move = function () {
 }
 
 /* MOVE SELECTION */
-commander.moveSelection = function (from, to) {
+commander.moveSelection = (from, to) => {
     const o = findBookmarkId(commander.bookmarks, from.id);
 
     //Minimal paranoia
@@ -653,7 +653,7 @@ commander.moveSelection = function (from, to) {
 }
 
 /* DELETE */
-commander.delete = function () {
+commander.delete = () => {
     const panel = commander.left.active ? commander.left : commander.right;
     const id = document.getElementById(panel.prefix + panel.selected).commander.id;
     const bookmark = findBookmarkId(commander.bookmarks, id);
@@ -673,7 +673,7 @@ commander.delete = function () {
 }
 
 /* DELETE SELECTION */
-commander.deleteSelection = function (from) {
+commander.deleteSelection = (from) => {
     const o = findBookmarkId(commander.bookmarks, from.id);
 
     //Minimal paranoia
@@ -700,7 +700,7 @@ commander.deleteSelection = function (from) {
 
 
 /* CREATE FOLDER */
-commander.createfolder = function () {
+commander.createfolder = () => {
     const panel = commander.left.active ? commander.left : commander.right;
     const foldertext = prompt("Enter folder name", "");
 
@@ -711,7 +711,7 @@ commander.createfolder = function () {
 }
 
 /* EQUALIZE */
-commander.equalize = function () {
+commander.equalize = () => {
     const active = commander.left.active ? commander.left : commander.right;
     const sleepy = !commander.left.active ? commander.left : commander.right;
 
@@ -723,7 +723,7 @@ commander.equalize = function () {
 }
 
 /* PLUS , MOVE UP */
-commander.moveup = function () {
+commander.moveup = () => {
     const panel = commander.left.active ? commander.left : commander.right;
     const id = document.getElementById(panel.prefix + panel.selected).commander.id;
     const bookmark = findBookmarkId(commander.bookmarks, id);
@@ -751,7 +751,7 @@ commander.moveup = function () {
 }
 
 /* DOWN, MOVE DOWN */
-commander.movedown = function () {
+commander.movedown = () => {
     const panel = commander.left.active ? commander.left : commander.right;
     const id = document.getElementById(panel.prefix + panel.selected).commander.id;
     let bookmark = findBookmarkId(commander.bookmarks, id);
@@ -780,7 +780,7 @@ commander.movedown = function () {
 }
 
 /* SEARCH */
-commander.search = function (searchtext) {
+commander.search = (searchtext) => {
     if (!searchtext) {
         if (commander.query) {
             searchtext = commander.query;
@@ -788,7 +788,7 @@ commander.search = function (searchtext) {
             searchtext = prompt("Enter search string", ""); //"" is the default
         }
     }
-    chrome.bookmarks.search(searchtext, function (o) {
+    chrome.bookmarks.search(searchtext, (o) => {
         const panel = commander.left.active ? commander.left : commander.right;
         panel.id = "search";
         commander.results = o;
@@ -798,7 +798,7 @@ commander.search = function (searchtext) {
 }
 
 /* FILTER */
-commander.filter = function (panel) {
+commander.filter = (panel) => {
     if (!panel) {
         panel = commander.left.active ? commander.left : commander.right;
     }
@@ -811,7 +811,7 @@ commander.filter = function (panel) {
 }
 
 /* SELECT */
-commander.selector = function (panel) {
+commander.selector = (panel) => {
     //Panel will actually be an event when called via the '*' key
     if (panel instanceof jQuery.Event) {
         panel = commander.left.active ? commander.left : commander.right;

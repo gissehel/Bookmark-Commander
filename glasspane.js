@@ -70,8 +70,8 @@ glasspane.init = () => {
     /* EVIL Mac Fix */
     if (screenParams.shouldReplaceHBar) {
         //Replace ═ with =, cause silly Mac OS
-        $("#h2").text(function (index, oldtext) { return oldtext.replace(/═/gi, screenParams.doublebar) });
-        $("#h3").text(function (index, oldtext) { return oldtext.replace(/═/gi, screenParams.doublebar) });
-        $("#options").text(function (index, oldtext) { return oldtext.replace(/═/gi, screenParams.doublebar) });
+        $("#h2").text((index, oldtext) => oldtext.replace(/═/gi, screenParams.doublebar));
+        $("#h3").text((index, oldtext) => oldtext.replace(/═/gi, screenParams.doublebar));
+        $("#options").text((index, oldtext) => oldtext.replace(/═/gi, screenParams.doublebar));
     }
 }

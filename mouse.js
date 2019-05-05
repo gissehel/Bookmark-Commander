@@ -105,7 +105,7 @@ mouse.reinit = () => {
 /* If we ever get enough user feedback, we might change this
    to jump more than 1 entry per scrolly
 */
-mouse.scroll = function (e) {
+mouse.scroll = (e) => {
     if (e.wheelDelta > 0) {
         //Go Up
         commander.up();
