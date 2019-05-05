@@ -48,8 +48,9 @@ commander.draw = () => {
 /* Core wild magic */
 commander.setPanel = (panelConfig) => {
     //Show we be here ?
-    if (panelConfig.info)
+    if (panelConfig.info) {
         return commander.setInfoPanel(panelConfig);
+    }
 
     let o = findBookmarkId(commander.bookmarks, panelConfig.id);
 
