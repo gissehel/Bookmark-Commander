@@ -44,9 +44,15 @@ const handleClickDoubleClick = (() => {
             }
             handleClickDoubleClick_lastClick = null;
 
-            if (lastOnClick) {
-                lastOnClick();
+            if (screenParams.simpleClickOnSelectedItemDelve) {
+                if (lastOnClick) {
+                    lastOnClick();
+                }
+            } else {
+                onClick();
             }
+
+            
 
             handleClickDoubleClick_lastClick = {
                 target,
@@ -55,7 +61,9 @@ const handleClickDoubleClick = (() => {
                         clearTimeout(handleClickDoubleClick_lastClick.timer);
                     }
                     handleClickDoubleClick_lastClick = null;
-                    onClick();
+                    if (screenParams.simpleClickOnSelectedItemDelve) {
+                        onClick();
+                    }
                 }, screenParams.doubleClickTimeout),
                 onClick,
             }

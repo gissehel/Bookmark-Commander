@@ -833,11 +833,9 @@ commander.selector = (panel) => {
     commander.draw();
 }
 
-let simpleClickOnSelectedItemDelve = false;
-
 commander.on_left_click = (n) => {
     menu.exit_if_out();
-    if (simpleClickOnSelectedItemDelve && commander.left.active && commander.left.selected == n) {
+    if (screenParams.simpleClickOnSelectedItemDelve && commander.left.active && commander.left.selected == n) {
         commander.delve();
     } else {
         commander.left.info = false;
@@ -850,7 +848,7 @@ commander.on_left_click = (n) => {
 
 commander.on_right_click = (n) => {
     menu.exit_if_out();
-    if (simpleClickOnSelectedItemDelve && commander.right.active && commander.right.selected == n) {
+    if (screenParams.simpleClickOnSelectedItemDelve && commander.right.active && commander.right.selected == n) {
         commander.delve();
     } else {
         commander.right.info = false;
