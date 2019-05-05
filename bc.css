@@ -8,12 +8,6 @@
   blue      : rgb(   0,   0, 128 )
 */
 
-/* Link to Vera */
-@font-face {
-    font-family: "Vera";
-    src: url(VeraMono.ttf) format("truetype");
-}
-
 #calibre {
     display: inline-block;
 }
