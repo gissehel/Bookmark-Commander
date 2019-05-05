@@ -19,7 +19,11 @@ commander.editing = false;
  ****/
 
 /* INIT, RE-INIT */
-commander.boot = () => {
+commander.init = () => commander.init_or_reinit();
+
+commander.reinit = () => commander.init_or_reinit();
+
+commander.init_or_reinit = () => {
     chrome.bookmarks.getTree((stuff) => {
         commander.bookmarks = stuff;
         commander.draw();
@@ -570,7 +574,7 @@ commander.copy = () => {
         newbookmark.url = bookmark.url;
     }
 
-    chrome.bookmarks.create(newbookmark, commander.boot);
+    chrome.bookmarks.create(newbookmark, commander.reinit);
 }
 
 /* COPY SELECTION */
@@ -597,7 +601,7 @@ commander.copySelection = (from, to) => {
         }
     }
 
-    commander.boot();
+    commander.reinit();
 }
 
 /* MOVE */
@@ -628,7 +632,7 @@ commander.move = () => {
         return commander.moveSelection(panel, to);
     }
 
-    chrome.bookmarks.move(bookmark.id, { parentId: to.id }, commander.boot);
+    chrome.bookmarks.move(bookmark.id, { parentId: to.id }, commander.reinit);
 }
 
 /* MOVE SELECTION */
@@ -646,11 +650,11 @@ commander.moveSelection = (from, to) => {
         if (children[counter].url && children[counter].url.has(from.selector) || from.selector == "*") {
             const bookmark = children[counter];
 
-            chrome.bookmarks.move(bookmark.id, { parentId: to.id }, commander.boot);
+            chrome.bookmarks.move(bookmark.id, { parentId: to.id }, commander.reinit);
         }
     }
 
-    commander.boot();
+    commander.reinit();
 }
 
 /* DELETE */
@@ -667,9 +671,9 @@ commander.delete = () => {
     //What is interesting, is that removeTree works on non-trees as well
     //I am not going to count on that though ;]
     if (bookmark.children) {
-        chrome.bookmarks.removeTree(bookmark.id, commander.boot);
+        chrome.bookmarks.removeTree(bookmark.id, commander.reinit);
     } else {
-        chrome.bookmarks.remove(bookmark.id, commander.boot);
+        chrome.bookmarks.remove(bookmark.id, commander.reinit);
     }
 }
 
@@ -690,13 +694,13 @@ commander.deleteSelection = (from) => {
             //What is interesting, is that removeTree works on non-trees as well
             //I am not going to count on that though ;]
             if (bookmark.children) {
-                chrome.bookmarks.removeTree(bookmark.id, commander.boot);
+                chrome.bookmarks.removeTree(bookmark.id, commander.reinit);
             } else {
-                chrome.bookmarks.remove(bookmark.id, commander.boot);
+                chrome.bookmarks.remove(bookmark.id, commander.reinit);
             }
         }
     }
-    commander.boot();
+    commander.reinit();
 }
 
 
@@ -707,7 +711,7 @@ commander.createfolder = () => {
 
     if (foldertext) {
         const newbookmark = { parentId: panel.id, title: foldertext };
-        chrome.bookmarks.create(newbookmark, commander.boot);
+        chrome.bookmarks.create(newbookmark, commander.reinit);
     }
 }
 
@@ -747,7 +751,7 @@ commander.moveup = () => {
         panel.selected--;
     }
 
-    chrome.bookmarks.move(id, { parentId: panel.id, index: (bookmark.index - 1) }, commander.boot);
+    chrome.bookmarks.move(id, { parentId: panel.id, index: (bookmark.index - 1) }, commander.reinit);
 
 }
 
@@ -776,7 +780,7 @@ commander.movedown = () => {
             panel.selected++;
         }
 
-        chrome.bookmarks.move(bookmark.id, { parentId: panel.id, index: (bookmark.index - 1) }, commander.boot);
+        chrome.bookmarks.move(bookmark.id, { parentId: panel.id, index: (bookmark.index - 1) }, commander.reinit);
     }
 }
 
@@ -827,5 +831,53 @@ commander.selector = (panel) => {
     panel.selector = prompt("Select", panel.selector); //"" is the default
 
     commander.draw();
+}
+
+let simpleClickOnSelectedItemDelve = false;
+
+commander.on_left_click = (n) => {
+    menu.exit_if_out();
+    if (simpleClickOnSelectedItemDelve && commander.left.active && commander.left.selected == n) {
+        commander.delve();
+    } else {
+        commander.left.info = false;
+        commander.left.active = true;
+        commander.right.active = false;
+        commander.left.selected = n;
+        commander.draw();
+    }
+}
+
+commander.on_right_click = (n) => {
+    menu.exit_if_out();
+    if (simpleClickOnSelectedItemDelve && commander.right.active && commander.right.selected == n) {
+        commander.delve();
+    } else {
+        commander.right.info = false;
+        commander.right.active = true;
+        commander.left.active = false;
+        commander.right.selected = n;
+        commander.draw();
+    }
+}
+
+commander.on_left_dblclick = (n) => {
+    menu.exit_if_out();
+    commander.left.info = false;
+    commander.left.active = true;
+    commander.right.active = false;
+    commander.left.selected = n;
+    commander.draw();
+    commander.delve();
+}
+
+commander.on_right_dblclick = (n) => {
+    menu.exit_if_out();
+    commander.right.info = false;
+    commander.right.active = true;
+    commander.left.active = false;
+    commander.right.selected = n;
+    commander.draw();
+    commander.delve();
 }
 

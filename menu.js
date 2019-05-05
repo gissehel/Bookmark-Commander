@@ -21,8 +21,9 @@ const menu = {};
             //Set text, no risk
             o[key].text = textkey[0];
             //Is this the longest one so far ?
-            if (o[key].text.length > o.maxText)
+            if (o[key].text.length > o.maxText) {
                 o.maxText = o[key].text.length;
+            }
             //Assume we have no key
             o[key].key = "";
             //Do we have a key ? Assign and measure
@@ -62,45 +63,37 @@ const menu = {};
     const fontSizesText = fontSizes.map(size => [`${size}px`, size]);
     const fontSizesInMenu = fontSizesText.map(x => x[0]).join(',');
     const fontSizesChange = pairToObject(fontSizesText.map(([label, size]) => [label, () => data.setSize(size)]));
+    const assignLeftRights = (menus) => {
+        const len = menus.length;
+        for(let index = 0; index<len; index++) {
+            leftIndex = (index+len-1)%len;
+            rightIndex = (index+1)%len;
+            menus[index].left = menus[leftIndex];
+            menus[index].right = menus[rightIndex];
+        }
+    }
 
     menu.init = () => {
         menu.dropdown = document.getElementById("dropdown")
-        menu.top = document.getElementById("menu")
 
         //Each menu is an object
         //Bad violation of DRY, but its worth not rewriting this.
-        menu.left = { caption: "Left", indent: 2, items: menu.itemize(2, "&List,&Info,&Tree,_,Sort by &Date,&Sort by Length,Sort &Alphabetically,_,&Filter|/,Select|*,_,&Rescan|C-r") };
-        menu.file = { caption: "File", indent: 12, items: menu.itemize(12, "&Help|F1,Mirror|F2,View|F3,Edit|F4,Copy|F5,Move|F6,Create Folder |F7,Delete|F8,Quit|F10,_,Move up|+,Move down|-,Select|*,Filter|/") };
-        menu.command = { caption: "Command", indent: 21, items: menu.itemize(21, "&Search,S&wap panels") };
-        menu.options = { caption: "Options", indent: 33, items: menu.itemize(33, "&Options,_," + fontSizesInMenu) };
-        menu.right = { caption: "Right", indent: 45, items: menu.itemize(45, "&List,&Info,&Tree,_,Sort by &Date,&Sort by Length,Sort &Alphabetically,_,&Filter|/,Select|*,_,&Rescan|C-r") };
+        menu.left = { caption: "Left", indent: 1, items: menu.itemize(1, "&List,&Info,&Tree,_,Sort by &Date,&Sort by Length,Sort &Alphabetically,_,&Filter|/,Select|*,_,&Rescan|C-r") };
+        menu.file = { caption: "File", indent: 11, items: menu.itemize(11, "&Help|F1,Mirror|F2,View|F3,Edit|F4,Copy|F5,Move|F6,Create Folder |F7,Delete|F8,Quit|F10,_,Move up|+,Move down|-,Select|*,Filter|/") };
+        menu.command = { caption: "Command", indent: 20, items: menu.itemize(20, "&Search,S&wap panels") };
+        menu.options = { caption: "Options", indent: 32, items: menu.itemize(32, "&Options,_," + fontSizesInMenu) };
+        menu.right = { caption: "Right", indent: 44, items: menu.itemize(44, "&List,&Info,&Tree,_,Sort by &Date,&Sort by Length,Sort &Alphabetically,_,&Filter|/,Select|*,_,&Rescan|C-r") };
 
-        menu.left.left = menu.right;
-        menu.left.right = menu.file;
-
-        menu.file.left = menu.left;
-        menu.file.right = menu.command;
-
-        menu.command.left = menu.file;
-        menu.command.right = menu.options;
-
-        menu.options.left = menu.command;
-        menu.options.right = menu.right;
-
-        menu.right.left = menu.options;
-        menu.right.right = menu.left;
+        assignLeftRights([menu.left, menu.file, menu.command, menu.options, menu.right]);
 
         menu.current = menu.left;
 
         menu.selection = 0;
-
-        menu.original = menu.top.innerHTML;
     }
 
     menu.show = () => {
         /* This could be ruined */
         menu.dropdown = document.getElementById("dropdown")
-        menu.top = document.getElementById("menu")
 
         //We are filling in a pre
         let s = "<pre id='currentMenu' style='margin: 0px 0px 0px 0px'>\n\n";
@@ -131,7 +124,8 @@ const menu = {};
         menu.dropdown.style.display = "block"
 
         //Color the name of the menu
-        menu.top.innerHTML = menu.original.replace(menu.current.caption, "<span class='fcode'>" + menu.current.caption + "</span>");
+        $('.menuItem').removeClass('fcode');
+        $('#menu_'+menu.current.caption).addClass('fcode');
 
         //Highlight the selected menu entry
         $('#' + menu.selection).removeClass('menu').addClass('fcode');
@@ -177,10 +171,17 @@ const menu = {};
 
     menu.exit = () => {
         document.getElementById("dropdown").style.display = "none"
-        document.getElementById("menu").innerHTML = menu.original;
+        $('.menuItem').removeClass('fcode');
 
-        commander.boot();
+        commander.reinit();
         commander.key_mapping_builder.activate();
+    }
+
+    menu.exit_if_out = () => {
+        if (menu.dropdown.style.display == "block")
+        {
+            menu.exit();
+        }
     }
 
     menu.dispatch = (event) => {
@@ -265,6 +266,6 @@ const menu = {};
         if (fontSizesChange[command] !== undefined) {
             fontSizesChange[command]();
         }
-        commander.boot();
+        commander.reinit();
     }
 }

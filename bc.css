@@ -24,6 +24,10 @@
     background: rgb(0, 0, 128);
 }
 
+.border, .menu, .fcode, .menuItem {
+    user-select: none;
+}
+
 pre {
     font-family: monospace;
     font-size: 11px;

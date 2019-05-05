@@ -58,14 +58,14 @@ glasspane.init = () => {
 
     for (key in function_keys) {
         const f = function_keys[key];
-        mainScreenContent += ("<span class='fcode'>F" + f.id + "</span><span class='menu' id='f" + f.id + "'>" + f.description + "</span><span class='fcode'> </span>");
+        mainScreenContent += "<span class='fcode'>F" + f.id + "</span><span class='menu' id='f" + f.id + "'>" + f.description + "</span><span class='fcode'> </span>";
     }
     mainScreenContent += ("<span id='end' class='fcode'>" + " ".repeat(screenParams.screenwidth - 91) + "</span>");
     mainScreenContent += "\n";
 
     window.mainScreen.innerHTML = mainScreenContent;
     mouse.reinit_if_already_init();
-    commander.boot();
+    commander.init();
 
     /* EVIL Mac Fix */
     if (screenParams.shouldReplaceHBar) {

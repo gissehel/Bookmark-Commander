@@ -164,9 +164,9 @@ editor.condense = (url) => {
 editor.quit = () => {
     document.body.innerHTML = commander.backup;
 
-    //We need to boot (reread bookmarks from Chome ) if we changed something
+    //We need to reinit (reread bookmarks from Chome ) if we changed something
     if (editor.saved) {
-        commander.boot();
+        commander.reinit();
     } else {
         commander.draw();
     }

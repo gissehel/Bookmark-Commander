@@ -10,7 +10,7 @@ mouse = {};
 const bindTopMenu = (_menu) => {
     const top = $("#menu")[0];
 
-    top.innerHTML = top.innerHTML.replace(_menu.caption, '<span id="menu_' + _menu.caption + '">' + _menu.caption + '</span>');
+    top.innerHTML = top.innerHTML.replace(_menu.caption, '<span class="menuItem" id="menu_' + _menu.caption + '">' + _menu.caption + '</span>');
     $("#menu_" + _menu.caption).live("click", () => {
         menu.current = _menu;
         menu.selection = 0;
@@ -26,8 +26,45 @@ mouse.reinit_if_already_init = () => {
     }
 }
 
+const handleClickDoubleClick = (() => {
+    let handleClickDoubleClick_lastClick = null;
+
+    return (target, onClick, onDoubleClick) => {
+        if (handleClickDoubleClick_lastClick && handleClickDoubleClick_lastClick.target === target) {
+            if (handleClickDoubleClick_lastClick.timer) {
+                clearTimeout(handleClickDoubleClick_lastClick.timer);
+            }
+            handleClickDoubleClick_lastClick = null;
+
+            onDoubleClick();
+        } else {
+            let lastOnClick = handleClickDoubleClick_lastClick && handleClickDoubleClick_lastClick.onClick;
+            if (handleClickDoubleClick_lastClick && handleClickDoubleClick_lastClick.timer) {
+                clearTimeout(handleClickDoubleClick_lastClick.timer);
+            }
+            handleClickDoubleClick_lastClick = null;
+
+            if (lastOnClick) {
+                lastOnClick();
+            }
+
+            handleClickDoubleClick_lastClick = {
+                target,
+                timer: setTimeout(() => {
+                    if (handleClickDoubleClick_lastClick && handleClickDoubleClick_lastClick.timer) {
+                        clearTimeout(handleClickDoubleClick_lastClick.timer);
+                    }
+                    handleClickDoubleClick_lastClick = null;
+                    onClick();
+                }, screenParams.doubleClickTimeout),
+                onClick,
+            }
+        }
+    };
+})();
+
 mouse.reinit = () => {
-    if (! mouse._is_init) {
+    if (!mouse._is_init) {
         //We go for each item and give it a mouse click event listener
         //Note the very cool 'live' which means listener also counts for newly created divs
         //which happens all the time in bookmark commander
@@ -35,32 +72,22 @@ mouse.reinit = () => {
         for (let i = 0; i < screenParams.panelheight; i++) {
             $("#left" + i).live("click",
                 (e) => {
-                    if (menu.dropdown.style.display == "block") menu.exit();
-                    const n = e.srcElement.id.substring(4)
-                    if (commander.left.active && commander.left.selected == n) {
-                        commander.delve();
-                    } else {
-                        commander.left.info = false;
-                        commander.left.active = true;
-                        commander.right.active = false;
-                        commander.left.selected = n;
-                        commander.draw();
-                    }
+                    const n = e.srcElement.id.substring(4);
+                    handleClickDoubleClick(e.currentTarget, () => commander.on_left_click(n), () => commander.on_left_dblclick(n));
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    return true;
                 }
             )
             $("#rite" + i).live("click",
                 (e) => {
-                    if (menu.dropdown.style.display == "block") menu.exit();
-                    const n = e.srcElement.id.substring(4)
-                    if (commander.right.active && commander.right.selected == n) {
-                        commander.delve();
-                    } else {
-                        commander.right.info = false;
-                        commander.right.active = true;
-                        commander.left.active = false;
-                        commander.right.selected = n;
-                        commander.draw();
-                    }
+                    const n = e.srcElement.id.substring(4);
+                    handleClickDoubleClick(e.currentTarget, () => commander.on_right_click(n), () => commander.on_right_dblclick(n));
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    return true;
                 }
             )
         }
@@ -76,10 +103,7 @@ mouse.reinit = () => {
     bindTopMenu(menu.options);
     bindTopMenu(menu.right);
 
-    // Yes, this is very evil, crossing mouse and menu concerns..
-    menu.original = menu.top.innerHTML;
-
-    if (! mouse._is_init) {
+    if (!mouse._is_init) {
         //Do the actual menu items, which have a very imaginative id system ( 0 -> panelheight -1 )
 
         for (let i = 0; i < screenParams.panelheight; i++) {
