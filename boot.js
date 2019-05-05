@@ -1,5 +1,5 @@
 $(document).ready(() => {
-    glasspane.init();
+    dualPanel.init();
     data.init();
     menu.init();
     keyboard.init();

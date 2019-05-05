@@ -19,7 +19,7 @@
 
 #editorScreen,
 #viewerScreen,
-#mainScreen {
+#dualPanel {
     position: absolute;
     background: rgb(0, 0, 128);
 }

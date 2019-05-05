@@ -38,7 +38,7 @@ data.onSizeChanged = () => {
 
     screenParams.panelwidth = Math.floor((screenParams.screenwidth - 4) / 2);
     screenParams.screenheight = screenParams.panelheight+6;
-    glasspane.init();
+    dualPanel.init();
 };
 
 

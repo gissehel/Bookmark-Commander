@@ -6,9 +6,9 @@
  └─┴─┘  ╚═╩═╝
 */
 
-const glasspane = {};
+const dualPanel = {};
 
-glasspane.init = () => {
+dualPanel.init = () => {
     // EVIL Mac Fix
     if (navigator.userAgent.has("Mac")) {
         screenParams.doublebar = '=';
@@ -63,7 +63,7 @@ glasspane.init = () => {
     mainScreenContent += ("<span id='end' class='fcode'>" + " ".repeat(screenParams.screenwidth - 91) + "</span>");
     mainScreenContent += "\n";
 
-    window.mainScreen.innerHTML = mainScreenContent;
+    window.dualPanel.innerHTML = mainScreenContent;
     mouse.reinit_if_already_init();
     commander.init();
 

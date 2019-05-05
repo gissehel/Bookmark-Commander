@@ -99,7 +99,16 @@ mouse.reinit = () => {
                 }
             )
         }
-    }
+
+        // Ugly, but less ugly than having a bunch of XXXXXX in a <hidden> elements with opacity 0 for formatting reasons,
+        //  that hijack the clicks.
+        $("hidden").live("click",
+        (e) => {
+            menu.exit_if_out();
+            return false;
+        }
+    )
+}
 
     //Do the top menu
     //This is a fairly nasty piece of hacking ;\
@@ -127,10 +136,9 @@ mouse.reinit = () => {
                 }
             )
         }
-
-        //Do the glasspane
-        $("#glasspane").live("click", (e) => true);
     }
+
+
     mouse._is_init = true;
 }
 

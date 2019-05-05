@@ -55,11 +55,8 @@ options.init = () => {
 
 options.show = () => {
     const div = options.div = $("#options")[0];
-    const pane = options.pane = $("#glasspane")[0];
     const commanderWidth = $("#menu")[0].offsetWidth
     const commanderHeight = $("#menu")[0].offsetHeight + $(".border")[0].offsetHeight;
-
-    div.style.display = pane.style.display = "block";
 
     div.style.left = (commanderWidth - div.offsetWidth) / 2 + 2;
     div.style.top = (commanderHeight - div.offsetHeight) / 2 + 2;

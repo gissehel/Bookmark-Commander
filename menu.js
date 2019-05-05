@@ -81,7 +81,7 @@ const menu = {};
         menu.left = { caption: "Left", indent: 1, items: menu.itemize(1, "&List,&Info,&Tree,_,Sort by &Date,&Sort by Length,Sort &Alphabetically,_,&Filter|/,Select|*,_,&Rescan|C-r") };
         menu.file = { caption: "File", indent: 11, items: menu.itemize(11, "&Help|F1,Mirror|F2,View|F3,Edit|F4,Copy|F5,Move|F6,Create Folder |F7,Delete|F8,Quit|F10,_,Move up|+,Move down|-,Select|*,Filter|/") };
         menu.command = { caption: "Command", indent: 20, items: menu.itemize(20, "&Search,S&wap panels") };
-        menu.options = { caption: "Options", indent: 32, items: menu.itemize(32, "&Options,_," + fontSizesInMenu) };
+        menu.options = { caption: "Options", indent: 32, items: menu.itemize(32, /* "&Options,_," + */ fontSizesInMenu) };
         menu.right = { caption: "Right", indent: 44, items: menu.itemize(44, "&List,&Info,&Tree,_,Sort by &Date,&Sort by Length,Sort &Alphabetically,_,&Filter|/,Select|*,_,&Rescan|C-r") };
 
         assignLeftRights([menu.left, menu.file, menu.command, menu.options, menu.right]);
