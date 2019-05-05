@@ -81,7 +81,7 @@ Date.prototype.format = function () {
     return (month + "/" + day + "/" + year);
 }
 
-const iconURL = chrome.extension.getURL("/bc-32x32.png");
+const iconURL = chrome.extension.getURL("/bc-16x16-l.png");
 const link = document.createElement("link");
 link.type = "image/x-icon";
 link.rel = "shortcut icon";

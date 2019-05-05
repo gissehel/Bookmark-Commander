@@ -3,18 +3,19 @@
     "short_name": "BC2",
     "version": "2.0.1",
     "manifest_version": 2,
-    "description": "Commanding Bookmarks, Old Skool",
+    "description": "Commanding Bookmarks, Old School",
     "background": {
         "page": "background.html"
     },
     "icons": {
-        "16": "bc-16x16.png",
-        "48": "bc-48x48.png",
-        "128": "bc-128x128.png"
+        "16": "bc-16x16-l.png",
+        "32": "bc-32x32-l.png",
+        "48": "bc-48x48-l.png",
+        "128": "bc-128x128-l.png"
     },
     "browser_action": {
         "default_title": "Manage Bookmarks II",
-        "default_icon": "bc-32x32.png"
+        "default_icon": "bc-16x16-l.png"
     },
     "permissions": [
         "bookmarks",
