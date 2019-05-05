@@ -1,5 +1,5 @@
-Bookmark Commander
-==================
+Orthodox Bookmark Manager
+=========================
 
 Manage your Chrome bookmarks with this plug in, old skool. It allows you manage bookmarks as if they were files in midnight commander.
 Link in Chrome Web Store : Soon; Waiting for approval
@@ -7,13 +7,18 @@ Link in Chrome Web Store : Soon; Waiting for approval
 Fork
 ----
 
+Orthodox Bookmark Manager is a fork of Bookmark Commander :
+
 Fork from : https://github.com/konijn/Bookmark-Commander
-Link in Chrome Web Store : https://chrome.google.com/webstore/detail/dblbfailhcgonbjofnmilkejmmoikojm?hl=en&gl=US
+Link in Chrome Web Store : https://chrome.google.com/webstore/detail/dblbfailhcgonbjofnmilkejmmoikojm
+
+It has been renamed in order to be published on the web store to conform to the store policy.
 
 License
 -------
 
 Copyright 2011-2012 Tom J Demuyt
+
 Copyright 2019 Gissehel
 
 Bookmark Commander by Tom J Demuyt is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.

@@ -1,6 +1,6 @@
 {
-    "name": "Bookmark Commander II",
-    "short_name": "BC2",
+    "name": "Orthodox Bookmark Manager",
+    "short_name": "orthodox-bookmark-manager",
     "version": "2.0.1",
     "manifest_version": 2,
     "description": "Manage your bookmarks with a two panned window application",
@@ -14,7 +14,7 @@
         "128": "bc-128x128-l.png"
     },
     "browser_action": {
-        "default_title": "Manage Bookmarks II",
+        "default_title": "Orthodox Bookmark Manager",
         "default_icon": "bc-16x16-l.png"
     },
     "permissions": [
