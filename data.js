@@ -11,8 +11,17 @@ data.reload = () => {
     } else {
         data._setSize("12");
     }
+    if (localStorage.simpleClickOnSelectedItemDelve === 'true') {
+        screenParams.simpleClickOnSelectedItemDelve = true;
+    } else {
+        data.simpleClickOnSelectedItemDelve(false);
+    }
 };
 
+data.simpleClickOnSelectedItemDelve = (bool) => {
+    screenParams.simpleClickOnSelectedItemDelve = bool;
+    localStorage.simpleClickOnSelectedItemDelve = `${screenParams.simpleClickOnSelectedItemDelve}`;
+}
 
 data.onSizeChanged = () => {
     const calibre = window.calibre;
