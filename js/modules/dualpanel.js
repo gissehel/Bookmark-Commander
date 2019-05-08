@@ -8,7 +8,9 @@
 
 const dualPanel = {};
 
-dualPanel.init = () => {
+dualPanel.init = () => dualPanel.redraw;
+
+dualPanel.redraw = () => {
     // EVIL Mac Fix
     if (navigator.userAgent.has("Mac")) {
         screenParams.doublebar = '=';
