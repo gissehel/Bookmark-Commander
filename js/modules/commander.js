@@ -71,7 +71,7 @@ commander.setPanel = (panelConfig) => {
             return;
         } else {
             //This should never happen as well
-            alert("Bookmark Commander regrets to inform you that it cannot display your bookmarks,\n please hit refresh and try again.");
+            alert("Orthodox Bookmark Manager regrets to inform you that it cannot display your bookmarks,\n please hit refresh and try again.");
         }
     }
 
@@ -218,7 +218,7 @@ commander.setInfoPanel = (panelConfig) => {
             if (!panelConfig.other.active) {
                 return;
             } else {
-                alert("Bookmark Commander regrets to inform you that it cannot display the info on this bookmark,\n please hit refresh and try again.");
+                alert("Orthodox Bookmark Manager regrets to inform you that it cannot display the info on this bookmark,\n please hit refresh and try again.");
             }
         }
     }

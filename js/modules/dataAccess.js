@@ -47,7 +47,6 @@ dataAccess.onSizeChanged = () => {
     dualPanel.redraw();
 };
 
-
 const _setSize = (size) => {
     const body = document.body;
     [...body.classList].filter(x => x.startsWith('size-')).forEach(x => body.classList.remove(x));
