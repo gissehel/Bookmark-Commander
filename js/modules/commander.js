@@ -415,11 +415,8 @@ commander.edit = () => {
 /* MENU */
 commander.menu = () => {
     commander.backup = document.body.innerHTML;
-    //Tricky, hide the selected item
-    $(".selected").removeClass('selected')
-    //Define keyboard behaviour
+    [...document.getElementsByClassName('selected')].forEach(element=>element.classList.remove('selected'));
     menu.key_mapping_builder.activate();
-    //One for the money..
     menu.show();
 }
 
@@ -432,7 +429,7 @@ commander.back = () => {
     }
 
     const element = document.getElementById(panel.prefix + "0");
-    const text = jQuery.trim(element.innerHTML);
+    const text = element.innerHTML.trim();
 
     if (text == "/..") {
         commander.select(element.commander.id);
@@ -818,7 +815,7 @@ commander.filter = (panel) => {
 /* SELECT */
 commander.selector = (panel) => {
     //Panel will actually be an event when called via the '*' key
-    if (panel instanceof jQuery.Event) {
+    if (panel instanceof KeyboardEvent) {
         panel = commander.left.active ? commander.left : commander.right;
     }
 

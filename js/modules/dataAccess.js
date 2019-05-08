@@ -49,9 +49,9 @@ dataAccess.onSizeChanged = () => {
 
 
 const _setSize = (size) => {
-    const $body = $('body');
-    [...$body[0].classList].filter(x => x.startsWith('size-')).forEach(x => $body.removeClass(x));
-    $body.addClass(`size-${size}`);
+    const body = document.body;
+    [...body.classList].filter(x => x.startsWith('size-')).forEach(x => body.classList.remove(x));
+    body.classList.add(`size-${size}`);
     dataAccess.onSizeChanged();
 };
 

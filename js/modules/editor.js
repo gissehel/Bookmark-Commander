@@ -55,7 +55,7 @@ editor.view = (id) => {
 
     document.body.innerHTML = sum([
         `<pre id='editorScreen'>`,
-        `<span class='menu'>${("  Folder/Bookmark").extend()}</span>\n`,
+        `<span id='menu' class='menu'>${("  Folder/Bookmark").extend()}</span>\n`,
         `<textarea class='blue' cols='${data.screenWidth - 2}' rows='3' id='title'>${bookmark.title}</textarea>\n`,
         `<span class='menu'>${("  URL").extend()}</span>\n`,
         `<textarea class='blue' cols='${(data.screenWidth - 2)}' rows='${(data.panelHeight)}' id='url'${editor.urlReadOnly}>${content}</textarea>\n`,
@@ -63,13 +63,15 @@ editor.view = (id) => {
         `<span id='end' class='fcode'>${" ".repeat(data.screenWidth - 91)}</span>\n`,
     ]);
 
+    editor.menu = document.getElementById('menu');
     editor.url = document.getElementById('url');
     editor.end = document.getElementById('end');
     editor.title = document.getElementById('title');
 
     // Ugly quirk, because width in columns for a textarea isn't enought
-    const width = $('.menu').width();
-    $('textarea').attr('style', `width: ${width}px`);
+    const width = editor.menu.offsetWidth;
+    editor.title.style.width = width;
+    editor.url.style.width = width;
 
     editor.key_mapping_builder.activate();
 

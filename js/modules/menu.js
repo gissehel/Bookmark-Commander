@@ -128,12 +128,15 @@ menu.show = () => {
     menu.isOut = true;
 
     //Color the name of the menu
-    $('.menuItem').removeClass('fcode');
-    $('.topMenuItem').removeClass('fcode');
-    $('#menu_' + menu.current.caption).addClass('fcode');
+    [...document.getElementsByClassName('menuItem')].forEach(element=>element.classList.remove('fcode'));
+    [...document.getElementsByClassName('topMenuItem')].forEach(element=>element.classList.remove('fcode'));
+    document.getElementById('menu_'+menu.current.caption).classList.add('fcode');
 
     //Highlight the selected menu entry
-    $('#menuItem_' + menu.selection).removeClass('menu').addClass('fcode');
+    const menuItem = document.getElementById('menuItem_'+menu.selection);
+    menuItem.classList.remove('menu');
+    menuItem.classList.add('fcode');
+    
 }
 
 menu.goLeft = () => {
@@ -177,8 +180,8 @@ menu.goUp = () => {
 menu.exit = () => {
     menu.dropdown.style.display = "none"
     menu.isOut = false;
-    $('.topMenuItem').removeClass('fcode');
-    $('.menuItem').removeClass('fcode');
+    [...document.getElementsByClassName('topMenuItem')].forEach(element=>element.classList.remove('fcode'));
+    [...document.getElementsByClassName('menuItem')].forEach(element=>element.classList.remove('fcode'));
 
     commander.reInit();
     commander.key_mapping_builder.activate();

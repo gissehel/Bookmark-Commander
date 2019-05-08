@@ -4,6 +4,24 @@
 */
 
 /*
+Removed from bc.html as it doesn't work anyway
+    <!--
+    <div id="options" class="options"
+        style="position: absolute; top: 0px ; left : 0px;margin: 0px 0px 0px 0px; display: none;z-index:4">
+        <pre id='popupOption' style='margin: 0px 0px 0px 0px'>╔═ Options ══════════════════════════════════╗
+║                   Always   Ask   Ctrl Key  ║
+║ Recursive Sorting  ( )     ( )      (x)    ║
+║ Recursive Copying  ( )     ( )      (x)    ║
+╠════════════════════════════════════════════╣
+║ Use Trashcan       [ ]                     ║
+╠════════════════════════════════════════════╣
+║          [&lt;OK&gt;]         [ Cancel ]         ║
+╚════════════════════════════════════════════╝</pre>
+    </div>
+    -->
+*/
+
+/*
 
 $("#menu")[0].offsetWidth
 $(".border")[0].offsetHeight

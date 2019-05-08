@@ -49,7 +49,7 @@ viewer.view = (id) => {
 
     document.body.innerHTML = sum([
         "<pre id='viewerScreen'>",
-        `<span class='menu'>${findBookmarkTitle(id).extend()}</span>\n`,
+        `<span id='menu' class='menu'>${findBookmarkTitle(id).extend()}</span>\n`,
         `<textarea class='blue' cols='${data.screenWidth - 2}' rows='3' readonly='readonly'>${bookmark.title}</textarea>\n`,
         `<span class='menu'>${"  URL".extend()}</span>\n`,
         `<textarea class='blue' cols='${data.screenWidth - 2}' rows='${data.panelHeight}' readonly='readonly'>${content}</textarea>\n`,
@@ -59,8 +59,8 @@ viewer.view = (id) => {
 
 
     // Ugly quirk, because width in columns for a textarea isn't enought
-    const width = $('.menu').width();
-    $('textarea').attr('style', `width: ${width}px`);
+    const width = document.getElementById('menu').offsetWidth;
+    [...document.getElementsByTagName('textarea')].map(element => element.style.width = width);
 
     viewer.key_mapping_builder.activate();
 }

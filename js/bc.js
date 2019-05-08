@@ -24,7 +24,7 @@ String.prototype.startsWith = function (str) {
     }
 
     if (typeof str === "object") {
-        return Object.keys(str).map(key => this.startsWith(str[key])).reduce((acc,elem)=>acc || elem);
+        return Object.keys(str).map(key => this.startsWith(str[key])).reduce((acc, elem) => acc || elem);
     }
     return false;
 }
@@ -37,15 +37,9 @@ String.prototype.replaceAll = function (needle, prick) {
     return s;
 }
 
-
 //html 5 should have stuff like this, really..
 String.prototype.remove = function (needle) {
     return this.replaceAll(needle, "");
-}
-
-//To go where jQuery dares not go
-String.prototype.trim = function () {
-    return jQuery.trim(this);
 }
 
 //BASIC for the win
