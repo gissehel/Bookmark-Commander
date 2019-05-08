@@ -180,7 +180,7 @@ menu.exit = () => {
     $('.topMenuItem').removeClass('fcode');
     $('.menuItem').removeClass('fcode');
 
-    commander.reinit();
+    commander.reInit();
     commander.key_mapping_builder.activate();
 }
 
@@ -272,7 +272,7 @@ menu.dispatch = ({ shiftKey, ctrlKey, altKey }) => {
     if (fontSizesChange[command] !== undefined) {
         fontSizesChange[command]();
     }
-    commander.reinit();
+    commander.reInit();
 }
 
 menu.items = [

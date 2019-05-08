@@ -160,7 +160,7 @@ editor.quit = () => {
 
     //We need to reinit (reread bookmarks from Chome ) if we changed something
     if (editor.saved) {
-        commander.reinit();
+        commander.reInit();
     } else {
         commander.draw();
     }

@@ -174,7 +174,7 @@ const sortBookmarks = (id, foldersTop, f, recursive) => {
             sortBookmarks(folder.children[counter].id, null, f, recursive);
         }
     }
-    commander.reinit();
+    commander.reInit();
 }
 
 const catchLogAndReturnDefault = (def, code) => {

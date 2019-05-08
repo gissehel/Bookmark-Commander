@@ -19,11 +19,11 @@ commander.editing = false;
  ****/
 
 /* INIT, RE-INIT */
-commander.init = () => commander.init_or_reinit();
+commander.init = () => commander.initOrReInit();
 
-commander.reinit = () => commander.init_or_reinit();
+commander.reInit = () => commander.initOrReInit();
 
-commander.init_or_reinit = () => {
+commander.initOrReInit = () => {
     chrome.bookmarks.getTree((stuff) => {
         commander.bookmarks = stuff;
         commander.draw();
@@ -100,7 +100,7 @@ commander.setPanel = (panelConfig) => {
     }
 
     //Other parties are interested in how many items there really are
-    panelConfig.itemcount = children.length;
+    panelConfig.itemCount = children.length;
 
     //Keep counter post-loop for sanity checks
     let counter;
@@ -449,7 +449,7 @@ commander.down = () => {
         panel.selected++;
     }
 
-    if (!(panel.scroll + panel.selected < panel.itemcount)) {
+    if (!(panel.scroll + panel.selected < panel.itemCount)) {
         return commander.end();
     }
 
@@ -466,7 +466,7 @@ commander.pageDown = () => {
         panel.scroll = panel.scroll + data.panelHeight - 1;
     }
 
-    if (!(panel.scroll + panel.selected < panel.itemcount)) {
+    if (!(panel.scroll + panel.selected < panel.itemCount)) {
         return commander.end();
     }
 
@@ -526,11 +526,11 @@ commander.home = () => {
 commander.end = () => {
     const panel = commander.left.active ? commander.left : commander.right;
 
-    if (panel.itemcount < data.panelHeight + 1) {
+    if (panel.itemCount < data.panelHeight + 1) {
         panel.scroll = 0;
-        panel.selected = panel.itemcount - 1;
+        panel.selected = panel.itemCount - 1;
     } else {
-        panel.scroll = panel.itemcount - data.panelHeight;
+        panel.scroll = panel.itemCount - data.panelHeight;
         panel.selected = data.panelHeight - 1;
     }
     commander.draw();
@@ -565,16 +565,16 @@ commander.copy = () => {
     const from_id = document.getElementById(from.prefix + from.selected).commander.id;
     const bookmark = findBookmarkId(commander.bookmarks, from_id);
 
-    const newbookmark = { parentId: to.id };
+    const newBookmark = { parentId: to.id };
     //Create the bookmark object
     if (bookmark.title) {
-        newbookmark.title = bookmark.title;
+        newBookmark.title = bookmark.title;
     }
     if (bookmark.url) {
-        newbookmark.url = bookmark.url;
+        newBookmark.url = bookmark.url;
     }
 
-    chrome.bookmarks.create(newbookmark, commander.reinit);
+    chrome.bookmarks.create(newBookmark, commander.reInit);
 }
 
 /* COPY SELECTION */
@@ -591,17 +591,17 @@ commander.copySelection = (from, to) => {
     for (let counter = 0; counter < children.length; counter++) {
         if (children[counter].url && children[counter].url.has(from.selector) || from.selector == "*") {
             let bookmark = children[counter];
-            let newbookmark = { parentId: to.id };
+            let newBookmark = { parentId: to.id };
 
-            newbookmark.title = bookmark.title;
+            newBookmark.title = bookmark.title;
             if (bookmark.url) {
-                newbookmark.url = bookmark.url;
+                newBookmark.url = bookmark.url;
             }
-            chrome.bookmarks.create(newbookmark);
+            chrome.bookmarks.create(newBookmark);
         }
     }
 
-    commander.reinit();
+    commander.reInit();
 }
 
 /* MOVE */
@@ -632,7 +632,7 @@ commander.move = () => {
         return commander.moveSelection(panel, to);
     }
 
-    chrome.bookmarks.move(bookmark.id, { parentId: to.id }, commander.reinit);
+    chrome.bookmarks.move(bookmark.id, { parentId: to.id }, commander.reInit);
 }
 
 /* MOVE SELECTION */
@@ -650,11 +650,11 @@ commander.moveSelection = (from, to) => {
         if (children[counter].url && children[counter].url.has(from.selector) || from.selector == "*") {
             const bookmark = children[counter];
 
-            chrome.bookmarks.move(bookmark.id, { parentId: to.id }, commander.reinit);
+            chrome.bookmarks.move(bookmark.id, { parentId: to.id }, commander.reInit);
         }
     }
 
-    commander.reinit();
+    commander.reInit();
 }
 
 /* DELETE */
@@ -671,9 +671,9 @@ commander.delete = () => {
     //What is interesting, is that removeTree works on non-trees as well
     //I am not going to count on that though ;]
     if (bookmark.children) {
-        chrome.bookmarks.removeTree(bookmark.id, commander.reinit);
+        chrome.bookmarks.removeTree(bookmark.id, commander.reInit);
     } else {
-        chrome.bookmarks.remove(bookmark.id, commander.reinit);
+        chrome.bookmarks.remove(bookmark.id, commander.reInit);
     }
 }
 
@@ -694,13 +694,13 @@ commander.deleteSelection = (from) => {
             //What is interesting, is that removeTree works on non-trees as well
             //I am not going to count on that though ;]
             if (bookmark.children) {
-                chrome.bookmarks.removeTree(bookmark.id, commander.reinit);
+                chrome.bookmarks.removeTree(bookmark.id, commander.reInit);
             } else {
-                chrome.bookmarks.remove(bookmark.id, commander.reinit);
+                chrome.bookmarks.remove(bookmark.id, commander.reInit);
             }
         }
     }
-    commander.reinit();
+    commander.reInit();
 }
 
 
@@ -710,8 +710,8 @@ commander.createFolder = () => {
     const folderText = prompt("Enter folder name", "");
 
     if (folderText) {
-        const newbookmark = { parentId: panel.id, title: folderText };
-        chrome.bookmarks.create(newbookmark, commander.reinit);
+        const newBookmark = { parentId: panel.id, title: folderText };
+        chrome.bookmarks.create(newBookmark, commander.reInit);
     }
 }
 
@@ -751,7 +751,7 @@ commander.moveUp = () => {
         panel.selected--;
     }
 
-    chrome.bookmarks.move(id, { parentId: panel.id, index: (bookmark.index - 1) }, commander.reinit);
+    chrome.bookmarks.move(id, { parentId: panel.id, index: (bookmark.index - 1) }, commander.reInit);
 
 }
 
@@ -780,7 +780,7 @@ commander.moveDown = () => {
             panel.selected++;
         }
 
-        chrome.bookmarks.move(bookmark.id, { parentId: panel.id, index: (bookmark.index - 1) }, commander.reinit);
+        chrome.bookmarks.move(bookmark.id, { parentId: panel.id, index: (bookmark.index - 1) }, commander.reInit);
     }
 }
 
