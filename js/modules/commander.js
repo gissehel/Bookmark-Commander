@@ -147,12 +147,12 @@ commander.setPanel = (panelConfig) => {
             //Lets also show the url
             if (child.url) {
                 let url = child.url.left(((data.panelWidth + 1) * 2)).extend((data.panelWidth + 1) * 2);
-                document.getElementById("url").innerHTML = url;
+                dualPanel.url.innerHTML = url;
             } else if (panelConfig.id == "tree") {
                 let url = findBookmarkTitle(child.id).left(((data.panelWidth + 1) * 2)).extend((data.panelWidth + 1) * 2);
-                document.getElementById("url").innerHTML = url;
+                dualPanel.url.innerHTML = url;
             } else {
-                document.getElementById("url").innerHTML = " ".repeat((data.panelWidth + 1) * 2);
+                dualPanel.url.innerHTML = " ".repeat((data.panelWidth + 1) * 2);
             }
             panelConfig.selectedBookmark = child.id;
         }
@@ -834,7 +834,7 @@ commander.selector = (panel) => {
 }
 
 commander.on_left_click = (n) => {
-    menu.exit_if_out();
+    menu.exitIfOut();
     if (data.simpleClickOnSelectedItemDelve && commander.left.active && commander.left.selected == n) {
         commander.delve();
     } else {
@@ -847,7 +847,7 @@ commander.on_left_click = (n) => {
 }
 
 commander.on_right_click = (n) => {
-    menu.exit_if_out();
+    menu.exitIfOut();
     if (data.simpleClickOnSelectedItemDelve && commander.right.active && commander.right.selected == n) {
         commander.delve();
     } else {
@@ -860,7 +860,7 @@ commander.on_right_click = (n) => {
 }
 
 commander.on_left_dblclick = (n) => {
-    menu.exit_if_out();
+    menu.exitIfOut();
     commander.left.info = false;
     commander.left.active = true;
     commander.right.active = false;
@@ -870,7 +870,7 @@ commander.on_left_dblclick = (n) => {
 }
 
 commander.on_right_dblclick = (n) => {
-    menu.exit_if_out();
+    menu.exitIfOut();
     commander.right.info = false;
     commander.right.active = true;
     commander.left.active = false;

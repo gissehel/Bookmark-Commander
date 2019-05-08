@@ -13,26 +13,20 @@ String.prototype.extend = function (till) {
     if (!till) {
         till = data.screenWidth;
     }
-    return (this + " ".repeat(till)).substring(0, till).replaceAll('<','&lt;').replaceAll('>','&gt;');
+    return (this + " ".repeat(till)).substring(0, till).replaceAll('<', '&lt;').replaceAll('>', '&gt;');
 }
 
 //Need moar sugar
 //Note that this takes also an array with possible prefixes
 String.prototype.startsWith = function (str) {
-    if (typeof str == "string") {
+    if (typeof str === "string") {
         return (this.indexOf(str) === 0);
     }
 
-    let any = false;
-
-    if (typeof str == "object") {
-        for (let key in str) {
-            if (this.startsWith(str[key])) {
-                any = true;
-            }
-        }
+    if (typeof str === "object") {
+        return Object.keys(str).map(key => this.startsWith(str[key])).reduce((acc,elem)=>acc || elem);
     }
-    return any;
+    return false;
 }
 
 String.prototype.replaceAll = function (needle, prick) {
@@ -87,6 +81,10 @@ const pairToObject = function (array) {
         acc[key] = value;
         return acc;
     }, {});
+}
+
+const sum = function (array) {
+    return array.reduce((acc, elem) => acc + elem);
 }
 
 const iconURL = chrome.extension.getURL("/bc-16x16-l.png");

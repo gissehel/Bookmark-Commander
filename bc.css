@@ -12,6 +12,15 @@
     display: inline-block;
 }
 
+#dropdown {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    margin: 0px 0px 0px 0px;
+    display: none;
+    z-index: 1;
+}
+
 #editorScreen textarea,
 #viewerScreen textarea {
     font: inherit;
@@ -24,7 +33,10 @@
     background: rgb(0, 0, 128);
 }
 
-.border, .menu, .fcode, .menuItem {
+.border,
+.menu,
+.fcode,
+.menuItem {
     user-select: none;
 }
 

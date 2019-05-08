@@ -8,41 +8,21 @@
 
 const dualPanel = {};
 
-dualPanel.init = () => dualPanel.redraw;
+dualPanel.init = () => {
+    if (navigator.userAgent.has("Mac")) {
+        data.shouldReplaceHBar = true;
+        data.doubleBar = "=";
+    }
+
+    const element = document.createElement('pre');
+    element.id = 'dualPanel';
+    document.body.appendChild(element);
+    dualPanel.element = element;
+    dualPanel.redraw();
+}
 
 dualPanel.redraw = () => {
-    // EVIL Mac Fix
-    if (navigator.userAgent.has("Mac")) {
-        data.doubleBar = '=';
-        data.shouldReplaceHBar = true;
-    }
-
-    let mainScreenContent = '';
-    //Menu
-    //Note the relative position and z-index, without this the dropdown would overlap the menu
-    //and menu events would not trigger
-    mainScreenContent += "<span id='menu' class='menu' style='position:relative;z-index:2'>" + ("  Left     File     Command     Options     Right").extend() + "</span>";
-    mainScreenContent += "\n";
-
-    //Box Top, missing span here !, it's below now to fill up white spots
-    mainScreenContent += "<span class='border'><span id='h1'><span id='leftroot'></span><span id='riteroot'></span></span>";
-    mainScreenContent += "\n";
-
-    //Entries
-    for (let counter = 0; counter < data.panelHeight; counter++) {
-        mainScreenContent += ("║<span id='left" + counter + "' class='border'>" + " ".repeat(data.panelWidth) + "</span>║");
-        mainScreenContent += ("║<span id='rite" + counter + "' class='border'>" + " ".repeat(data.panelWidth) + "</span>║");
-        mainScreenContent += "\n";
-    }
-
-    //Box Bottom
-    mainScreenContent += ("<span id='h2'>╠" + "═".repeat(data.panelWidth) + "╩╩" + "═".repeat(data.panelWidth) + "╣</span>");
-    mainScreenContent += "\n";
-    mainScreenContent += ("║<span id='url'>" + " ".repeat((data.panelWidth + 1) * 2) + "</span>║");
-    mainScreenContent += "\n";
-    mainScreenContent += ("<span id='h3'>╚" + "═".repeat((data.panelWidth + 1) * 2) + "╝" + "</span></span>");
-    mainScreenContent += "\n";
-
+    const panelIds = [...Array(data.panelHeight).keys()];
     const function_keys =
         [
             { id: 1, description: "Help  " },
@@ -57,23 +37,23 @@ dualPanel.redraw = () => {
             { id: 10, description: "Quit  " },
         ];
 
-
-    for (key in function_keys) {
-        const f = function_keys[key];
-        mainScreenContent += "<span class='fcode'>F" + f.id + "</span><span class='menu' id='f" + f.id + "'>" + f.description + "</span><span class='fcode'> </span>";
-    }
-    mainScreenContent += ("<span id='end' class='fcode'>" + " ".repeat(data.screenWidth - 91) + "</span>");
-    mainScreenContent += "\n";
-
-    window.dualPanel.innerHTML = mainScreenContent;
-    mouse.reinit_if_already_init();
+    dualPanel.element.innerHTML = sum([
+        "<span id='menu' class='menu' style='position:relative;z-index:2'></span>\n",
+        "<span class='border'>",
+        "<span id='h1'><span id='leftroot'></span><span id='riteroot'></span></span>\n",
+        ...panelIds.map((counter) => sum([
+            `║<span id='left${counter}' class='border'>${" ".repeat(data.panelWidth)}</span>║`,
+            `║<span id='rite${counter}' class='border'>${" ".repeat(data.panelWidth)}</span>║`,
+            "\n",
+        ])),
+        `<span>╠${data.doubleBar.repeat(data.panelWidth)}╩╩${data.doubleBar.repeat(data.panelWidth)}╣</span>\n`,
+        `║<span id='url'>${" ".repeat((data.panelWidth + 1) * 2)}</span>║\n`,
+        `<span>╚${data.doubleBar.repeat((data.panelWidth + 1) * 2)}╝</span>\n`,
+        "</span>",
+        ...function_keys.map((functionKey) => `<span class='fcode'> F${functionKey.id}</span><span class='menu' id='f${functionKey.id}'>${functionKey.description}</span><span class='fcode'></span>`),
+        `<span id='end' class='fcode'>${" ".repeat(data.screenWidth - 91)}</span>\n`,
+    ]);
+    dualPanel.url = document.getElementById("url");
+    menu.refresh();
     commander.init();
-
-    /* EVIL Mac Fix */
-    if (data.shouldReplaceHBar) {
-        //Replace ═ with =, cause silly Mac OS
-        $("#h2").text((index, oldtext) => oldtext.replace(/═/gi, data.doubleBar));
-        $("#h3").text((index, oldtext) => oldtext.replace(/═/gi, data.doubleBar));
-        $("#options").text((index, oldtext) => oldtext.replace(/═/gi, data.doubleBar));
-    }
 }

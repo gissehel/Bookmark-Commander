@@ -5,27 +5,6 @@
 
 mouse = {};
 
-
-/* Some DRYness*/
-const bindTopMenu = (_menu) => {
-    const top = $("#menu")[0];
-
-    top.innerHTML = top.innerHTML.replace(_menu.caption, '<span class="menuItem" id="menu_' + _menu.caption + '">' + _menu.caption + '</span>');
-    $("#menu_" + _menu.caption).live("click", () => {
-        menu.current = _menu;
-        menu.selection = 0;
-        commander.menu();
-    });
-}
-
-mouse.init = () => mouse.reinit();
-
-mouse.reinit_if_already_init = () => {
-    if (mouse._is_init) {
-        mouse.reinit();
-    }
-}
-
 const handleClickDoubleClick = (() => {
     let handleClickDoubleClick_lastClick = null;
 
@@ -52,7 +31,7 @@ const handleClickDoubleClick = (() => {
                 onClick();
             }
 
-            
+
 
             handleClickDoubleClick_lastClick = {
                 target,
@@ -71,75 +50,63 @@ const handleClickDoubleClick = (() => {
     };
 })();
 
-mouse.reinit = () => {
-    if (!mouse._is_init) {
-        //We go for each item and give it a mouse click event listener
-        //Note the very cool 'live' which means listener also counts for newly created divs
-        //which happens all the time in bookmark commander
-        //if an item was already clicked then we assume the user wants to execute it (delve)
-        for (let i = 0; i < data.panelHeight; i++) {
-            $("#left" + i).live("click",
-                (e) => {
-                    const n = e.srcElement.id.substring(4);
-                    handleClickDoubleClick(e.currentTarget, () => commander.on_left_click(n), () => commander.on_left_dblclick(n));
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    return true;
-                }
-            )
-            $("#rite" + i).live("click",
-                (e) => {
-                    const n = e.srcElement.id.substring(4);
-                    handleClickDoubleClick(e.currentTarget, () => commander.on_right_click(n), () => commander.on_right_dblclick(n));
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    return true;
-                }
-            )
-        }
+mouse.init = () => {
+    document.body.addEventListener('wheel', mouse.scroll);
 
-        // Ugly, but less ugly than having a bunch of XXXXXX in a <hidden> elements with opacity 0 for formatting reasons,
-        //  that hijack the clicks.
-        $("hidden").live("click",
+
+    //We go for each item and give it a mouse click event listener
+    //Note the very cool 'live' which means listener also counts for newly created divs
+    //which happens all the time in bookmark commander
+    //if an item was already clicked then we assume the user wants to execute it (delve)
+    for (let i = 0; i < data.panelHeight; i++) {
+        $("#left" + i).live("click",
+            (e) => {
+                const n = e.srcElement.id.substring(4);
+                handleClickDoubleClick(e.currentTarget, () => commander.on_left_click(n), () => commander.on_left_dblclick(n));
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                return true;
+            }
+        )
+        $("#rite" + i).live("click",
+            (e) => {
+                const n = e.srcElement.id.substring(4);
+                handleClickDoubleClick(e.currentTarget, () => commander.on_right_click(n), () => commander.on_right_dblclick(n));
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                return true;
+            }
+        )
+    }
+
+    // Ugly, but less ugly than having a bunch of XXXXXX in a <hidden> elements with opacity 0 for formatting reasons,
+    //  that hijack the clicks.
+    $("hidden").live("click",
         (e) => {
-            menu.exit_if_out();
+            menu.exitIfOut();
             return false;
         }
     )
-}
-
-    //Do the top menu
-    //This is a fairly nasty piece of hacking ;\
-    //To redeem myself I will make it i18n friendly
-
-    bindTopMenu(menu.left);
-    bindTopMenu(menu.file);
-    bindTopMenu(menu.command);
-    bindTopMenu(menu.options);
-    bindTopMenu(menu.right);
-
-    if (!mouse._is_init) {
-        //Do the actual menu items, which have a very imaginative id system ( 0 -> panelheight -1 )
-
-        for (let i = 0; i < data.panelHeight; i++) {
-            $("#" + i).live("click",
-                (e) => {
-                    const n = e.srcElement.id * 1;
-                    if (menu.selection == n) {
-                        menu.dispatch(e);
-                    } else {
-                        menu.selection = n;
-                        menu.show();
-                    }
-                }
-            )
+    $(".topMenuItem").live("click", (event) => {
+        const menuIndex = event.currentTarget.attributes['data-index'].value * 1;
+        menu.current = menu.items[menuIndex];
+        menu.selection = 0;
+        commander.menu();
+    });
+    $(".menuItem").live("click",
+        (e) => {
+            const n = e.srcElement.id.slice("menuItem_".length) * 1;
+            if (menu.selection == n) {
+                const { shiftKey, ctrlKey, altKey } = e;
+                menu.dispatch({ shiftKey, ctrlKey, altKey });
+            } else {
+                menu.selection = n;
+                menu.show();
+            }
         }
-    }
-
-
-    mouse._is_init = true;
+    )
 }
 
 /* If we ever get enough user feedback, we might change this

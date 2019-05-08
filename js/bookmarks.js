@@ -22,11 +22,11 @@ const findBookmarkId = (stuff, id) => {
         if (stuff && stuff.id && stuff.id == id) {
             node = stuff;
         } else {
-            for (let key in stuff) {
+            Object.keys(stuff).forEach(key=>{
                 if (typeof stuff[key] == "object") {
                     seek(stuff[key], id);
                 }
-            }
+            });
         }
     }
     seek(stuff, id);

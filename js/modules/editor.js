@@ -36,9 +36,9 @@ editor.view = (id) => {
         bookmark.url = '';
         //Dont show test for folders
         editor.function_keys[4].description = '      ';
-        editor.urlreadonly = "readonly='readonly'";
+        editor.urlReadOnly = "readonly='readonly'";
     } else {
-        editor.urlreadonly = "";
+        editor.urlReadOnly = "";
     }
 
     editor.id = id;
@@ -53,42 +53,36 @@ editor.view = (id) => {
     }
     editor.bookmark.content = content;
 
+    document.body.innerHTML = sum([
+        `<pre id='editorScreen'>`,
+        `<span class='menu'>${("  Folder/Bookmark").extend()}</span>\n`,
+        `<textarea class='blue' cols='${data.screenWidth - 2}' rows='3' id='title'>${bookmark.title}</textarea>\n`,
+        `<span class='menu'>${("  URL").extend()}</span>\n`,
+        `<textarea class='blue' cols='${(data.screenWidth - 2)}' rows='${(data.panelHeight)}' id='url'${editor.urlReadOnly}>${content}</textarea>\n`,
+        ...editor.function_keys.map(f => `<span class='fcode'>F${f.id}</span><span class='menu'>${f.description}</span><span class='fcode'> </span>`),
+        `<span id='end' class='fcode'>${" ".repeat(data.screenWidth - 91)}</span>\n`,
+    ]);
 
-    //Table due to general textarea weirdness
-    let s = "<pre id='editorScreen'>";
-    //Menu
-    s = s + "<span class='menu'>" + ("  Folder/Bookmark").extend() + "</span>\n";
-    //Its a mess, but a short mess ;\
-    s = s + "<textarea class='blue' cols='" + (data.screenWidth - 2) + "' rows='3' id='title'>" + bookmark.title + "</textarea>\n"
-    s = s + "<span class='menu'>" + ("  URL").extend() + "</span>\n";
-    s = s + "<textarea class='blue' cols='" + (data.screenWidth - 2) + "' rows='"+(data.panelHeight)+"' id='url'" + editor.urlreadonly + ">" + content + "</textarea>\n"
-
-
-    for (let key in editor.function_keys) {
-        let f = editor.function_keys[key];
-        s = s + ("<span class='fcode'>F" + f.id + "</span><span class='menu'>" + f.description + "</span><span class='fcode'> </span>");
-    }
-    s = s + ("<span id='end' class='fcode'>" + " ".repeat(data.screenWidth - 91) + "</span>\n");
-
-    document.body.innerHTML = s;
+    editor.url = document.getElementById('url');
+    editor.end = document.getElementById('end');
+    editor.title = document.getElementById('title');
 
     // Ugly quirk, because width in columns for a textarea isn't enought
     const width = $('.menu').width();
-    $('textarea').attr('style',`width: ${width}px`);
+    $('textarea').attr('style', `width: ${width}px`);
 
     editor.key_mapping_builder.activate();
 
     //Put focus on the title, at the end
-    const title = document.getElementById("title");
+    const title = editor.title;
     title.focus();
     const position = title.value.length * 2;
     title.setSelectionRange(position, position);
-
 }
 
 editor.considerTextAreas = () => {
-    const titleElement = document.getElementById("title")
-    const urlElement = document.getElementById("url")
+    const titleElement = editor.title;
+    const urlElement = editor.url;
 
     let _changed = false;
 
@@ -113,13 +107,13 @@ editor.considerTextAreas = () => {
 }
 
 editor.test = () => {
-    chrome.tabs.create({ 'url': document.getElementById("url").value }, null);
+    chrome.tabs.create({ 'url': editor.url.value }, null);
 }
 
 editor.save = () => {
-    const o = { title: document.getElementById("title").value };
+    const o = { title: editor.title.value };
 
-    const url = document.getElementById("url").value.trim();
+    const url = editor.url.value.trim();
 
     if (url.length > 0) {        //o.url = url;
         o.url = editor.condense(url);
@@ -128,7 +122,7 @@ editor.save = () => {
 
     editor.saved = true;
 
-    document.getElementById("end").innerHTML = ("<span style='color: yellow'>" + ("SAVED!").extend(data.screenWidth - 91) + "</span>");
+    editor.end.innerHTML = ("<span style='color: yellow'>" + ("SAVED!").extend(data.screenWidth - 91) + "</span>");
 
     editor.bookmark = o;
 
