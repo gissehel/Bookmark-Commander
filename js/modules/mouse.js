@@ -44,7 +44,7 @@ const handleClickDoubleClick = (() => {
             }
             handleClickDoubleClick_lastClick = null;
 
-            if (screenParams.simpleClickOnSelectedItemDelve) {
+            if (data.simpleClickOnSelectedItemDelve) {
                 if (lastOnClick) {
                     lastOnClick();
                 }
@@ -61,10 +61,10 @@ const handleClickDoubleClick = (() => {
                         clearTimeout(handleClickDoubleClick_lastClick.timer);
                     }
                     handleClickDoubleClick_lastClick = null;
-                    if (screenParams.simpleClickOnSelectedItemDelve) {
+                    if (data.simpleClickOnSelectedItemDelve) {
                         onClick();
                     }
-                }, screenParams.doubleClickTimeout),
+                }, data.doubleClickTimeout),
                 onClick,
             }
         }
@@ -77,7 +77,7 @@ mouse.reinit = () => {
         //Note the very cool 'live' which means listener also counts for newly created divs
         //which happens all the time in bookmark commander
         //if an item was already clicked then we assume the user wants to execute it (delve)
-        for (let i = 0; i < screenParams.panelheight; i++) {
+        for (let i = 0; i < data.panelHeight; i++) {
             $("#left" + i).live("click",
                 (e) => {
                     const n = e.srcElement.id.substring(4);
@@ -123,7 +123,7 @@ mouse.reinit = () => {
     if (!mouse._is_init) {
         //Do the actual menu items, which have a very imaginative id system ( 0 -> panelheight -1 )
 
-        for (let i = 0; i < screenParams.panelheight; i++) {
+        for (let i = 0; i < data.panelHeight; i++) {
             $("#" + i).live("click",
                 (e) => {
                     const n = e.srcElement.id * 1;

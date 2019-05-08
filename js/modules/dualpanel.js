@@ -13,8 +13,8 @@ dualPanel.init = () => dualPanel.redraw;
 dualPanel.redraw = () => {
     // EVIL Mac Fix
     if (navigator.userAgent.has("Mac")) {
-        screenParams.doublebar = '=';
-        screenParams.shouldReplaceHBar = true;
+        data.doubleBar = '=';
+        data.shouldReplaceHBar = true;
     }
 
     let mainScreenContent = '';
@@ -29,18 +29,18 @@ dualPanel.redraw = () => {
     mainScreenContent += "\n";
 
     //Entries
-    for (let counter = 0; counter < screenParams.panelheight; counter++) {
-        mainScreenContent += ("║<span id='left" + counter + "' class='border'>" + " ".repeat(screenParams.panelwidth) + "</span>║");
-        mainScreenContent += ("║<span id='rite" + counter + "' class='border'>" + " ".repeat(screenParams.panelwidth) + "</span>║");
+    for (let counter = 0; counter < data.panelHeight; counter++) {
+        mainScreenContent += ("║<span id='left" + counter + "' class='border'>" + " ".repeat(data.panelWidth) + "</span>║");
+        mainScreenContent += ("║<span id='rite" + counter + "' class='border'>" + " ".repeat(data.panelWidth) + "</span>║");
         mainScreenContent += "\n";
     }
 
     //Box Bottom
-    mainScreenContent += ("<span id='h2'>╠" + "═".repeat(screenParams.panelwidth) + "╩╩" + "═".repeat(screenParams.panelwidth) + "╣</span>");
+    mainScreenContent += ("<span id='h2'>╠" + "═".repeat(data.panelWidth) + "╩╩" + "═".repeat(data.panelWidth) + "╣</span>");
     mainScreenContent += "\n";
-    mainScreenContent += ("║<span id='url'>" + " ".repeat((screenParams.panelwidth + 1) * 2) + "</span>║");
+    mainScreenContent += ("║<span id='url'>" + " ".repeat((data.panelWidth + 1) * 2) + "</span>║");
     mainScreenContent += "\n";
-    mainScreenContent += ("<span id='h3'>╚" + "═".repeat((screenParams.panelwidth + 1) * 2) + "╝" + "</span></span>");
+    mainScreenContent += ("<span id='h3'>╚" + "═".repeat((data.panelWidth + 1) * 2) + "╝" + "</span></span>");
     mainScreenContent += "\n";
 
     const function_keys =
@@ -62,7 +62,7 @@ dualPanel.redraw = () => {
         const f = function_keys[key];
         mainScreenContent += "<span class='fcode'>F" + f.id + "</span><span class='menu' id='f" + f.id + "'>" + f.description + "</span><span class='fcode'> </span>";
     }
-    mainScreenContent += ("<span id='end' class='fcode'>" + " ".repeat(screenParams.screenwidth - 91) + "</span>");
+    mainScreenContent += ("<span id='end' class='fcode'>" + " ".repeat(data.screenWidth - 91) + "</span>");
     mainScreenContent += "\n";
 
     window.dualPanel.innerHTML = mainScreenContent;
@@ -70,10 +70,10 @@ dualPanel.redraw = () => {
     commander.init();
 
     /* EVIL Mac Fix */
-    if (screenParams.shouldReplaceHBar) {
+    if (data.shouldReplaceHBar) {
         //Replace ═ with =, cause silly Mac OS
-        $("#h2").text((index, oldtext) => oldtext.replace(/═/gi, screenParams.doublebar));
-        $("#h3").text((index, oldtext) => oldtext.replace(/═/gi, screenParams.doublebar));
-        $("#options").text((index, oldtext) => oldtext.replace(/═/gi, screenParams.doublebar));
+        $("#h2").text((index, oldtext) => oldtext.replace(/═/gi, data.doubleBar));
+        $("#h3").text((index, oldtext) => oldtext.replace(/═/gi, data.doubleBar));
+        $("#options").text((index, oldtext) => oldtext.replace(/═/gi, data.doubleBar));
     }
 }

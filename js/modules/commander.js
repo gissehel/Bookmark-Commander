@@ -78,13 +78,13 @@ commander.setPanel = (panelConfig) => {
     //Set the folder structure on top
     const title = findBookmarkTitle(panelConfig.id);
 
-    document.getElementById(panelConfig.prefix + "root").innerHTML = "╔" + (title + screenParams.doublebar.repeat(screenParams.panelwidth)).left(screenParams.panelwidth) + "╗";
+    document.getElementById(panelConfig.prefix + "root").innerHTML = "╔" + (title + data.doubleBar.repeat(data.panelWidth)).left(data.panelWidth) + "╗";
 
     //Clear out the children
-    for (let counter = 0; counter < screenParams.panelheight; counter++) {
+    for (let counter = 0; counter < data.panelHeight; counter++) {
         let line = document.getElementById(panelConfig.prefix + counter);
         if (line) {
-            line.innerHTML = (" ".repeat(screenParams.panelwidth));
+            line.innerHTML = (" ".repeat(data.panelWidth));
             line.setAttribute("class", "border");
         }
     }
@@ -109,7 +109,7 @@ commander.setPanel = (panelConfig) => {
     delete panelConfig.selectedBookmark;
 
     //Go over the children ( folders + bookmarks )
-    for (counter = 0; counter < screenParams.panelheight && counter + panelConfig.scroll < children.length; counter++) {
+    for (counter = 0; counter < data.panelHeight && counter + panelConfig.scroll < children.length; counter++) {
         //Get the child
         let child = children[counter + panelConfig.scroll];
         //Default bookmark prefix and style
@@ -146,13 +146,13 @@ commander.setPanel = (panelConfig) => {
             style = "selected"
             //Lets also show the url
             if (child.url) {
-                let url = child.url.left(((screenParams.panelwidth + 1) * 2)).extend((screenParams.panelwidth + 1) * 2);
+                let url = child.url.left(((data.panelWidth + 1) * 2)).extend((data.panelWidth + 1) * 2);
                 document.getElementById("url").innerHTML = url;
             } else if (panelConfig.id == "tree") {
-                let url = findBookmarkTitle(child.id).left(((screenParams.panelwidth + 1) * 2)).extend((screenParams.panelwidth + 1) * 2);
+                let url = findBookmarkTitle(child.id).left(((data.panelWidth + 1) * 2)).extend((data.panelWidth + 1) * 2);
                 document.getElementById("url").innerHTML = url;
             } else {
-                document.getElementById("url").innerHTML = " ".repeat((screenParams.panelwidth + 1) * 2);
+                document.getElementById("url").innerHTML = " ".repeat((data.panelWidth + 1) * 2);
             }
             panelConfig.selectedBookmark = child.id;
         }
@@ -164,7 +164,7 @@ commander.setPanel = (panelConfig) => {
         element.setAttribute("class", style);
 
         //Set the content
-        let innerHTML = (prefix + child.title).extend(screenParams.panelwidth);
+        let innerHTML = (prefix + child.title).extend(data.panelWidth);
 
         //Highlight filter if any
         if (panelConfig.filter) {
@@ -224,13 +224,13 @@ commander.setInfoPanel = (panelConfig) => {
     }
 
     //Do not set the folder structure on top
-    document.getElementById(panelConfig.prefix + "root").innerHTML = "╔" + screenParams.doublebar.repeat(screenParams.panelwidth) + "╗";
+    document.getElementById(panelConfig.prefix + "root").innerHTML = "╔" + data.doubleBar.repeat(data.panelWidth) + "╗";
 
     //Clear out the children
-    for (let counter = 0; counter < screenParams.panelheight; counter++) {
+    for (let counter = 0; counter < data.panelHeight; counter++) {
         const line = document.getElementById(panelConfig.prefix + counter);
         if (line) {
-            line.innerHTML = (" ".repeat(screenParams.panelwidth));
+            line.innerHTML = (" ".repeat(data.panelWidth));
             line.setAttribute("class", "border");
         }
     }
@@ -247,7 +247,7 @@ commander.setInfoPanel = (panelConfig) => {
     let element = document.getElementById(panelConfig.prefix + line++);
 
     if (o.title) {
-        element.innerHTML = (o.title).extend(screenParams.panelwidth);
+        element.innerHTML = (o.title).extend(data.panelWidth);
     }
 
     line++;
@@ -256,45 +256,45 @@ commander.setInfoPanel = (panelConfig) => {
         element = document.getElementById(panelConfig.prefix + line++);
         let d = new Date()
         d.setTime(o.dateAdded);
-        element.innerHTML = ("  added:    " + d.format()).extend(screenParams.panelwidth);
+        element.innerHTML = ("  added:    " + d.format()).extend(data.panelWidth);
     }
 
     if (o.dateGroupModified) {
         element = document.getElementById(panelConfig.prefix + line++);
         let d = new Date()
         d.setTime(o.dateGroupModified);
-        element.innerHTML = ("  changed:  " + d.format()).extend(screenParams.panelwidth);
+        element.innerHTML = ("  changed:  " + d.format()).extend(data.panelWidth);
     }
 
     element = document.getElementById(panelConfig.prefix + line++);
-    element.innerHTML = ("  id:       " + o.id).extend(screenParams.panelwidth);
+    element.innerHTML = ("  id:       " + o.id).extend(data.panelWidth);
 
     element = document.getElementById(panelConfig.prefix + line++);
-    element.innerHTML = ("  index:    " + o.index).extend(screenParams.panelwidth);
+    element.innerHTML = ("  index:    " + o.index).extend(data.panelWidth);
 
     element = document.getElementById(panelConfig.prefix + line++);
-    element.innerHTML = ("  parent:   " + o.parentId).extend(screenParams.panelwidth);
+    element.innerHTML = ("  parent:   " + o.parentId).extend(data.panelWidth);
 
     element = document.getElementById(panelConfig.prefix + line++);
     if (o.children) {
-        element.innerHTML = ("  children: " + o.children.length).extend(screenParams.panelwidth);
+        element.innerHTML = ("  children: " + o.children.length).extend(data.panelWidth);
     } else {
         //Sugar
         let url = o.url;
 
-        while (url.length > screenParams.panelwidth) {
+        while (url.length > data.panelWidth) {
             //Get the victim, leave implicit space for first entry
             element = document.getElementById(panelConfig.prefix + line++);
             //content
-            element.innerHTML = url.left(screenParams.panelwidth);
+            element.innerHTML = url.left(data.panelWidth);
             //remainder
-            url = url.substring(screenParams.panelwidth);
+            url = url.substring(data.panelWidth);
         }
         if (url.length > 0) {
             //Get the victim
             element = document.getElementById(panelConfig.prefix + line++);
             //content
-            element.innerHTML = url.extend(screenParams.panelwidth);
+            element.innerHTML = url.extend(data.panelWidth);
         }
     }
 }
@@ -443,7 +443,7 @@ commander.back = () => {
 commander.down = () => {
     const panel = commander.left.active ? commander.left : commander.right;
 
-    if (panel.selected == screenParams.panelheight - 1) {
+    if (panel.selected == data.panelHeight - 1) {
         panel.scroll++;
     } else {
         panel.selected++;
@@ -460,10 +460,10 @@ commander.down = () => {
 commander.pageDown = () => {
     const panel = commander.left.active ? commander.left : commander.right;
 
-    if (panel.selected < screenParams.panelheight - 1) {
-        panel.selected = screenParams.panelheight - 1;
+    if (panel.selected < data.panelHeight - 1) {
+        panel.selected = data.panelHeight - 1;
     } else {
-        panel.scroll = panel.scroll + screenParams.panelheight - 1;
+        panel.scroll = panel.scroll + data.panelHeight - 1;
     }
 
     if (!(panel.scroll + panel.selected < panel.itemcount)) {
@@ -503,7 +503,7 @@ commander.pageUp = () => {
     if (panel.selected != 0) {
         panel.selected = 0;
     } else {
-        panel.scroll = panel.scroll - screenParams.panelheight + 1;
+        panel.scroll = panel.scroll - data.panelHeight + 1;
     }
 
     //Sanity fix the scroll value
@@ -526,12 +526,12 @@ commander.home = () => {
 commander.end = () => {
     const panel = commander.left.active ? commander.left : commander.right;
 
-    if (panel.itemcount < screenParams.panelheight + 1) {
+    if (panel.itemcount < data.panelHeight + 1) {
         panel.scroll = 0;
         panel.selected = panel.itemcount - 1;
     } else {
-        panel.scroll = panel.itemcount - screenParams.panelheight;
-        panel.selected = screenParams.panelheight - 1;
+        panel.scroll = panel.itemcount - data.panelHeight;
+        panel.selected = data.panelHeight - 1;
     }
     commander.draw();
 }
@@ -705,12 +705,12 @@ commander.deleteSelection = (from) => {
 
 
 /* CREATE FOLDER */
-commander.createfolder = () => {
+commander.createFolder = () => {
     const panel = commander.left.active ? commander.left : commander.right;
-    const foldertext = prompt("Enter folder name", "");
+    const folderText = prompt("Enter folder name", "");
 
-    if (foldertext) {
-        const newbookmark = { parentId: panel.id, title: foldertext };
+    if (folderText) {
+        const newbookmark = { parentId: panel.id, title: folderText };
         chrome.bookmarks.create(newbookmark, commander.reinit);
     }
 }
@@ -728,7 +728,7 @@ commander.equalize = () => {
 }
 
 /* PLUS , MOVE UP */
-commander.moveup = () => {
+commander.moveUp = () => {
     const panel = commander.left.active ? commander.left : commander.right;
     const id = document.getElementById(panel.prefix + panel.selected).commander.id;
     const bookmark = findBookmarkId(commander.bookmarks, id);
@@ -756,7 +756,7 @@ commander.moveup = () => {
 }
 
 /* DOWN, MOVE DOWN */
-commander.movedown = () => {
+commander.moveDown = () => {
     const panel = commander.left.active ? commander.left : commander.right;
     const id = document.getElementById(panel.prefix + panel.selected).commander.id;
     let bookmark = findBookmarkId(commander.bookmarks, id);
@@ -774,7 +774,7 @@ commander.movedown = () => {
     bookmark = parent.children[bookmark.index + 1];
     if (bookmark) {
         //We are evilly counting on the 'hmmm I think this got deleted feature', muhaha is in order
-        if (panel.selected == screenParams.panelheight - 1) {
+        if (panel.selected == data.panelHeight - 1) {
             panel.scroll++;
         } else {
             panel.selected++;
@@ -785,19 +785,19 @@ commander.movedown = () => {
 }
 
 /* SEARCH */
-commander.search = (searchtext) => {
-    if (!searchtext) {
+commander.search = (searchText) => {
+    if (!searchText) {
         if (commander.query) {
-            searchtext = commander.query;
+            searchText = commander.query;
         } else {
-            searchtext = prompt("Enter search string", ""); //"" is the default
+            searchText = prompt("Enter search string", ""); //"" is the default
         }
     }
-    chrome.bookmarks.search(searchtext, (o) => {
+    chrome.bookmarks.search(searchText, (o) => {
         const panel = commander.left.active ? commander.left : commander.right;
         panel.id = "search";
         commander.results = o;
-        commander.query = searchtext;
+        commander.query = searchText;
         commander.draw();
     });
 }
@@ -835,7 +835,7 @@ commander.selector = (panel) => {
 
 commander.on_left_click = (n) => {
     menu.exit_if_out();
-    if (screenParams.simpleClickOnSelectedItemDelve && commander.left.active && commander.left.selected == n) {
+    if (data.simpleClickOnSelectedItemDelve && commander.left.active && commander.left.selected == n) {
         commander.delve();
     } else {
         commander.left.info = false;
@@ -848,7 +848,7 @@ commander.on_left_click = (n) => {
 
 commander.on_right_click = (n) => {
     menu.exit_if_out();
-    if (screenParams.simpleClickOnSelectedItemDelve && commander.right.active && commander.right.selected == n) {
+    if (data.simpleClickOnSelectedItemDelve && commander.right.active && commander.right.selected == n) {
         commander.delve();
     } else {
         commander.right.info = false;

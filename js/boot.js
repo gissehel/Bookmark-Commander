@@ -1,6 +1,6 @@
 $(document).ready(() => {
     dualPanel.init();
-    data.init();
+    dataAccess.init();
     menu.init();
     keyboard.init();
     mouse.init();

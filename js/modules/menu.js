@@ -62,7 +62,7 @@ const menu = {};
     const fontSizes = [...Array(11).keys()].map(x => 10 + x);
     const fontSizesText = fontSizes.map(size => [`${size}px`, size]);
     const fontSizesInMenu = fontSizesText.map(x => x[0]).join(',');
-    const fontSizesChange = pairToObject(fontSizesText.map(([label, size]) => [label, () => data.setSize(size)]));
+    const fontSizesChange = pairToObject(fontSizesText.map(([label, size]) => [label, () => dataAccess.setSize(size)]));
     const assignLeftRights = (menus) => {
         const len = menus.length;
         for(let index = 0; index<len; index++) {
@@ -101,11 +101,11 @@ const menu = {};
         //We need the top, and it needs to be indented
         s = s + "<hidden>" + "X".repeat(menu.current.indent) + "</hidden>";
         //The top
-        s = s + "<span class='menu'>╔" + screenParams.doublebar.repeat(menu.current.items.maxText + menu.current.items.maxKeyText + 1) + "╗</span>\n";
+        s = s + "<span class='menu'>╔" + data.doubleBar.repeat(menu.current.items.maxText + menu.current.items.maxKeyText + 1) + "╗</span>\n";
 
         for (key = 0; key <= menu.current.items.maxKey; key++) {
             if (menu.current.items[key].text == "_") {
-                s = s + "<hidden>" + "X".repeat(menu.current.indent) + "</hidden>" + "<span class='menu'>╠" + screenParams.doublebar.repeat(menu.current.items.maxText + menu.current.items.maxKeyText + 1) + "╣</span>\n";
+                s = s + "<hidden>" + "X".repeat(menu.current.indent) + "</hidden>" + "<span class='menu'>╠" + data.doubleBar.repeat(menu.current.items.maxText + menu.current.items.maxKeyText + 1) + "╣</span>\n";
             } else {
                 s = s + menu.current.items[key].html;
             }
@@ -114,7 +114,7 @@ const menu = {};
         //We need the bottom, and it needs to be indented
         s = s + "<hidden>" + "X".repeat(menu.current.indent) + "</hidden>";
         //The bottom
-        s = s + "<span class='menu'>╚" + screenParams.doublebar.repeat(menu.current.items.maxText + menu.current.items.maxKeyText + 1) + "╝</span>\n";
+        s = s + "<span class='menu'>╚" + data.doubleBar.repeat(menu.current.items.maxText + menu.current.items.maxKeyText + 1) + "╝</span>\n";
         //Close
         s = s + "</pre>";
 
@@ -201,11 +201,11 @@ const menu = {};
         if (command == "Edit") commander.edit();
         if (command == "Copy") commander.copy();
         if (command == "Move") commander.move();
-        if (command == "Create Folder ") commander.createfolder(); //Note the extra hacky space at the end ;\
+        if (command == "Create Folder ") commander.createFolder(); //Note the extra hacky space at the end ;\
         if (command == "Delete") commander.delete();       //Note the use of a keyword as a function ;\
         if (command == "Quit") commander.quit();
-        if (command == "Move up") commander.moveup();
-        if (command == "Move Down") commander.movedown();
+        if (command == "Move up") commander.moveUp();
+        if (command == "Move Down") commander.moveDown();
         if (command == "Search") commander.search();
 
         if (command == "Sort by Date") sortBookmarks(id, null, sortByDateFunction, event.ctrlKey)

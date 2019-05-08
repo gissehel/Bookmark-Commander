@@ -59,16 +59,16 @@ editor.view = (id) => {
     //Menu
     s = s + "<span class='menu'>" + ("  Folder/Bookmark").extend() + "</span>\n";
     //Its a mess, but a short mess ;\
-    s = s + "<textarea class='blue' cols='" + (screenParams.screenwidth - 2) + "' rows='3' id='title'>" + bookmark.title + "</textarea>\n"
+    s = s + "<textarea class='blue' cols='" + (data.screenWidth - 2) + "' rows='3' id='title'>" + bookmark.title + "</textarea>\n"
     s = s + "<span class='menu'>" + ("  URL").extend() + "</span>\n";
-    s = s + "<textarea class='blue' cols='" + (screenParams.screenwidth - 2) + "' rows='"+(screenParams.panelheight)+"' id='url'" + editor.urlreadonly + ">" + content + "</textarea>\n"
+    s = s + "<textarea class='blue' cols='" + (data.screenWidth - 2) + "' rows='"+(data.panelHeight)+"' id='url'" + editor.urlreadonly + ">" + content + "</textarea>\n"
 
 
     for (let key in editor.function_keys) {
         let f = editor.function_keys[key];
         s = s + ("<span class='fcode'>F" + f.id + "</span><span class='menu'>" + f.description + "</span><span class='fcode'> </span>");
     }
-    s = s + ("<span id='end' class='fcode'>" + " ".repeat(screenParams.screenwidth - 91) + "</span>\n");
+    s = s + ("<span id='end' class='fcode'>" + " ".repeat(data.screenWidth - 91) + "</span>\n");
 
     document.body.innerHTML = s;
 
@@ -128,7 +128,7 @@ editor.save = () => {
 
     editor.saved = true;
 
-    document.getElementById("end").innerHTML = ("<span style='color: yellow'>" + ("SAVED!").extend(screenParams.screenwidth - 91) + "</span>");
+    document.getElementById("end").innerHTML = ("<span style='color: yellow'>" + ("SAVED!").extend(data.screenWidth - 91) + "</span>");
 
     editor.bookmark = o;
 
