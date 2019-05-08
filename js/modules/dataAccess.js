@@ -37,13 +37,13 @@ dataAccess.onSizeChanged = () => {
     const ch = calibreRect.height;
     const bw = body.clientWidth;
     const cw = calibreRect.width;
-    const nLines = Math.floor((bh-12)/ch);
-    const nCols = Math.floor((bw-4)/cw);
-    data.screenWidth = Math.floor(nCols/2)*2;
+    const nLines = Math.floor((bh - 12) / ch);
+    const nCols = Math.floor((bw - 4) / cw);
+    data.screenWidth = Math.floor(nCols / 2) * 2;
     data.panelHeight = nLines - 6;
 
     data.panelWidth = Math.floor((data.screenWidth - 4) / 2);
-    data.screenHeight = data.panelHeight+6;
+    data.screenHeight = data.panelHeight + 6;
     dualPanel.redraw();
 };
 

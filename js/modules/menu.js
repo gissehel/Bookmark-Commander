@@ -42,7 +42,7 @@ menu.itemize = (item) => {
             subItem.html = `${hidden}<span class='menu'>╠${data.doubleBar.repeat(maxText + maxKeyText + 2)}╣</span>\n`;
             subItem.isSep = true;
         } else {
-            subItem.html = `${hidden}<span class='menu'>║</span><span class='menu menuItem' id='menuItem_${subItemIndex}'> ${subItem.htmlName}${" ".repeat(maxText - subItem.text.length)}${subItem.key}${" ".repeat(maxKeyText+1 - subItem.key.length)}</span><span class='menu'>║</span>\n`;
+            subItem.html = `${hidden}<span class='menu'>║</span><span class='menu menuItem' id='menuItem_${subItemIndex}'> ${subItem.htmlName}${" ".repeat(maxText - subItem.text.length)}${subItem.key}${" ".repeat(maxKeyText + 1 - subItem.key.length)}</span><span class='menu'>║</span>\n`;
             subItem.isSep = false;
         }
 
