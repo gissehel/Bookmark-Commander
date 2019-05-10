@@ -1,8 +1,13 @@
 Orthodox Bookmark Manager
 =========================
 
-Manage your Chrome bookmarks with this plug in, old skool. It allows you manage bookmarks as if they were files in midnight commander.
-Link in Chrome Web Store : Soon; Waiting for approval
+Orthodox Bookmark Manager allow you to manage your Chrome bookmarks with a two panned window application.
+
+The two panned model allow you to be in two bookmark folders at the same time, and quickly move or copy from one place to another.
+
+This extension is specially designed to work efficiently with keyboards.
+Github link : https://github.com/gissehel/Bookmark-Commander
+Link in Chrome Web Store : https://chrome.google.com/webstore/detail/orthodox-bookmark-manager/kgakeednpdpkibnfappaljjcfgcekiho
 
 Fork
 ----
