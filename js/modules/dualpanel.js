@@ -21,6 +21,14 @@ dualPanel.init = () => {
     dualPanel.redraw();
 }
 
+dualPanel.hide = () => {
+    dualPanel.element.classList.add('hidden');
+}
+
+dualPanel.show = () => {
+    dualPanel.element.classList.remove('hidden');
+}
+
 dualPanel.redraw = () => {
     const panelIds = [...Array(data.panelHeight).keys()];
     const function_keys =

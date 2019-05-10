@@ -33,6 +33,10 @@
     background: rgb(0, 0, 128);
 }
 
+.hidden {
+    display: none;
+}
+
 .border,
 .menu,
 .fcode,

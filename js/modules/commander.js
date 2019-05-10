@@ -374,7 +374,7 @@ commander.view = () => {
     commander.viewing = !commander.viewing;
 
     if (commander.viewing) {
-        commander.backup = document.body.innerHTML;
+        dualPanel.hide();
 
         const panel = commander.left.active ? commander.left : commander.right;
         const id = document.getElementById(panel.prefix + panel.selected).commander.id;
@@ -385,7 +385,8 @@ commander.view = () => {
             commander.viewing = false;
         }
     } else {
-        document.body.innerHTML = commander.backup;
+        dualPanel.show();
+        viewer.remove();
 
         //we require it for decorating the elements, kludgy, I know
         commander.draw();
@@ -396,7 +397,7 @@ commander.view = () => {
 
 /* EDIT */
 commander.edit = () => {
-    commander.backup = document.body.innerHTML;
+    dualPanel.hide();
 
     const panel = commander.left.active ? commander.left : commander.right;
 
@@ -414,7 +415,6 @@ commander.edit = () => {
 
 /* MENU */
 commander.menu = () => {
-    commander.backup = document.body.innerHTML;
     [...document.getElementsByClassName('selected')].forEach(element=>element.classList.remove('selected'));
     menu.key_mapping_builder.activate();
     menu.show();

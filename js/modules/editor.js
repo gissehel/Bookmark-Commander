@@ -53,20 +53,24 @@ editor.view = (id) => {
     }
     editor.bookmark.content = content;
 
-    document.body.innerHTML = sum([
-        `<pre id='editorScreen'>`,
-        `<span id='menu' class='menu'>${("  Folder/Bookmark").extend()}</span>\n`,
-        `<textarea class='blue' cols='${data.screenWidth - 2}' rows='3' id='title'>${bookmark.title}</textarea>\n`,
+    editor.element = document.createElement('pre');
+    editor.element.id = 'editorScreen';
+
+    editor.element.innerHTML = sum([
+        `<span id='editorMenu' class='menu'>${("  Folder/Bookmark").extend()}</span>\n`,
+        `<textarea class='blue' cols='${data.screenWidth - 2}' rows='3' id='editorTitle'>${bookmark.title}</textarea>\n`,
         `<span class='menu'>${("  URL").extend()}</span>\n`,
-        `<textarea class='blue' cols='${(data.screenWidth - 2)}' rows='${(data.panelHeight)}' id='url'${editor.urlReadOnly}>${content}</textarea>\n`,
+        `<textarea class='blue' cols='${(data.screenWidth - 2)}' rows='${(data.panelHeight)}' id='editorUrl'${editor.urlReadOnly}>${content}</textarea>\n`,
         ...editor.function_keys.map(f => `<span class='fcode'>F${f.id}</span><span class='menu'>${f.description}</span><span class='fcode'> </span>`),
-        `<span id='end' class='fcode'>${" ".repeat(data.screenWidth - 91)}</span>\n`,
+        `<span id='editorEnd' class='fcode'>${" ".repeat(data.screenWidth - 91)}</span>\n`,
     ]);
 
-    editor.menu = document.getElementById('menu');
-    editor.url = document.getElementById('url');
-    editor.end = document.getElementById('end');
-    editor.title = document.getElementById('title');
+    document.body.appendChild(editor.element);
+
+    editor.menu = document.getElementById('editorMenu');
+    editor.url = document.getElementById('editorUrl');
+    editor.end = document.getElementById('editorEnd');
+    editor.title = document.getElementById('editorTitle');
 
     // Ugly quirk, because width in columns for a textarea isn't enought
     const width = editor.menu.offsetWidth;
@@ -80,6 +84,13 @@ editor.view = (id) => {
     title.focus();
     const position = title.value.length * 2;
     title.setSelectionRange(position, position);
+}
+
+editor.remove = () => {
+    if (editor.element) {
+        document.body.removeChild(editor.element);
+        editor.element = null;
+    }
 }
 
 editor.considerTextAreas = () => {
@@ -158,7 +169,7 @@ editor.condense = (url) => {
 
 //TODO, ask whether the user wants to save ?
 editor.quit = () => {
-    document.body.innerHTML = commander.backup;
+    editor.remove();
 
     //We need to reinit (reread bookmarks from Chome ) if we changed something
     if (editor.saved) {
@@ -168,5 +179,7 @@ editor.quit = () => {
     }
     commander.key_mapping_builder.activate();
     commander.editing = false;
+
+    dualPanel.show();
 }
 

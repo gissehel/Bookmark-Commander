@@ -132,10 +132,13 @@ menu.show = () => {
     [...document.getElementsByClassName('topMenuItem')].forEach(element=>element.classList.remove('fcode'));
     document.getElementById('menu_'+menu.current.caption).classList.add('fcode');
 
+    
     //Highlight the selected menu entry
     const menuItem = document.getElementById('menuItem_'+menu.selection);
-    menuItem.classList.remove('menu');
-    menuItem.classList.add('fcode');
+    if (menuItem) {
+        menuItem.classList.remove('menu');
+        menuItem.classList.add('fcode');
+    }
     
 }
 

@@ -47,9 +47,11 @@ viewer.view = (id) => {
         content = js_beautify(content, { 'indent_size': 2 });
     }
 
-    document.body.innerHTML = sum([
-        "<pre id='viewerScreen'>",
-        `<span id='menu' class='menu'>${findBookmarkTitle(id).extend()}</span>\n`,
+    viewer.element = document.createElement('pre');
+    viewer.element.id = 'viewerScreen';
+
+    viewer.element.innerHTML = sum([
+        `<span id='viewerMenu' class='menu'>${findBookmarkTitle(id).extend()}</span>\n`,
         `<textarea class='blue' cols='${data.screenWidth - 2}' rows='3' readonly='readonly'>${bookmark.title}</textarea>\n`,
         `<span class='menu'>${"  URL".extend()}</span>\n`,
         `<textarea class='blue' cols='${data.screenWidth - 2}' rows='${data.panelHeight}' readonly='readonly'>${content}</textarea>\n`,
@@ -57,12 +59,20 @@ viewer.view = (id) => {
         `<span id='end' class='fcode'>${" ".repeat(data.screenWidth - 91)}</span>\n`,
     ]);
 
+    document.body.appendChild(viewer.element);
 
     // Ugly quirk, because width in columns for a textarea isn't enought
-    const width = document.getElementById('menu').offsetWidth;
+    const width = document.getElementById('viewerMenu').offsetWidth;
     [...document.getElementsByTagName('textarea')].map(element => element.style.width = width);
 
     viewer.key_mapping_builder.activate();
+}
+
+viewer.remove = () => {
+    if (viewer.element) {
+        document.body.removeChild(viewer.element);
+        viewer.element = null;
+    }
 }
 
 viewer.test = () => {
