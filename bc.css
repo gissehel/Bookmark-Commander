@@ -8,6 +8,13 @@
   blue      : rgb(   0,   0, 128 )
 */
 
+body {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+}
+
 #calibre {
     display: inline-block;
 }
@@ -16,14 +23,26 @@
     position: absolute;
     top: 0px;
     left: 0px;
-    margin: 0px 0px 0px 0px;
+    margin: 2px;
     display: none;
     z-index: 1;
+}
+
+#dropdown.off {
+    display: none;
+}
+#dropdown.on {
+    display: block;
+}
+
+#currentMenu {
+    margin: 0px 0px 0px 0px;
 }
 
 #editorScreen textarea,
 #viewerScreen textarea {
     font: inherit;
+    vertical-align: top;
 }
 
 #editorScreen,
@@ -126,11 +145,6 @@ pre {
     background: rgb(0, 128, 128);
 }
 
-.selected {
-    color: rgb(0, 0, 0);
-    background: rgb(0, 128, 128);
-}
-
 .paars {
     color: rgb(223, 0, 255);
 }
@@ -144,6 +158,11 @@ pre {
     background: rgb(0, 0, 128);
 }
 
+.selected {
+    color: rgb(0, 0, 0);
+    background: rgb(0, 128, 128);
+}
+
 .fcode {
     color: rgb(192, 192, 192);
     background: rgb(0, 0, 0);
@@ -153,9 +172,8 @@ pre {
     color: rgb(255, 255, 0);
 }
 
-/* Vera font for textarea's did not work for textarea's b*/
 textarea {
-    font-family: "Lucida Console", Monaco, monospace;
+    font-family: monospace;
     font-size: inherit;
     -webkit-appearance: textfield;
     padding: 0px 0px 0px 0px;
@@ -230,9 +248,4 @@ blink {
     border-bottom-width: 2px;
     border-bottom-style: solid;
     z-index: 5;
-}
-
-hidden {
-    color: green;
-    opacity: 0;
 }

@@ -53,33 +53,27 @@ const handleClickDoubleClick = (() => {
 mouse.init = () => {
     document.body.addEventListener('wheel', mouse.scroll);
 
+    $(".leftItem").live("click",
+        (e) => {
+            const n = e.srcElement.id.substring(4);
+            handleClickDoubleClick(e.currentTarget, () => commander.on_left_click(n), () => commander.on_left_dblclick(n));
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            return true;
+        }
+    )
 
-    //We go for each item and give it a mouse click event listener
-    //Note the very cool 'live' which means listener also counts for newly created divs
-    //which happens all the time in bookmark commander
-    //if an item was already clicked then we assume the user wants to execute it (delve)
-    for (let i = 0; i < data.panelHeight; i++) {
-        $("#left" + i).live("click",
-            (e) => {
-                const n = e.srcElement.id.substring(4);
-                handleClickDoubleClick(e.currentTarget, () => commander.on_left_click(n), () => commander.on_left_dblclick(n));
-                e.preventDefault();
-                e.stopPropagation();
-                e.stopImmediatePropagation();
-                return true;
-            }
-        )
-        $("#rite" + i).live("click",
-            (e) => {
-                const n = e.srcElement.id.substring(4);
-                handleClickDoubleClick(e.currentTarget, () => commander.on_right_click(n), () => commander.on_right_dblclick(n));
-                e.preventDefault();
-                e.stopPropagation();
-                e.stopImmediatePropagation();
-                return true;
-            }
-        )
-    }
+    $(".riteItem").live("click",
+        (e) => {
+            const n = e.srcElement.id.substring(4);
+            handleClickDoubleClick(e.currentTarget, () => commander.on_right_click(n), () => commander.on_right_dblclick(n));
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            return true;
+        }
+    )
 
     // Ugly, but less ugly than having a bunch of XXXXXX in a <hidden> elements with opacity 0 for formatting reasons,
     //  that hijack the clicks.

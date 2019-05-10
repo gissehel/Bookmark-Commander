@@ -14,10 +14,7 @@ dualPanel.init = () => {
         data.doubleBar = "=";
     }
 
-    const element = document.createElement('pre');
-    element.id = 'dualPanel';
-    document.body.appendChild(element);
-    dualPanel.element = element;
+    dualPanel.element = createElement('pre', { id: 'dualPanel' }, { appendTo: document.body });
     dualPanel.redraw();
 }
 
@@ -50,8 +47,8 @@ dualPanel.redraw = () => {
         "<span class='border'>",
         "<span id='h1'><span id='leftroot'></span><span id='riteroot'></span></span>\n",
         ...panelIds.map((counter) => sum([
-            `║<span id='left${counter}' class='border'>${" ".repeat(data.panelWidth)}</span>║`,
-            `║<span id='rite${counter}' class='border'>${" ".repeat(data.panelWidth)}</span>║`,
+            `║<span id='left${counter}' class='leftItem border'>${" ".repeat(data.panelWidth)}</span>║`,
+            `║<span id='rite${counter}' class='riteItem border'>${" ".repeat(data.panelWidth)}</span>║`,
             "\n",
         ])),
         `<span>╠${data.doubleBar.repeat(data.panelWidth)}╩╩${data.doubleBar.repeat(data.panelWidth)}╣</span>\n`,

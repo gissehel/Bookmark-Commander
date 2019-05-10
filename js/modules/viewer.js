@@ -47,23 +47,27 @@ viewer.view = (id) => {
         content = js_beautify(content, { 'indent_size': 2 });
     }
 
-    viewer.element = document.createElement('pre');
-    viewer.element.id = 'viewerScreen';
+    viewer.element = createElement('pre', {
+        id: 'viewerScreen',
+        innerHTML: sum([
+            `<span id='viewerMenu' class='menu'>${findBookmarkTitle(id).extend()}</span>\n`,
+            `<textarea class='blue' cols='${data.screenWidth}' rows='3' id='viewerTitle' readonly='readonly'>${bookmark.title}</textarea>\n`,
+            `<span class='menu'>${"  URL".extend()}</span>\n`,
+            `<textarea class='blue' cols='${data.screenWidth}' rows='${data.panelHeight}' id='viewerUrl' readonly='readonly'>${content}</textarea>\n`,
+            ...viewer.function_keys.map(f => `<span class='fcode'> F${f.id}</span><span class='menu'>${f.description}</span><span class='fcode'></span>`),
+            `<span id='end' class='fcode'>${" ".repeat(data.screenWidth - 91)}</span>\n`,
+        ]),
+    }, { appendTo: document.body });
 
-    viewer.element.innerHTML = sum([
-        `<span id='viewerMenu' class='menu'>${findBookmarkTitle(id).extend()}</span>\n`,
-        `<textarea class='blue' cols='${data.screenWidth - 2}' rows='3' readonly='readonly'>${bookmark.title}</textarea>\n`,
-        `<span class='menu'>${"  URL".extend()}</span>\n`,
-        `<textarea class='blue' cols='${data.screenWidth - 2}' rows='${data.panelHeight}' readonly='readonly'>${content}</textarea>\n`,
-        ...viewer.function_keys.map(f => `<span class='fcode'> F${f.id}</span><span class='menu'>${f.description}</span><span class='fcode'></span>`),
-        `<span id='end' class='fcode'>${" ".repeat(data.screenWidth - 91)}</span>\n`,
-    ]);
-
-    document.body.appendChild(viewer.element);
+    viewer.url = document.getElementById('viewerUrl');
+    viewer.title = document.getElementById('viewerTitle');
 
     // Ugly quirk, because width in columns for a textarea isn't enought
-    const width = document.getElementById('viewerMenu').offsetWidth;
-    [...document.getElementsByTagName('textarea')].map(element => element.style.width = width);
+    viewer.title.style.width = data.screenWidth * data.calibreWidth;
+    viewer.title.style.height = 3 * data.calibreHeight;
+    
+    viewer.url.style.width = data.screenWidth * data.calibreWidth;
+    viewer.url.style.height = data.panelHeight * data.calibreHeight;
 
     viewer.key_mapping_builder.activate();
 }

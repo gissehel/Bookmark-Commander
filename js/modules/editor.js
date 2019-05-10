@@ -53,19 +53,19 @@ editor.view = (id) => {
     }
     editor.bookmark.content = content;
 
-    editor.element = document.createElement('pre');
-    editor.element.id = 'editorScreen';
-
-    editor.element.innerHTML = sum([
-        `<span id='editorMenu' class='menu'>${("  Folder/Bookmark").extend()}</span>\n`,
-        `<textarea class='blue' cols='${data.screenWidth - 2}' rows='3' id='editorTitle'>${bookmark.title}</textarea>\n`,
-        `<span class='menu'>${("  URL").extend()}</span>\n`,
-        `<textarea class='blue' cols='${(data.screenWidth - 2)}' rows='${(data.panelHeight)}' id='editorUrl'${editor.urlReadOnly}>${content}</textarea>\n`,
-        ...editor.function_keys.map(f => `<span class='fcode'>F${f.id}</span><span class='menu'>${f.description}</span><span class='fcode'> </span>`),
-        `<span id='editorEnd' class='fcode'>${" ".repeat(data.screenWidth - 91)}</span>\n`,
-    ]);
-
-    document.body.appendChild(editor.element);
+    editor.element = createElement('pre',{
+        id: 'editorScreen',
+        innerHTML: sum([
+            `<span id='editorMenu' class='menu'>${("  Folder/Bookmark").extend()}</span>\n`,
+            `<textarea class='blue' cols='${data.screenWidth}' rows='3' id='editorTitle'>${bookmark.title}</textarea>\n`,
+            `<span class='menu'>${("  URL").extend()}</span>\n`,
+            `<textarea class='blue' cols='${(data.screenWidth)}' rows='${(data.panelHeight)}' id='editorUrl'${editor.urlReadOnly}>${content}</textarea>\n`,
+            `<span class='editorShortcutBar'>`,
+            ...editor.function_keys.map(f => `<span class='fcode'> F${f.id}</span><span class='menu'>${f.description}</span><span class='fcode'></span>`),
+            `<span id='editorEnd' class='fcode'>${" ".repeat(data.screenWidth - 91)}</span>\n`,
+            `</span>`,
+        ]),
+    }, {appendTo: document.body});
 
     editor.menu = document.getElementById('editorMenu');
     editor.url = document.getElementById('editorUrl');
@@ -73,9 +73,11 @@ editor.view = (id) => {
     editor.title = document.getElementById('editorTitle');
 
     // Ugly quirk, because width in columns for a textarea isn't enought
-    const width = editor.menu.offsetWidth;
-    editor.title.style.width = width;
-    editor.url.style.width = width;
+    editor.title.style.width = data.screenWidth * data.calibreWidth;
+    editor.title.style.height = 3 * data.calibreHeight;
+    
+    editor.url.style.width = data.screenWidth * data.calibreWidth;
+    editor.url.style.height = data.panelHeight * data.calibreHeight;
 
     editor.key_mapping_builder.activate();
 

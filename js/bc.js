@@ -81,11 +81,18 @@ const sum = function (array) {
     return array.reduce((acc, elem) => acc + elem);
 }
 
+const createElement = (name, properties, args) => {
+    const element = document.createElement(name);
+    Object.keys(properties).forEach(key => {
+        element[key] = properties[key];
+    })
+    args = args || {};
+    if (args.appendTo && args.appendTo.appendChild) {
+        args.appendTo.appendChild(element);
+    }
+    return element;
+}
+
 const iconURL = chrome.extension.getURL("/bc-16x16-l.png");
-const link = document.createElement("link");
-link.type = "image/x-icon";
-link.rel = "shortcut icon";
-link.href = iconURL;
-//this.docHead.appendChild(link);
-this.document.head.appendChild(link);
+const link = createElement("link", { type: 'image/x-icon', rel: 'shortcut icon', href: iconURL }, { appendTo: this.document.head });
 

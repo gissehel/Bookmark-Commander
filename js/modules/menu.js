@@ -5,7 +5,6 @@
 
 const menu = {};
 
-
 menu.getSubItem = (itemDescription) => {
     subItem = {};
 
@@ -34,7 +33,8 @@ menu.itemize = (item) => {
     let maxKeyText = Math.max(...item.items.map(subItem => subItem.key.length));
     let maxText = Math.max(...item.items.map(subItem => subItem.text.length));
 
-    const hidden = "<hidden>" + " ".repeat(indent) + "</hidden>";
+    // const hidden = "<hidden>" + " ".repeat(indent) + "</hidden>";
+    const hidden = '';
 
     item.items.forEach((subItem, subItemIndex) => {
         //Put some indenting in place and finalize the box
@@ -88,11 +88,7 @@ menu.assignIndent = () => {
 }
 
 menu.init = () => {
-    const dropdown = document.createElement('div');
-    dropdown.id = 'dropdown';
-    document.body.appendChild(dropdown);
-
-    menu.dropdown = dropdown;
+    menu.dropdown = createElement('div', { id: 'dropdown' }, { appendTo: document.body });
 
     menu.assignIndent();
     menu.assignLeftRights();
@@ -117,29 +113,32 @@ menu.show = () => {
     const current = menu.current;
 
     menu.dropdown.innerHTML = sum([
-        "<pre id='currentMenu' style='margin: 0px 0px 0px 0px'>\n\n",
+        "<pre id='currentMenu'>\n\n",
         current.menuStart,
         ...current.items.map(subItem => subItem.html),
         current.menuStop,
         "</pre>",
     ]);
 
-    menu.dropdown.style.display = "block"
+    menu.dropdown.style.left = current.indent * data.calibreWidth;
+
+    menu.dropdown.classList.remove('off');
+    menu.dropdown.classList.add('on');
     menu.isOut = true;
 
     //Color the name of the menu
-    [...document.getElementsByClassName('menuItem')].forEach(element=>element.classList.remove('fcode'));
-    [...document.getElementsByClassName('topMenuItem')].forEach(element=>element.classList.remove('fcode'));
-    document.getElementById('menu_'+menu.current.caption).classList.add('fcode');
+    [...document.getElementsByClassName('menuItem')].forEach(element => element.classList.remove('fcode'));
+    [...document.getElementsByClassName('topMenuItem')].forEach(element => element.classList.remove('fcode'));
+    document.getElementById('menu_' + menu.current.caption).classList.add('fcode');
 
-    
+
     //Highlight the selected menu entry
-    const menuItem = document.getElementById('menuItem_'+menu.selection);
+    const menuItem = document.getElementById('menuItem_' + menu.selection);
     if (menuItem) {
         menuItem.classList.remove('menu');
         menuItem.classList.add('fcode');
     }
-    
+
 }
 
 menu.goLeft = () => {
@@ -181,10 +180,11 @@ menu.goUp = () => {
 }
 
 menu.exit = () => {
-    menu.dropdown.style.display = "none"
+    menu.dropdown.classList.remove('on');
+    menu.dropdown.classList.add('off');
     menu.isOut = false;
-    [...document.getElementsByClassName('topMenuItem')].forEach(element=>element.classList.remove('fcode'));
-    [...document.getElementsByClassName('menuItem')].forEach(element=>element.classList.remove('fcode'));
+    [...document.getElementsByClassName('topMenuItem')].forEach(element => element.classList.remove('fcode'));
+    [...document.getElementsByClassName('menuItem')].forEach(element => element.classList.remove('fcode'));
 
     commander.reInit();
     commander.key_mapping_builder.activate();

@@ -85,7 +85,8 @@ commander.setPanel = (panelConfig) => {
         let line = document.getElementById(panelConfig.prefix + counter);
         if (line) {
             line.innerHTML = (" ".repeat(data.panelWidth));
-            line.setAttribute("class", "border");
+            line.classList.remove("selected");
+            line.classList.add("border");
         }
     }
 
@@ -114,7 +115,8 @@ commander.setPanel = (panelConfig) => {
         let child = children[counter + panelConfig.scroll];
         //Default bookmark prefix and style
         let prefix = " ";
-        let style = "border";
+        let isJs = false;
+        let isSelected = false;
 
         //This should never happen ™
         if (!child) {
@@ -139,11 +141,11 @@ commander.setPanel = (panelConfig) => {
 
         //Are we looking at a javascript ?
         if (child.url && child.url.startsWith("javascript")) {
-            style = "js"
+            isJs = true;
         }
         //If we look at the selected one the style is different
         if (counter == panelConfig.selected && panelConfig.active) {
-            style = "selected"
+            isSelected = true;
             //Lets also show the url
             if (child.url) {
                 let url = child.url.left(((data.panelWidth + 1) * 2)).extend((data.panelWidth + 1) * 2);
@@ -161,7 +163,16 @@ commander.setPanel = (panelConfig) => {
         const element = document.getElementById(panelConfig.prefix + counter);
 
         //set the style
-        element.setAttribute("class", style);
+        if (isJs) {
+            element.classList.add('js');
+        } else {
+            element.classList.remove('js');
+        }
+        if (isSelected) {
+            element.classList.add('selected');
+        } else {
+            element.classList.remove('selected');
+        }
 
         //Set the content
         let innerHTML = (prefix + child.title).extend(data.panelWidth);
@@ -231,7 +242,7 @@ commander.setInfoPanel = (panelConfig) => {
         const line = document.getElementById(panelConfig.prefix + counter);
         if (line) {
             line.innerHTML = (" ".repeat(data.panelWidth));
-            line.setAttribute("class", "border");
+            line.classList.remove('selected');
         }
     }
 

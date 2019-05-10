@@ -1,11 +1,7 @@
 const dataAccess = {};
 
 dataAccess.init = () => {
-    const calibre = document.createElement('pre');
-    calibre.id = 'calibre';
-    calibre.textContent = ' ';
-    document.body.appendChild(calibre);
-    dataAccess.calibre = calibre;
+    dataAccess.calibre = createElement('pre', { id: 'calibre', textContent: ' ' }, { appendTo: document.body });
 
     window.addEventListener('resize', (e) => dataAccess.onSizeChanged());
     dataAccess.reload();
@@ -33,14 +29,18 @@ dataAccess.onSizeChanged = () => {
     const calibre = dataAccess.calibre;
     const calibreRect = calibre.getBoundingClientRect();
     const body = document.body;
-    const bh = body.clientHeight;
-    const ch = calibreRect.height;
-    const bw = body.clientWidth;
-    const cw = calibreRect.width;
-    const nLines = Math.floor((bh - 12) / ch);
-    const nCols = Math.floor((bw - 4) / cw);
+    const bodyRect = body.getBoundingClientRect();
+    const bh = bodyRect.height;
+    const calibreHeight = calibreRect.height;
+    const bw = bodyRect.width;
+    const calibreWidth = calibreRect.width;
+    const nLines = Math.floor((bh - 4) / calibreHeight);
+    const nCols = Math.floor((bw - 4) / calibreWidth);
     data.screenWidth = Math.floor(nCols / 2) * 2;
     data.panelHeight = nLines - 6;
+    data.calibreWidth = calibreWidth;
+    data.calibreHeight = calibreHeight;
+    window.bodyRect=bodyRect;
 
     data.panelWidth = Math.floor((data.screenWidth - 4) / 2);
     data.screenHeight = data.panelHeight + 6;
