@@ -6,7 +6,7 @@ keyboard.init = () => {
     window.addEventListener('keyup', keyboard.onKeyUp);
 }
 
-keyboard.onKeyDown = (event) => {
+keyboard.onKeyDown = async (event) => {
     if (event.key === 'Shift' || event.key === 'Control' || event.key === 'Alt') {
         return;
     }
@@ -38,13 +38,15 @@ keyboard.onKeyDown = (event) => {
     }
 
     if (keyboard.key_mapping[code]) {
+        event.preventDefault();
+        event.stopPropagation();
+        await delay(1);
         keyboard.key_mapping[code](event);
-        event.preventDefault();
-        event.stopPropagation();
     } else if (keyboard.key_mapping[key]) {
-        keyboard.key_mapping[key](event);
         event.preventDefault();
         event.stopPropagation();
+        await delay(1);
+        keyboard.key_mapping[key](event);
     }
 };
 
