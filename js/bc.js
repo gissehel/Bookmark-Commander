@@ -105,6 +105,8 @@ const readyPromise = new Promise((resolve, reject)=>{
     }
 })
 
+const delay = (delay, data) => new Promise((resolve,reject) => setTimeout(()=>{resolve(data)}, delay));
+
 const iconURL = chrome.extension.getURL("/bc-16x16-l.png");
 const link = createElement("link", { type: 'image/x-icon', rel: 'shortcut icon', href: iconURL }, { appendTo: this.document.head });
 
