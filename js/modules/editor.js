@@ -53,7 +53,7 @@ editor.view = (id) => {
     }
     editor.bookmark.content = content;
 
-    editor.element = createElement('pre',{
+    editor.element = createElement('pre', {
         id: 'editorScreen',
         innerHTML: sum([
             `<span id='editorMenu' class='menu'>${("  Folder/Bookmark").extend()}</span>\n`,
@@ -65,7 +65,7 @@ editor.view = (id) => {
             `<span id='editorEnd' class='fcode'>${" ".repeat(data.screenWidth - 91)}</span>\n`,
             `</span>`,
         ]),
-    }, {appendTo: document.body});
+    }, { appendTo: document.body });
 
     editor.menu = document.getElementById('editorMenu');
     editor.url = document.getElementById('editorUrl');
@@ -75,7 +75,7 @@ editor.view = (id) => {
     // Ugly quirk, because width in columns for a textarea isn't enought
     editor.title.style.width = data.screenWidth * data.calibreWidth;
     editor.title.style.height = 3 * data.calibreHeight;
-    
+
     editor.url.style.width = data.screenWidth * data.calibreWidth;
     editor.url.style.height = data.panelHeight * data.calibreHeight;
 
@@ -118,7 +118,6 @@ editor.considerTextAreas = () => {
     }
 
     editor.changed = _changed;
-
 }
 
 editor.test = () => {
