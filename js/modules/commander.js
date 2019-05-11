@@ -426,7 +426,7 @@ commander.edit = () => {
 
 /* MENU */
 commander.menu = () => {
-    [...document.getElementsByClassName('selected')].forEach(element=>element.classList.remove('selected'));
+    [...document.getElementsByClassName('selected')].forEach(element => element.classList.remove('selected'));
     menu.key_mapping_builder.activate();
     menu.show();
 }
@@ -841,7 +841,7 @@ commander.selector = (panel) => {
     commander.draw();
 }
 
-commander.on_left_click = (n) => {
+commander.onLeftClick = (n) => {
     menu.exitIfOut();
     if (data.simpleClickOnSelectedItemDelve && commander.left.active && commander.left.selected == n) {
         commander.delve();
@@ -854,7 +854,7 @@ commander.on_left_click = (n) => {
     }
 }
 
-commander.on_right_click = (n) => {
+commander.onRightClick = (n) => {
     menu.exitIfOut();
     if (data.simpleClickOnSelectedItemDelve && commander.right.active && commander.right.selected == n) {
         commander.delve();
@@ -867,7 +867,7 @@ commander.on_right_click = (n) => {
     }
 }
 
-commander.on_left_dblclick = (n) => {
+commander.onLeftDoubleClick = (n) => {
     menu.exitIfOut();
     commander.left.info = false;
     commander.left.active = true;
@@ -877,7 +877,7 @@ commander.on_left_dblclick = (n) => {
     commander.delve();
 }
 
-commander.on_right_dblclick = (n) => {
+commander.onRightDoubleClick = (n) => {
     menu.exitIfOut();
     commander.right.info = false;
     commander.right.active = true;

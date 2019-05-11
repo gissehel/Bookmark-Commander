@@ -93,6 +93,18 @@ const createElement = (name, properties, args) => {
     return element;
 }
 
+const readyPromise = new Promise((resolve, reject)=>{
+    if (document.readyState === 'complete' || (document.readyState !== 'loading' && !document.documentElement.doScroll)) {
+        setTimeout(()=>resolve(), 1);
+    } else {
+        const onContentLoaded = () => {
+            resolve();
+            document.removeEventListener('DOMContentLoaded', onContentLoaded, false);
+        }
+        document.addEventListener('DOMContentLoaded', onContentLoaded, false);
+    }
+})
+
 const iconURL = chrome.extension.getURL("/bc-16x16-l.png");
 const link = createElement("link", { type: 'image/x-icon', rel: 'shortcut icon', href: iconURL }, { appendTo: this.document.head });
 

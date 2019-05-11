@@ -6,22 +6,22 @@
 mouse = {};
 
 const handleClickDoubleClick = (() => {
-    let handleClickDoubleClick_lastClick = null;
+    let lastClick = null;
 
     return (target, onClick, onDoubleClick) => {
-        if (handleClickDoubleClick_lastClick && handleClickDoubleClick_lastClick.target === target) {
-            if (handleClickDoubleClick_lastClick.timer) {
-                clearTimeout(handleClickDoubleClick_lastClick.timer);
+        if (lastClick && lastClick.target === target) {
+            if (lastClick.timer) {
+                clearTimeout(lastClick.timer);
             }
-            handleClickDoubleClick_lastClick = null;
+            lastClick = null;
 
             onDoubleClick();
         } else {
-            let lastOnClick = handleClickDoubleClick_lastClick && handleClickDoubleClick_lastClick.onClick;
-            if (handleClickDoubleClick_lastClick && handleClickDoubleClick_lastClick.timer) {
-                clearTimeout(handleClickDoubleClick_lastClick.timer);
+            let lastOnClick = lastClick && lastClick.onClick;
+            if (lastClick && lastClick.timer) {
+                clearTimeout(lastClick.timer);
             }
-            handleClickDoubleClick_lastClick = null;
+            lastClick = null;
 
             if (data.simpleClickOnSelectedItemDelve) {
                 if (lastOnClick) {
@@ -31,15 +31,13 @@ const handleClickDoubleClick = (() => {
                 onClick();
             }
 
-
-
-            handleClickDoubleClick_lastClick = {
+            lastClick = {
                 target,
                 timer: setTimeout(() => {
-                    if (handleClickDoubleClick_lastClick && handleClickDoubleClick_lastClick.timer) {
-                        clearTimeout(handleClickDoubleClick_lastClick.timer);
+                    if (lastClick && lastClick.timer) {
+                        clearTimeout(lastClick.timer);
                     }
-                    handleClickDoubleClick_lastClick = null;
+                    lastClick = null;
                     if (data.simpleClickOnSelectedItemDelve) {
                         onClick();
                     }
@@ -50,63 +48,36 @@ const handleClickDoubleClick = (() => {
     };
 })();
 
-mouse.init = () => {
-    document.body.addEventListener('wheel', mouse.scroll);
-
-    $(".leftItem").live("click",
-        (e) => {
-            const n = e.srcElement.id.substring(4);
-            handleClickDoubleClick(e.currentTarget, () => commander.on_left_click(n), () => commander.on_left_dblclick(n));
-            e.preventDefault();
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-            return true;
-        }
-    )
-
-    $(".riteItem").live("click",
-        (e) => {
-            const n = e.srcElement.id.substring(4);
-            handleClickDoubleClick(e.currentTarget, () => commander.on_right_click(n), () => commander.on_right_dblclick(n));
-            e.preventDefault();
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-            return true;
-        }
-    )
-
-    // Ugly, but less ugly than having a bunch of XXXXXX in a <hidden> elements with opacity 0 for formatting reasons,
-    //  that hijack the clicks.
-    $("hidden").live("click",
-        (e) => {
-            menu.exitIfOut();
-            return false;
-        }
-    )
-    $(".topMenuItem").live("click", (event) => {
-        const menuIndex = event.currentTarget.attributes['data-index'].value * 1;
+mouse.onClick = (event) => {
+    const { srcElement } = event;
+    if (srcElement.closest('.leftItem')) {
+        const n = srcElement.attributes['data-index'].value * 1;
+        handleClickDoubleClick(srcElement, () => commander.onLeftClick(n), () => commander.onLeftDoubleClick(n));
+    } else if (srcElement.closest('.riteItem')) {
+        const n = srcElement.attributes['data-index'].value * 1;
+        handleClickDoubleClick(srcElement, () => commander.onRightClick(n), () => commander.onRightDoubleClick(n));
+    } else if (srcElement.closest('.topMenuItem')) {
+        const menuIndex = srcElement.attributes['data-index'].value * 1;
         menu.current = menu.items[menuIndex];
         menu.selection = 0;
         commander.menu();
-    });
-    $(".menuItem").live("click",
-        (e) => {
-            const n = e.srcElement.id.slice("menuItem_".length) * 1;
-            if (menu.selection == n) {
-                const { shiftKey, ctrlKey, altKey } = e;
-                menu.dispatch({ shiftKey, ctrlKey, altKey });
-            } else {
-                menu.selection = n;
-                menu.show();
-            }
-        }
-    )
+    } else if (srcElement.closest('.menuItem')) {
+        const n = srcElement.attributes['data-index'].value * 1;
+        const { shiftKey, ctrlKey, altKey } = event;
+        const keys = { shiftKey, ctrlKey, altKey };
+        handleClickDoubleClick(n, () => menu.select(n), () => menu.dispatch(keys, n));
+    }
+}
+
+mouse.init = () => {
+    document.body.addEventListener('wheel', mouse.onScroll);
+    document.body.addEventListener('click', mouse.onClick);
 }
 
 /* If we ever get enough user feedback, we might change this
    to jump more than 1 entry per scrolly
 */
-mouse.scroll = (e) => {
+mouse.onScroll = (e) => {
     if (e.wheelDelta > 0) {
         //Go Up
         commander.up();

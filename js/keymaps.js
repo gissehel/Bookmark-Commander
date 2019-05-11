@@ -31,6 +31,7 @@ keyboard
     .add('ArrowUp', menu.goUp)
     .add('ArrowDown', menu.goDown)
     .add('Enter', menu.dispatch)
+    .add('Ctrl+Enter', menu.dispatch)
     .add('Escape', menu.exit)
     .add('F9', menu.exit)
     .add('Tab', () => { })

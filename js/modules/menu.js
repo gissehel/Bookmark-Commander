@@ -42,7 +42,7 @@ menu.itemize = (item) => {
             subItem.html = `${hidden}<span class='menu'>╠${data.doubleBar.repeat(maxText + maxKeyText + 2)}╣</span>\n`;
             subItem.isSep = true;
         } else {
-            subItem.html = `${hidden}<span class='menu'>║</span><span class='menu menuItem' id='menuItem_${subItemIndex}'> ${subItem.htmlName}${" ".repeat(maxText - subItem.text.length)}${subItem.key}${" ".repeat(maxKeyText + 1 - subItem.key.length)}</span><span class='menu'>║</span>\n`;
+            subItem.html = `${hidden}<span class='menu'>║</span><span class='menu menuItem' id='menuItem_${subItemIndex}' data-index='${subItemIndex}'> ${subItem.htmlName}${" ".repeat(maxText - subItem.text.length)}${subItem.key}${" ".repeat(maxKeyText + 1 - subItem.key.length)}</span><span class='menu'>║</span>\n`;
             subItem.isSep = false;
         }
 
@@ -109,7 +109,10 @@ menu.refresh = () => {
     }
 }
 
-menu.show = () => {
+menu.show = (n) => {
+    if (n !== undefined) {
+        menu.selection = n;
+    }
     const current = menu.current;
 
     menu.dropdown.innerHTML = sum([
@@ -131,26 +134,37 @@ menu.show = () => {
     [...document.getElementsByClassName('topMenuItem')].forEach(element => element.classList.remove('fcode'));
     document.getElementById('menu_' + menu.current.caption).classList.add('fcode');
 
-
     //Highlight the selected menu entry
     const menuItem = document.getElementById('menuItem_' + menu.selection);
     if (menuItem) {
-        menuItem.classList.remove('menu');
         menuItem.classList.add('fcode');
     }
+}
 
+menu.select = (n) => {
+    if (! menu.isOut) {
+        return;
+    }
+    if (n !== undefined) {
+        menu.selection = n;
+    }
+    const current = menu.current;
+    [...document.getElementsByClassName('menuItem')].forEach(element => element.classList.remove('fcode'));
+
+    const menuItem = document.getElementById('menuItem_' + menu.selection);
+    if (menuItem) {
+        menuItem.classList.add('fcode');
+    }
 }
 
 menu.goLeft = () => {
     menu.current = menu.current.left;
-    menu.selection = 0;
-    menu.show();
+    menu.show(0);
 }
 
 menu.goRight = () => {
     menu.current = menu.current.right;
-    menu.selection = 0;
-    menu.show();
+    menu.show(0);
 }
 
 menu.goDown = () => {
@@ -162,7 +176,7 @@ menu.goDown = () => {
     } else {
         menu.selection = 0;
     }
-    menu.show();
+    menu.select();
 }
 
 //Yes, this is an evil clone of goDown
@@ -176,7 +190,7 @@ menu.goUp = () => {
     } else {
         menu.selection = menu.current.items.length;
     }
-    menu.show();
+    menu.select();
 }
 
 menu.exit = () => {
@@ -196,7 +210,11 @@ menu.exitIfOut = () => {
     }
 }
 
-menu.dispatch = ({ shiftKey, ctrlKey, altKey }) => {
+menu.dispatch = ({ shiftKey, ctrlKey, altKey }, n) => {
+    console.log({ shiftKey, ctrlKey, altKey })
+    if (n !== undefined) {
+        menu.selection = n;
+    }
     const command = menuItem = menu.current.items[menu.selection].text.trim(' ');
 
     //We should always exit the menu

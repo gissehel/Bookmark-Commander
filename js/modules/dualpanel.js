@@ -47,8 +47,8 @@ dualPanel.redraw = () => {
         "<span class='border'>",
         "<span id='h1'><span id='leftroot'></span><span id='riteroot'></span></span>\n",
         ...panelIds.map((counter) => sum([
-            `║<span id='left${counter}' class='leftItem border'>${" ".repeat(data.panelWidth)}</span>║`,
-            `║<span id='rite${counter}' class='riteItem border'>${" ".repeat(data.panelWidth)}</span>║`,
+            `║<span id='left${counter}' class='leftItem border' data-index='${counter}'>${" ".repeat(data.panelWidth)}</span>║`,
+            `║<span id='rite${counter}' class='riteItem border' data-index='${counter}'>${" ".repeat(data.panelWidth)}</span>║`,
             "\n",
         ])),
         `<span>╠${data.doubleBar.repeat(data.panelWidth)}╩╩${data.doubleBar.repeat(data.panelWidth)}╣</span>\n`,
