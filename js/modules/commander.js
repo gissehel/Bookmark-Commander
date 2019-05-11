@@ -30,6 +30,9 @@ commander.initOrReInit = () => {
     });
 }
 
+commander.getActivePanel = () => commander.left.active ? commander.left : commander.right;
+commander.getInactivePanel = () => !commander.left.active ? commander.left : commander.right;
+
 /* HELPER, DRAW IT */
 commander.draw = () => {
     if (commander.left.id == "search") {
@@ -43,7 +46,7 @@ commander.draw = () => {
     }
 
     //First draw the active one
-    const panel = commander.left.active ? commander.left : commander.right;
+    const panel = commander.getActivePanel();
     commander.setPanel(panel);
     commander.setPanel(panel.other);
     //mouse.init();
@@ -312,7 +315,7 @@ commander.setInfoPanel = (panelConfig) => {
 
 /* TAB, SWAP */
 commander.swapPanel = () => {
-    let panel = commander.left.active ? commander.left : commander.right;
+    let panel = commander.getActivePanel();
     //Dont make an info panel active
     if (panel.other.info) {
         return;
@@ -325,7 +328,7 @@ commander.swapPanel = () => {
 
 /* Prelude to SELECT, ENTER */
 commander.delve = () => {
-    const panel = commander.left.active ? commander.left : commander.right;
+    const panel = commander.getActivePanel();
     const id = document.getElementById(panel.prefix + panel.selected).commander.id;
 
     if (panel.id != "tree") {
@@ -343,7 +346,7 @@ commander.delve = () => {
 
 /* SELECT, ENTER */
 commander.select = (index) => {
-    const panel = commander.left.active ? commander.left : commander.right;
+    const panel = commander.getActivePanel();
 
     //Do we want to select this for real ?
     const bookmark = findBookmarkId(commander.bookmarks, index);
@@ -387,7 +390,7 @@ commander.view = () => {
     if (commander.viewing) {
         dualPanel.hide();
 
-        const panel = commander.left.active ? commander.left : commander.right;
+        const panel = commander.getActivePanel();
         const id = document.getElementById(panel.prefix + panel.selected).commander.id;
 
         if (id != "0") {
@@ -410,7 +413,7 @@ commander.view = () => {
 commander.edit = () => {
     dualPanel.hide();
 
-    const panel = commander.left.active ? commander.left : commander.right;
+    const panel = commander.getActivePanel();
 
     if (panel.id == 0) {
         return;
@@ -433,7 +436,7 @@ commander.menu = () => {
 
 /* BACKSPACE */
 commander.back = () => {
-    const panel = commander.left.active ? commander.left : commander.right;
+    const panel = commander.getActivePanel();
 
     if (panel.id == "search") {
         return commander.select("0");
@@ -449,7 +452,7 @@ commander.back = () => {
 
 /* DOWN */
 commander.down = () => {
-    const panel = commander.left.active ? commander.left : commander.right;
+    const panel = commander.getActivePanel();
 
     if (panel.selected == data.panelHeight - 1) {
         panel.scroll++;
@@ -466,7 +469,7 @@ commander.down = () => {
 
 /* PAGE DOWN */
 commander.pageDown = () => {
-    const panel = commander.left.active ? commander.left : commander.right;
+    const panel = commander.getActivePanel();
 
     if (panel.selected < data.panelHeight - 1) {
         panel.selected = data.panelHeight - 1;
@@ -485,7 +488,7 @@ commander.pageDown = () => {
 /* UP */
 commander.up = () => {
     //Get active panel
-    const panel = commander.left.active ? commander.left : commander.right;
+    const panel = commander.getActivePanel();
     //if we are already physically in slot 0, see if we can still scroll up
     //Otherwise go up a physical slot
     if (panel.selected == 0) {
@@ -505,7 +508,7 @@ commander.up = () => {
 /* PAGE UP */
 commander.pageUp = () => {
     //Get active panel
-    const panel = commander.left.active ? commander.left : commander.right;
+    const panel = commander.getActivePanel();
     //if we are already physically in slot 0, see if we can still scroll up
     //Otherwise go up a physical slot
     if (panel.selected != 0) {
@@ -524,7 +527,7 @@ commander.pageUp = () => {
 
 /* HOME */
 commander.home = () => {
-    const panel = commander.left.active ? commander.left : commander.right;
+    const panel = commander.getActivePanel();
     panel.selected = 0;
     panel.scroll = 0;
     commander.draw();
@@ -532,7 +535,7 @@ commander.home = () => {
 
 /* END */
 commander.end = () => {
-    const panel = commander.left.active ? commander.left : commander.right;
+    const panel = commander.getActivePanel();
 
     if (panel.itemCount < data.panelHeight + 1) {
         panel.scroll = 0;
@@ -546,8 +549,8 @@ commander.end = () => {
 
 /* COPY */
 commander.copy = () => {
-    const from = commander.left.active ? commander.left : commander.right;
-    const to = !commander.left.active ? commander.left : commander.right;
+    const from = commander.getActivePanel();
+    const to = commander.getInactivePanel();
 
     if (to.id == "0") {
         alert("Can not copy bookmarks into the root")
@@ -614,11 +617,11 @@ commander.copySelection = (from, to) => {
 
 /* MOVE */
 commander.move = () => {
-    const panel = commander.left.active ? commander.left : commander.right;
+    const panel = commander.getActivePanel();
     const id = document.getElementById(panel.prefix + panel.selected).commander.id;
     const bookmark = findBookmarkId(commander.bookmarks, id);
 
-    const to = !commander.left.active ? commander.left : commander.right;
+    const to = commander.getInactivePanel();
 
     if (to.id == "0") {
         alert("Can not copy bookmarks into the root")
@@ -667,7 +670,7 @@ commander.moveSelection = (from, to) => {
 
 /* DELETE */
 commander.delete = () => {
-    const panel = commander.left.active ? commander.left : commander.right;
+    const panel = commander.getActivePanel();
     const id = document.getElementById(panel.prefix + panel.selected).commander.id;
     const bookmark = findBookmarkId(commander.bookmarks, id);
 
@@ -714,19 +717,36 @@ commander.deleteSelection = (from) => {
 
 /* CREATE FOLDER */
 commander.createFolder = () => {
-    const panel = commander.left.active ? commander.left : commander.right;
+    const panel = commander.getActivePanel();
     const folderText = prompt("Enter folder name", "");
 
     if (folderText) {
         const newBookmark = { parentId: panel.id, title: folderText };
-        chrome.bookmarks.create(newBookmark, commander.reInit);
+        chrome.bookmarks.create(newBookmark, (newItem) => {
+            chrome.bookmarks.getTree((bookmarks) => {
+                commander.bookmarks = bookmarks;
+                const bookmark = findBookmarkId(bookmarks, panel.id);
+                let nextSelected = null;
+                bookmark.children.map(child => child.id).forEach((id, pos) => {
+                    if (id === newItem.id) {
+                        nextSelected = pos + (panel.id === "0" ? 0 : 1);
+                    }
+                });
+                if (nextSelected !== null) {
+                    panel.selected = nextSelected;
+                    panel.scroll = 0;
+                    panel.selector = "";
+                }
+                commander.draw();
+            });
+        });
     }
 }
 
 /* EQUALIZE */
 commander.equalize = () => {
-    const active = commander.left.active ? commander.left : commander.right;
-    const sleepy = !commander.left.active ? commander.left : commander.right;
+    const active = commander.getActivePanel();
+    const sleepy = commander.getInactivePanel();
 
     sleepy.id = active.id;
     sleepy.selected = 0;
@@ -737,7 +757,7 @@ commander.equalize = () => {
 
 /* PLUS , MOVE UP */
 commander.moveUp = () => {
-    const panel = commander.left.active ? commander.left : commander.right;
+    const panel = commander.getActivePanel();
     const id = document.getElementById(panel.prefix + panel.selected).commander.id;
     const bookmark = findBookmarkId(commander.bookmarks, id);
 
@@ -765,7 +785,7 @@ commander.moveUp = () => {
 
 /* DOWN, MOVE DOWN */
 commander.moveDown = () => {
-    const panel = commander.left.active ? commander.left : commander.right;
+    const panel = commander.getActivePanel();
     const id = document.getElementById(panel.prefix + panel.selected).commander.id;
     let bookmark = findBookmarkId(commander.bookmarks, id);
 
@@ -802,7 +822,7 @@ commander.search = (searchText) => {
         }
     }
     chrome.bookmarks.search(searchText, (o) => {
-        const panel = commander.left.active ? commander.left : commander.right;
+        const panel = commander.getActivePanel();
         panel.id = "search";
         commander.results = o;
         commander.query = searchText;
@@ -813,7 +833,7 @@ commander.search = (searchText) => {
 /* FILTER */
 commander.filter = (panel) => {
     if (!panel) {
-        panel = commander.left.active ? commander.left : commander.right;
+        panel = commander.getActivePanel();
     }
 
     panel.filter = prompt("Enter filter string", panel.filter); //"" is the default
@@ -827,7 +847,7 @@ commander.filter = (panel) => {
 commander.selector = (panel) => {
     //Panel will actually be an event when called via the '*' key
     if (panel instanceof KeyboardEvent) {
-        panel = commander.left.active ? commander.left : commander.right;
+        panel = commander.getActivePanel();
     }
 
     if (!panel.selector) {
