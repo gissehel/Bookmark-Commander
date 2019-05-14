@@ -326,6 +326,16 @@ commander.swapPanel = () => {
     commander.draw();
 }
 
+commander.swapPanels = () => {
+    const temp = commander.left;
+    commander.left = commander.right;
+    commander.right = temp;
+
+    //This is unfortunate, a 'clever' hack bleeding thru
+    commander.left.prefix = "left";
+    commander.right.prefix = "rite";
+}
+
 /* Prelude to SELECT, ENTER */
 commander.delve = () => {
     const panel = commander.getActivePanel();
@@ -860,6 +870,32 @@ commander.selector = (panel) => {
 
     commander.draw();
 }
+
+commander.setInfo = (panel) => {
+    panel.other.info = false;
+    panel.other.active = true;
+    panel.info = true;
+    panel.active = false;
+}
+
+commander.setList = (panel) => {
+    panel.info = false;
+
+    if (panel.id == "tree") {
+        const id = document.getElementById(panel.prefix + panel.selected).commander.id;
+        commander.select(id);
+    }
+}
+
+commander.setTree =(panel) => {
+    panel.info = false;
+    panel.id = "tree"
+}
+
+commander.sortBookmarksByDate = (panel, ctrlKey) => sortBookmarks(panel.id, null, sortByDateFunction, ctrlKey)
+commander.sortBookmarksAlphabetically = (panel, ctrlKey) => sortBookmarks(panel.id, null, sortByNameFunction, ctrlKey)
+commander.sortBookmarksByLength = (panel, ctrlKey) => sortBookmarks(panel.id, null, sortByLengthFunction, ctrlKey)
+
 
 commander.onLeftClick = (n) => {
     menu.exitIfOut();

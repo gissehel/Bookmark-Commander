@@ -48,25 +48,37 @@ const handleClickDoubleClick = (() => {
     };
 })();
 
-mouse.onClick = (event) => {
-    const { srcElement } = event;
-    if (srcElement.closest('.leftItem')) {
-        const n = srcElement.attributes['data-index'].value * 1;
-        handleClickDoubleClick(srcElement, () => commander.onLeftClick(n), () => commander.onLeftDoubleClick(n));
-    } else if (srcElement.closest('.riteItem')) {
-        const n = srcElement.attributes['data-index'].value * 1;
-        handleClickDoubleClick(srcElement, () => commander.onRightClick(n), () => commander.onRightDoubleClick(n));
-    } else if (srcElement.closest('.topMenuItem')) {
-        const menuIndex = srcElement.attributes['data-index'].value * 1;
+mouse.onClickActions = {
+    '.leftItem': (element) => {
+        const n = element.attributes['data-index'].value * 1;
+        handleClickDoubleClick(element, () => commander.onLeftClick(n), () => commander.onLeftDoubleClick(n));
+    },
+    '.riteItem': (element) => {
+        const n = element.attributes['data-index'].value * 1;
+        handleClickDoubleClick(element, () => commander.onRightClick(n), () => commander.onRightDoubleClick(n));
+    },
+    '.topMenuItem': (element) => {
+        const menuIndex = element.attributes['data-index'].value * 1;
         menu.current = menu.items[menuIndex];
         menu.selection = 0;
         commander.menu();
-    } else if (srcElement.closest('.menuItem')) {
-        const n = srcElement.attributes['data-index'].value * 1;
+    },
+    '.menuItem': (element) => {
+        const n = element.attributes['data-index'].value * 1;
         const { shiftKey, ctrlKey, altKey } = event;
         const keys = { shiftKey, ctrlKey, altKey };
         handleClickDoubleClick(n, () => menu.select(n), () => menu.dispatch(keys, n));
-    }
+    },
+}
+
+mouse.onClick = (event) => {
+    const { srcElement } = event;
+    Object.keys(mouse.onClickActions).forEach((selector)=>{
+        let element = srcElement.closest(selector);
+        if (element) {
+            mouse.onClickActions[selector](element);
+        }
+    });
 }
 
 mouse.init = () => {

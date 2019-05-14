@@ -5,60 +5,59 @@
 
 const menu = {};
 
-menu.getSubItem = (itemDescription) => {
+menu.formatSubItem = (itemData) => {
     subItem = {};
 
-    const textKey = itemDescription.split("|")
-
-    const text = textKey[0];
-    subItem.key = textKey[1] ? textKey[1] : "";
-
-    const prePost = text.split("&")
-
-    if (prePost.length == 2) {
-        subItem.htmlName = prePost[0] + "<span class='speed'>" + prePost[1].left(1) + "</span>" + prePost[1].substring(1);
+    if (itemData.isSep) {
+        subItem.isSep = true;
     } else {
-        subItem.htmlName = text.remove("&");
+        const text = itemData.title;
+        subItem.key = itemData.shortCut ? itemData.shortCut : "";
+
+        const prePost = text.split("&")
+
+        if (prePost.length == 2) {
+            subItem.htmlName = prePost[0] + "<span class='speed'>" + prePost[1].left(1) + "</span>" + prePost[1].substring(1);
+        } else {
+            subItem.htmlName = text.remove("&");
+        }
+
+        subItem.text = text.remove("&");
+        subItem.command = itemData.command;
     }
 
-    subItem.text = text.remove("&")
     return subItem;
 }
 
 menu.itemize = (item) => {
-    const { indent, itemsDescription } = item;
+    const { itemsData } = item;
 
-    item.items = itemsDescription.split(",").map(menu.getSubItem);
+    item.items = itemsData.map(menu.formatSubItem);
 
-    let maxKeyText = Math.max(...item.items.map(subItem => subItem.key.length));
-    let maxText = Math.max(...item.items.map(subItem => subItem.text.length));
+    let maxKeyText = Math.max(...item.items.filter(subItem => !subItem.isSep).map(subItem => subItem.key.length));
+    let maxText = Math.max(...item.items.filter(subItem => !subItem.isSep).map(subItem => subItem.text.length));
 
-    // const hidden = "<hidden>" + " ".repeat(indent) + "</hidden>";
-    const hidden = '';
+    if (maxKeyText > 0) {
+        maxText += 1;
+    }
+
+    item.menuStart = "<span class='menu'>╔" + data.doubleBar.repeat(maxText + maxKeyText + 2) + "╗</span>\n";
 
     item.items.forEach((subItem, subItemIndex) => {
-        //Put some indenting in place and finalize the box
-        if (subItem.text == "_") {
-            subItem.html = `${hidden}<span class='menu'>╠${data.doubleBar.repeat(maxText + maxKeyText + 2)}╣</span>\n`;
-            subItem.isSep = true;
+        if (subItem.isSep) {
+            subItem.html = `<span class='menu'>╠${data.doubleBar.repeat(maxText + maxKeyText + 2)}╣</span>\n`;
         } else {
-            subItem.html = `${hidden}<span class='menu'>║</span><span class='menu menuItem' id='menuItem_${subItemIndex}' data-index='${subItemIndex}'> ${subItem.htmlName}${" ".repeat(maxText - subItem.text.length)}${subItem.key}${" ".repeat(maxKeyText + 1 - subItem.key.length)}</span><span class='menu'>║</span>\n`;
-            subItem.isSep = false;
+            subItem.html = `<span class='menu'>║</span><span class='menu menuItem' id='menuItem_${subItemIndex}' data-index='${subItemIndex}'> ${subItem.htmlName}${" ".repeat(maxText - subItem.text.length)}${subItem.key}${" ".repeat(maxKeyText + 1 - subItem.key.length)}</span><span class='menu'>║</span>\n`;
         }
-
     });
 
-    item.menuStart = hidden + "<span class='menu'>╔" + data.doubleBar.repeat(maxText + maxKeyText + 2) + "╗</span>\n";
-    item.menuStop = hidden + "<span class='menu'>╚" + data.doubleBar.repeat(maxText + maxKeyText + 2) + "╝</span>\n";
+    item.menuStop = "<span class='menu'>╚" + data.doubleBar.repeat(maxText + maxKeyText + 2) + "╝</span>\n";
 
     item.maxKeyText = maxKeyText;
     item.maxText = maxText;
 }
 
 const fontSizes = [...Array(11).keys()].map(x => 10 + x);
-const fontSizesText = fontSizes.map(size => [`${size}px`, size]);
-const fontSizesInMenu = fontSizesText.map(x => x[0]).join(',');
-const fontSizesChange = pairToObject(fontSizesText.map(([label, size]) => [label, () => dataAccess.setSize(size)]));
 
 menu.assignLeftRights = () => {
     let { items } = menu;
@@ -142,7 +141,7 @@ menu.show = (n) => {
 }
 
 menu.select = (n) => {
-    if (! menu.isOut) {
+    if (!menu.isOut) {
         return;
     }
     if (n !== undefined) {
@@ -215,110 +214,166 @@ menu.dispatch = ({ shiftKey, ctrlKey, altKey }, n) => {
     if (n !== undefined) {
         menu.selection = n;
     }
-    const command = menuItem = menu.current.items[menu.selection].text.trim(' ');
-
-    //We should always exit the menu
-    //So no code required for Rescan since menu.exit rescans automatically
-    menu.exit();
-
-    //pre-work reduces rework
-    const panel = (menu.current.caption == "Left") ? commander.left : commander.right;
-    const id = panel.id;
-
-    if (command == "Help") commander.help();
-    if (command == "Mirror") commander.equalize();
-    if (command == "View") commander.view();
-    if (command == "Edit") commander.edit();
-    if (command == "Copy") commander.copy();
-    if (command == "Move") commander.move();
-    if (command == "Create Folder") commander.createFolder();
-    if (command == "Delete") commander.delete();
-    if (command == "Quit") commander.quit();
-    if (command == "Move up") commander.moveUp();
-    if (command == "Move Down") commander.moveDown();
-    if (command == "Search") commander.search();
-
-    if (command == "Sort by Date") sortBookmarks(id, null, sortByDateFunction, ctrlKey)
-    if (command == "Sort Alphabetically") sortBookmarks(id, null, sortByNameFunction, ctrlKey)
-    if (command == "Sort by Length") sortBookmarks(id, null, sortByLengthFunction, ctrlKey)
-
-    if (command == "Info") {
-        panel.other.info = false;
-        panel.other.active = true;
-        panel.info = true;
-        panel.active = false;
+    const action = menuItem = menu.current.items[menu.selection].command;
+    let panel;
+    if (menu.current.getPanel) {
+        panel = menu.current.getPanel();
+    } else {
+        panel = commander.getActivePanel();
     }
-
-    if (command == "List") {
-        panel.info = false;
-
-        if (panel.id == "tree") {
-            const id = document.getElementById(panel.prefix + panel.selected).commander.id;
-            commander.select(id);
-        }
+    if (action) {
+        menu.exit();
+        action({ panel, shiftKey, ctrlKey, altKey });
+        commander.reInit();
+        return;
     }
-
-    if (command == "Swap panels") {
-        const temp = commander.left;
-        commander.left = commander.right;
-        commander.right = temp;
-
-        //This is unfortunate, a 'clever' hack bleeding thru
-        commander.left.prefix = "left";
-        commander.right.prefix = "rite";
-    }
-
-    /* Note the different calls according to File vs. Left/Right */
-    if (command == "Filter") {
-        if (menu.current.caption == "File") {
-            commander.filter();
-        } else {
-            commander.filter(panel);
-        }
-    }
-
-    if (command == "Select") {
-        if (menu.current.caption == "File") {
-            commander.selector();
-        } else {
-            commander.selector(panel);
-        }
-    }
-
-    if (command == "Tree") {
-        panel.info = false;
-        panel.id = "tree"
-    }
-
-    if (command == "Options") {
-        options.show();
-    }
-    if (fontSizesChange[command] !== undefined) {
-        fontSizesChange[command]();
-    }
-    commander.reInit();
 }
+
+const sideMenuItemsData = [
+    {
+        title: "&List",
+        command: ({ panel }) => commander.setList(panel),
+    },
+    {
+        title: "&Info",
+        command: ({ panel }) => commander.setInfo(panel),
+    },
+    {
+        title: "&Tree",
+        command: ({ panel }) => commander.setTree(panel),
+    },
+    { isSep: true },
+    {
+        title: "Sort by &Date",
+        command: ({ panel, ctrlKey }) => commander.sortBookmarksByDate(panel, ctrlKey),
+    },
+    {
+        title: "&Sort by Length",
+        command: ({ panel, ctrlKey }) => commander.sortBookmarksByLength(panel, ctrlKey),
+    },
+    {
+        title: "Sort &Alphabetically",
+        command: ({ panel, ctrlKey }) => commander.sortBookmarksAlphabetically(panel, ctrlKey),
+    },
+    { isSep: true },
+    {
+        title: "&Filter",
+        shortCut: "/",
+        command: ({ panel }) => commander.filter(panel),
+    },
+    {
+        title: "Select",
+        shortCut: "*",
+        command: ({ panel }) => commander.selector(panel),
+    },
+    { isSep: true },
+    {
+        title: "&Rescan",
+        shortCut: "C-r",
+        command: () => { },
+    },
+];
 
 menu.items = [
     {
         caption: "Left",
-        itemsDescription: "&List,&Info,&Tree,_,Sort by &Date,&Sort by Length,Sort &Alphabetically,_,&Filter|/,Select|*,_,&Rescan|C-r",
+        getPanel: () => commander.left,
+        itemsData: sideMenuItemsData,
     },
     {
         caption: "File",
-        itemsDescription: "&Help|F1,Mirror|F2,View|F3,Edit|F4,Copy|F5,Move|F6,Create Folder |F7,Delete|F8,Quit|F10,_,Move up|+,Move down|-,Select|*,Filter|/",
+        itemsData: [
+            {
+                title: "&Help",
+                shortCut: "F1",
+                command: () => commander.help(),
+            },
+            {
+                title: "Mirror",
+                shortCut: "F2",
+                command: () => commander.equalize(),
+            },
+            {
+                title: "View",
+                shortCut: "F3",
+                command: () => commander.view(),
+            },
+            {
+                title: "Edit",
+                shortCut: "F4",
+                command: () => commander.edit(),
+            },
+            {
+                title: "Copy",
+                shortCut: "F5",
+                command: () => commander.copy(),
+            },
+            {
+                title: "Move",
+                shortCut: "F6",
+                command: () => commander.move(),
+            },
+            {
+                title: "Create Folder",
+                shortCut: "F7",
+                command: () => commander.createFolder(),
+            },
+            {
+                title: "Delete",
+                shortCut: "F8",
+                command: () => commander.delete(),
+            },
+            {
+                title: "Quit",
+                shortCut: "F10",
+                command: () => commander.quit(),
+            },
+            {
+                title: "Move up",
+                shortCut: "+",
+                command: () => commander.moveUp(),
+            },
+            {
+                title: "Move down",
+                shortCut: "-",
+                command: () => commander.moveDown(),
+            },
+            {
+                title: "Select",
+                shortCut: "*",
+                command: () => commander.selector(),
+            },
+            {
+                title: "Filter",
+                shortCut: "/",
+                command: () => commander.filter(),
+            },
+        ],
     },
     {
         caption: "Command",
-        itemsDescription: "&Search,S&wap panels",
+        itemsData: [
+            {
+                title: "&Search",
+                command: () => commander.search(),
+            },
+            {
+                title: "S&wap panels",
+                command: () => commander.swapPanels(),
+            },
+        ],
     },
     {
         caption: "Options",
-        itemsDescription: fontSizesInMenu,
+        itemsData: [...Array(11).keys()].map(x => 10 + x).map(size => ({
+            title: `${size}px`,
+            command: () => dataAccess.setSize(size),
+        })),
     },
     {
         caption: "Right",
-        itemsDescription: "&List,&Info,&Tree,_,Sort by &Date,&Sort by Length,Sort &Alphabetically,_,&Filter|/,Select|*,_,&Rescan|C-r",
-    }
+        getPanel: () => commander.right,
+        itemsData: sideMenuItemsData,
+    },
 ];
 
