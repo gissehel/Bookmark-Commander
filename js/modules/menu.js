@@ -47,7 +47,6 @@ menu.itemize = (item) => {
         maxText += 1;
     }
 
-    console.log({maxText,maxKeyText})
     item.menuStart = "<span class='menu'>╔" + data.doubleBar.repeat(maxText + maxKeyText + 2) + "╗</span>\n";
 
     item.items.forEach((subItem, subItemIndex) => {
@@ -218,7 +217,6 @@ menu.exitIfOut = () => {
 }
 
 menu.dispatch = ({ shiftKey, ctrlKey, altKey }, n) => {
-    console.log({ shiftKey, ctrlKey, altKey })
     if (n !== undefined) {
         menu.selection = n;
     }

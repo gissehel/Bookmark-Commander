@@ -40,7 +40,6 @@ class MenuBuilder {
         this._current = null;
         this._definition = [];
         this._menu.setDefinition(this._definition);
-        console.log('x');
     }
 
     addMenu(caption) {
