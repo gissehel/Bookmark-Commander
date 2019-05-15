@@ -37,10 +37,17 @@ menu.itemize = (item) => {
     let maxKeyText = Math.max(...item.items.filter(subItem => !subItem.isSep).map(subItem => subItem.key.length));
     let maxText = Math.max(...item.items.filter(subItem => !subItem.isSep).map(subItem => subItem.text.length));
 
+    if (maxKeyText === -Infinity) {
+        maxKeyText = 0;
+    }
+    if (maxText === -Infinity) {
+        maxText = 0;
+    }
     if (maxKeyText > 0) {
         maxText += 1;
     }
 
+    console.log({maxText,maxKeyText})
     item.menuStart = "<span class='menu'>╔" + data.doubleBar.repeat(maxText + maxKeyText + 2) + "╗</span>\n";
 
     item.items.forEach((subItem, subItemIndex) => {
@@ -59,23 +66,21 @@ menu.itemize = (item) => {
 
 const fontSizes = [...Array(11).keys()].map(x => 10 + x);
 
-menu.assignLeftRights = () => {
-    let { items } = menu;
-    const len = items.length;
+menu.assignLeftRights = (definition) => {
+    const len = definition.length;
     for (let index = 0; index < len; index++) {
         leftIndex = (index + len - 1) % len;
         rightIndex = (index + 1) % len;
-        items[index].left = items[leftIndex];
-        items[index].right = items[rightIndex];
+        definition[index].left = definition[leftIndex];
+        definition[index].right = definition[rightIndex];
     }
 }
 
-menu.assignIndent = () => {
-    let { items } = menu;
+menu.assignIndent = (definition) => {
     let titleText = "";
     let titleHtml = "";
 
-    items.forEach((item, itemIndex) => {
+    definition.forEach((item, itemIndex) => {
         item.indent = titleText.length + 1;
 
         titleHtml += ` <span class="topMenuItem" id="menu_${item.caption}" data-index='${itemIndex}'> ${item.caption} </span>  `;
@@ -89,12 +94,15 @@ menu.assignIndent = () => {
 menu.init = () => {
     menu.dropdown = createElement('div', { id: 'dropdown' }, { appendTo: document.body });
 
-    menu.assignIndent();
-    menu.assignLeftRights();
+    const definition = menu.definition || [{caption:'None', itemsData:[{title:'None', command:()=>{}}]}];
+    menu.definition = definition;
 
-    menu.items.forEach(item => menu.itemize(item));
+    menu.assignIndent(definition);
+    menu.assignLeftRights(definition);
 
-    menu.current = menu.items[0];
+    definition.forEach(item => menu.itemize(item));
+
+    menu.current = definition[0];
     menu.selection = 0;
 
     menu.isOut = false;
@@ -229,151 +237,17 @@ menu.dispatch = ({ shiftKey, ctrlKey, altKey }, n) => {
     }
 }
 
-const sideMenuItemsData = [
-    {
-        title: "&List",
-        command: ({ panel }) => commander.setList(panel),
-    },
-    {
-        title: "&Info",
-        command: ({ panel }) => commander.setInfo(panel),
-    },
-    {
-        title: "&Tree",
-        command: ({ panel }) => commander.setTree(panel),
-    },
-    { isSep: true },
-    {
-        title: "Sort by &Date",
-        command: ({ panel, ctrlKey }) => commander.sortBookmarksByDate(panel, ctrlKey),
-    },
-    {
-        title: "&Sort by Length",
-        command: ({ panel, ctrlKey }) => commander.sortBookmarksByLength(panel, ctrlKey),
-    },
-    {
-        title: "Sort &Alphabetically",
-        command: ({ panel, ctrlKey }) => commander.sortBookmarksAlphabetically(panel, ctrlKey),
-    },
-    { isSep: true },
-    {
-        title: "&Filter",
-        shortCut: "/",
-        command: ({ panel }) => commander.filter(panel),
-    },
-    {
-        title: "Select",
-        shortCut: "*",
-        command: ({ panel }) => commander.selector(panel),
-    },
-    { isSep: true },
-    {
-        title: "&Rescan",
-        shortCut: "C-r",
-        command: () => { },
-    },
-];
+menu.setDefinition = (definition) => menu.definition = definition;
 
-menu.items = [
-    {
-        caption: "Left",
-        getPanel: () => commander.left,
-        itemsData: sideMenuItemsData,
-    },
-    {
-        caption: "File",
-        itemsData: [
-            {
-                title: "&Help",
-                shortCut: "F1",
-                command: () => commander.help(),
-            },
-            {
-                title: "Mirror",
-                shortCut: "F2",
-                command: () => commander.equalize(),
-            },
-            {
-                title: "View",
-                shortCut: "F3",
-                command: () => commander.view(),
-            },
-            {
-                title: "Edit",
-                shortCut: "F4",
-                command: () => commander.edit(),
-            },
-            {
-                title: "Copy",
-                shortCut: "F5",
-                command: () => commander.copy(),
-            },
-            {
-                title: "Move",
-                shortCut: "F6",
-                command: () => commander.move(),
-            },
-            {
-                title: "Create Folder",
-                shortCut: "F7",
-                command: () => commander.createFolder(),
-            },
-            {
-                title: "Delete",
-                shortCut: "F8",
-                command: () => commander.delete(),
-            },
-            {
-                title: "Quit",
-                shortCut: "F10",
-                command: () => commander.quit(),
-            },
-            {
-                title: "Move up",
-                shortCut: "+",
-                command: () => commander.moveUp(),
-            },
-            {
-                title: "Move down",
-                shortCut: "-",
-                command: () => commander.moveDown(),
-            },
-            {
-                title: "Select",
-                shortCut: "*",
-                command: () => commander.selector(),
-            },
-            {
-                title: "Filter",
-                shortCut: "/",
-                command: () => commander.filter(),
-            },
-        ],
-    },
-    {
-        caption: "Command",
-        itemsData: [
-            {
-                title: "&Search",
-                command: () => commander.search(),
-            },
-            {
-                title: "S&wap panels",
-                command: () => commander.swapPanels(),
-            },
-        ],
-    },
-    {
-        caption: "Options",
-        itemsData: [...Array(11).keys()].map(x => 10 + x).map(size => ({
-            title: `${size}px`,
-            command: () => dataAccess.setSize(size),
-        })),
-    },
-    {
-        caption: "Right",
-        getPanel: () => commander.right,
-        itemsData: sideMenuItemsData,
-    },
-];
+menu.open = (menuIndex) => {
+    menu.current = menu.definition[menuIndex];
+    menu.selection = 0;
+    commander.menu();
+}
 
+menu.build = () => {
+    if (menu._builder === undefined) {
+        menu._builder = new MenuBuilder(menu);
+    }
+    return menu._builder;
+}

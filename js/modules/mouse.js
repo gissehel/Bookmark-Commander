@@ -59,9 +59,7 @@ mouse.onClickActions = {
     },
     '.topMenuItem': (element) => {
         const menuIndex = element.attributes['data-index'].value * 1;
-        menu.current = menu.items[menuIndex];
-        menu.selection = 0;
-        commander.menu();
+        menu.open(menuIndex);
     },
     '.menuItem': (element) => {
         const n = element.attributes['data-index'].value * 1;
