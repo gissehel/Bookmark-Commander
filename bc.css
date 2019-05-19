@@ -157,64 +157,66 @@ pre {
     font-size: 20px;
 }
 
-
-.border {
-    color: rgb(192, 192, 192);
-    background: rgb(0, 0, 128);
-}
-
-.blue {
-    color: rgb(255, 255, 255);
-    background: rgb(0, 0, 128);
-}
-
-.menu {
-    color: rgb(0, 0, 0);
-    background: rgb(0, 128, 128);
-}
-
-#popupContent,
-.options {
-    color: rgb(0, 0, 0);
-    background: rgb(192, 192, 192);
-}
-
+.blue,
 .white {
     color: rgb(255, 255, 255);
-    background: rgb(0, 128, 128);
 }
 
-.paars {
-    color: rgb(223, 0, 255);
+.formItem.fcode,
+.menu,
+.options,
+#popupContent,
+.selected {
+    color: rgb(0, 0, 0);
 }
 
+.popupTitle {
+    color: rgb(0, 0, 128);
+}
+
+.border,
+.fcode {
+    color: rgb(192, 192, 192);
+}
+
+.speed,
 .yellow {
     color: rgb(255, 255, 0);
 }
 
 .js {
     color: rgb(0, 255, 0);
+}
+
+.paars {
+    color: rgb(223, 0, 255);
+}
+
+.options,
+#popupContent {
+    background: rgb(192, 192, 192);
+}
+
+.blue,
+.border,
+.js {
     background: rgb(0, 0, 128);
 }
 
-.selected {
-    color: rgb(0, 0, 0);
+.formItem.fcode,
+.menu,
+.selected,
+.white {
     background: rgb(0, 128, 128);
 }
 
 .fcode {
-    color: rgb(192, 192, 192);
     background: rgb(0, 0, 0);
-}
-
-.speed {
-    color: rgb(255, 255, 0);
 }
 
 textarea {
     font-family: monospace;
     font-size: inherit;
-    -webkit-appearance: textfield;
     padding: 0px 0px 0px 0px;
     margin: 0px 0px 0px 0px;
     border: 0px;
@@ -222,69 +224,4 @@ textarea {
     overflow-x: hidden;
     outline: none;
     resize: none;
-}
-
-/*Not sure this is required*/
-::scrollbar {
-    height: 0px;
-    width: 0px;
-    background-color: inherit;
-}
-
-
-@keyframes blink {
-    0% {
-        opacity: 0
-    }
-
-    50% {
-        opacity: 0
-    }
-
-    50.01% {
-        opacity: 1
-    }
-
-    100% {
-        opacity: 1
-    }
-}
-
-@-webkit-keyframes underblink {
-    0% {
-        border-bottom-color: silver;
-    }
-
-    50% {
-        border-bottom-color: silver;
-    }
-
-    50.01% {
-        border-bottom-color: black;
-    }
-
-    100% {
-        border-bottom-color: black;
-    }
-}
-
-blink {
-    animation: blink 0.7s infinite linear alternate;
-    -webkit-font-smoothing: antialiased;
-}
-
-.blink {
-    animation: blink 0.7s infinite linear alternate;
-    -webkit-font-smoothing: antialiased;
-    color: orange;
-}
-
-.underblink {
-    animation: underblink 0.7s infinite linear alternate;
-    -webkit-font-smoothing: antialiased;
-    display: inline-block;
-    border-bottom-color: black;
-    border-bottom-width: 2px;
-    border-bottom-style: solid;
-    z-index: 5;
 }
