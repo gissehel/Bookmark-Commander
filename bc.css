@@ -15,6 +15,10 @@ body {
     overflow: hidden;
 }
 
+body.help {
+    overflow: visible;
+}
+
 #calibre {
     display: inline-block;
 }

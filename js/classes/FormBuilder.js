@@ -20,6 +20,37 @@ class FormGroupBuilder {
         return this;
     }
 
+    addLabel(value, props) {
+        let content = null;
+        let getter = null;
+        if (typeof (value) === 'function') {
+            getter = value;
+        } else {
+            content = value;
+        }
+        props = props || {};
+        let { selectable } = props;
+        selectable = selectable || false;
+        const item = {
+            type: 'label',
+            content,
+            getter,
+            selectable,
+        }
+        this._group.items.push(item);
+        return this;
+    }
+
+    addButton(title, onClick) {
+        const item = {
+            type: 'button',
+            title,
+            onClick,
+        }
+        this._group.items.push(item);
+        return this;
+    }
+
     addCombo(title, getValues, getter, setter) {
         const item = {
             type: 'checkbox',
@@ -39,7 +70,7 @@ class FormGroupBuilder {
 
 class FormBuilder {
     constructor() {
-        this._form = { groups: [] };
+        this._form = { groups: [], result: { ok: true, cancel: true } };
     }
 
     setName(id, name) {
@@ -58,11 +89,13 @@ class FormBuilder {
         return formGroupBuilder;
     }
 
+    disableCancel() {
+        this.form.result.cancel = false;
+        return this;
+    }
+
     register(options) {
         options.setPopupContent(this.form);
         return null;
     }
 }
-
-
-

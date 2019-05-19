@@ -41,3 +41,15 @@ options
     .endGroup()
     .register(options)
     ;
+
+options
+    .newForm('about', 'About')
+    .addGroup(null)
+    .addLabel(' Orthodox Bookmark Manager ')
+    .addLabel(() => ` Version ${commander.getVersion()} `)
+    .addLabel('')
+    .addButton('Help', commander.help)
+    .endGroup()
+    .disableCancel()
+    .register(options)
+    ;

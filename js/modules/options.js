@@ -46,7 +46,12 @@ options.show = (popupId) => {
             }
         });
         options.selected = null;
-        options.select(Object.keys(options.formIds)[0]);
+        const defaultIds = Object.keys(options.formIds).filter((dataId)=>options.formIds[dataId] && options.formIds[dataId].type === 'button' && options.formIds[dataId].default);
+        if (defaultIds.length === 1) {
+            options.select(defaultIds[0]);
+        } else {
+            options.select(Object.keys(options.formIds)[0]);
+        }
         options.key_mapping_builder.activate();
     } else {
         options.close();
@@ -94,6 +99,21 @@ options.getFormContent = () => {
                                                     .setGetter(item.getter)
                                                     .setSetter(item.setter)
                                                     .register(options.formIds);
+                                            case 'label':
+                                                return new LabelWidget()
+                                                    .setContent(item.content)
+                                                    .setGetter(item.getter)
+                                                    .setSelectable(item.selectable)
+                                                    .setId(options.getNextId())
+                                                    .register(options.formIds);
+                                            case 'button':
+                                                return new CenteredWidget().setChild(
+                                                    new ButtonWidget()
+                                                        .setTitle(item.title)
+                                                        .setOnClick(item.onClick)
+                                                        .setId(options.getNextId())
+                                                        .register(options.formIds)
+                                                );
                                         }
                                         return null;
                                     })
@@ -106,19 +126,23 @@ options.getFormContent = () => {
                         new StackRightWidget()
                             .setChildSpace(0)
                             .add(
-                                new ButtonWidget()
-                                    .setTitle('Ok')
-                                    .setId(options.getNextId())
-                                    .setDefault(true)
-                                    .setOnClick(() => options.validate())
-                                    .register(options.formIds)
+                                options.current.result.ok ?
+                                    new ButtonWidget()
+                                        .setTitle('Ok')
+                                        .setId(options.getNextId())
+                                        .setDefault(true)
+                                        .setOnClick(() => options.validate())
+                                        .register(options.formIds)
+                                    : null
                             )
                             .add(
-                                new ButtonWidget()
-                                    .setTitle('Cancel')
-                                    .setId(options.getNextId())
-                                    .setOnClick(() => options.cancel())
-                                    .register(options.formIds)
+                                options.current.result.cancel ?
+                                    new ButtonWidget()
+                                        .setTitle('Cancel')
+                                        .setId(options.getNextId())
+                                        .setOnClick(() => options.cancel())
+                                        .register(options.formIds)
+                                    : null
                             )
                     )
             )
@@ -183,7 +207,6 @@ options.activate = (dataId) => {
             options.select(dataId);
         }
     }
-
 
     const formInfo = options.formIds[dataId];
     if (formInfo) {

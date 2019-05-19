@@ -11,6 +11,8 @@ commander.right.other = commander.left;
 commander.bookmarks = {};
 commander.viewing = false;
 commander.editing = false;
+commander.manifest = null;
+
 
 /****
  **
@@ -887,7 +889,7 @@ commander.setList = (panel) => {
     }
 }
 
-commander.setTree =(panel) => {
+commander.setTree = (panel) => {
     panel.info = false;
     panel.id = "tree"
 }
@@ -895,6 +897,10 @@ commander.setTree =(panel) => {
 commander.sortBookmarksByDate = (panel, ctrlKey) => sortBookmarks(panel.id, null, sortByDateFunction, ctrlKey)
 commander.sortBookmarksAlphabetically = (panel, ctrlKey) => sortBookmarks(panel.id, null, sortByNameFunction, ctrlKey)
 commander.sortBookmarksByLength = (panel, ctrlKey) => sortBookmarks(panel.id, null, sortByLengthFunction, ctrlKey)
+
+commander.getVersion = () => (commander.manifest && commander.manifest.version) || '...';
+
+commander.about = () => options.show('about');
 
 
 commander.onLeftClick = (n) => {
@@ -942,4 +948,13 @@ commander.onRightDoubleClick = (n) => {
     commander.draw();
     commander.delve();
 }
+
+fetch('./manifest.json')
+    .then((response) => {
+        if (response.status != 200) {
+            throw new Error(`No 200 status : [${response.status}]`);
+        };
+        return response.json();
+    })
+    .then((manifest) => commander.manifest = manifest)
 
