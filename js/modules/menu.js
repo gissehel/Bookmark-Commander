@@ -198,7 +198,7 @@ menu.goUp = () => {
             menu.goUp();
         }
     } else {
-        menu.selection = menu.current.items.length;
+        menu.selection = menu.current.items.length - 1;
     }
     menu.select();
 }
