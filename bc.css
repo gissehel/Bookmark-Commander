@@ -166,7 +166,7 @@ pre {
 .menu,
 .options,
 #popupContent,
-.selected {
+.border.selected {
     color: rgb(0, 0, 0);
 }
 
