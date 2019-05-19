@@ -51,9 +51,9 @@ class FramedTitleWidget extends Widget {
         }
         let titleLine = null;
         if (this.title.length + 4 <= width) {
-            titleLine = `╔ ${this.title} ${data.doubleBar.repeat(width - (this.title.length + 4))}╗`;
+            titleLine = `╔ <span class='popupTitle'>${this.title}</span> ${data.doubleBar.repeat(width - (this.title.length + 4))}╗`;
         } else if (4 <= width) {
-            titleLine = `╔ ${this.title.slice(0, (this.title.length + 4) - width + 1)} ╗`;
+            titleLine = `╔ <span class='popupTitle'>${this.title.slice(0, (this.title.length + 4) - width + 1)}</span> ╗`;
         } else {
             titleLine = `╔${' '.repeat(width - 2)}╗`;
         }
