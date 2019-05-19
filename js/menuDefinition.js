@@ -40,7 +40,7 @@ menu
 menu
     .build()
     .addMenu('Command')
-    .addItem('&Search', commander.search)
+    .addItem('&Search', () => commander.search())
     .addItem('S&wap panels', commander.swapPanels)
     .addSep()
     .addItem('&About', commander.about)

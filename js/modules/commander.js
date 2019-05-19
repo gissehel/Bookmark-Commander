@@ -826,19 +826,23 @@ commander.moveDown = () => {
 
 /* SEARCH */
 commander.search = (searchText) => {
-    if (!searchText) {
-        if (commander.query) {
-            searchText = commander.query;
-        } else {
-            searchText = prompt("Enter search string", ""); //"" is the default
+    delay(1).then(() => {
+        if (!searchText) {
+            if (commander.query) {
+                searchText = commander.query;
+            } else {
+                searchText = prompt("Enter search string", ""); //"" is the default
+            }
         }
-    }
-    chrome.bookmarks.search(searchText, (o) => {
-        const panel = commander.getActivePanel();
-        panel.id = "search";
-        commander.results = o;
-        commander.query = searchText;
-        commander.draw();
+        if (searchText) {
+            chrome.bookmarks.search(searchText, (o) => {
+                const panel = commander.getActivePanel();
+                panel.id = "search";
+                commander.results = o;
+                commander.query = searchText;
+                commander.draw();
+            });
+        }
     });
 }
 
