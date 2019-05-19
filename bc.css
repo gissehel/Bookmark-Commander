@@ -50,11 +50,15 @@ body.help {
     vertical-align: top;
 }
 
+#editorScreen textarea.changed,
+#viewerScreen textarea.changed {
+    font-weight: bold;
+}
+
 #editorScreen,
 #viewerScreen,
 #dualPanel {
     position: absolute;
-    background: rgb(0, 0, 128);
 }
 
 #popup {
@@ -179,6 +183,9 @@ pre {
     color: rgb(192, 192, 192);
 }
 
+#editorScreen textarea.changed,
+#viewerScreen textarea.changed,
+.statusWarning,
 .speed,
 .yellow {
     color: rgb(255, 255, 0);
@@ -197,6 +204,9 @@ pre {
     background: rgb(192, 192, 192);
 }
 
+#editorScreen,
+#viewerScreen,
+#dualPanel,
 .blue,
 .border,
 .js {

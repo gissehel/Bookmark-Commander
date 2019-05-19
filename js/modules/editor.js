@@ -104,17 +104,17 @@ editor.considerTextAreas = () => {
     //Consider the title
     if (titleElement.value != editor.bookmark.title) {
         _changed = true;
-        titleElement.style.fontStyle = "italic"
+        titleElement.classList.add('changed');
     } else {
-        titleElement.style.fontStyle = "normal"
+        titleElement.classList.remove('changed');
     }
 
     //Consider the url
     if (urlElement.value != editor.bookmark.content) {
         _changed = true;
-        urlElement.style.fontStyle = "italic"
+        urlElement.classList.add('changed');
     } else {
-        urlElement.style.fontStyle = "normal"
+        urlElement.classList.remove('changed');
     }
 
     editor.changed = _changed;
@@ -136,7 +136,7 @@ editor.save = () => {
 
     editor.saved = true;
 
-    editor.end.innerHTML = ("<span style='color: yellow'>" + ("SAVED!").extend(data.screenWidth - 91) + "</span>");
+    editor.end.innerHTML = ("<span class='statusWarning'>" + ("SAVED!").extend(data.screenWidth - 91) + "</span>");
 
     editor.bookmark = o;
 
