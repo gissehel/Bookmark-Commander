@@ -31,6 +31,7 @@ body {
 #dropdown.off {
     display: none;
 }
+
 #dropdown.on {
     display: block;
 }
@@ -52,15 +53,48 @@ body {
     background: rgb(0, 0, 128);
 }
 
+#popup {
+    display: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 100;
+}
+
+#popup.displayed {
+    display: block;
+}
+
+#popupContent {
+    background-color: aqua;
+    display: inline-block;
+    position: relative;
+}
+
 .hidden {
     display: none;
 }
 
+#popup,
 .border,
 .menu,
 .fcode,
 .menuItem {
     user-select: none;
+}
+
+.changed {
+    font-weight: bold;
+}
+
+.leftItem,
+.riteItem,
+.topMenuItem,
+.menuItem,
+.formItem {
+    cursor: pointer;
 }
 
 pre {
@@ -135,6 +169,7 @@ pre {
     background: rgb(0, 128, 128);
 }
 
+#popupContent,
 .options {
     color: rgb(0, 0, 0);
     background: rgb(192, 192, 192);

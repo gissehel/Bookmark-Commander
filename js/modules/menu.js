@@ -147,11 +147,15 @@ menu.show = (n) => {
     }
 }
 
-menu.select = (n) => {
+menu.select = (keys, n) => {
     if (!menu.isOut) {
         return;
     }
     if (n !== undefined) {
+        if (data.simpleClickOnSelectedItemToActivate && menu.selection === n) {
+            menu.dispatch(keys, n);
+            return;
+        }
         menu.selection = n;
     }
     const current = menu.current;

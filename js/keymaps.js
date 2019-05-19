@@ -69,4 +69,15 @@ keyboard
     .add('/', commander.filter)
     ;
 
+keyboard
+    .addMapping(options)
+    .add('Escape', options.cancel)
+    .add('Enter', options.validate)
+    .add('Space', () => options.activate())
+    .add('ArrowLeft', options.goPrev)
+    .add('ArrowRight', options.goNext)
+    .add('ArrowUp', options.goPrev)
+    .add('ArrowDown', options.goNext)
+    ;
+
 

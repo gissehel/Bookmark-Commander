@@ -23,7 +23,7 @@ const handleClickDoubleClick = (() => {
             }
             lastClick = null;
 
-            if (data.simpleClickOnSelectedItemDelve) {
+            if (data.simpleClickOnSelectedItemToActivate) {
                 if (lastOnClick) {
                     lastOnClick();
                 }
@@ -38,7 +38,7 @@ const handleClickDoubleClick = (() => {
                         clearTimeout(lastClick.timer);
                     }
                     lastClick = null;
-                    if (data.simpleClickOnSelectedItemDelve) {
+                    if (data.simpleClickOnSelectedItemToActivate) {
                         onClick();
                     }
                 }, data.doubleClickTimeout),
@@ -65,8 +65,12 @@ mouse.onClickActions = {
         const n = element.attributes['data-index'].value * 1;
         const { shiftKey, ctrlKey, altKey } = event;
         const keys = { shiftKey, ctrlKey, altKey };
-        handleClickDoubleClick(n, () => menu.select(n), () => menu.dispatch(keys, n));
+        handleClickDoubleClick(n, () => menu.select(keys, n), () => menu.dispatch(keys, n));
     },
+    '.formItem': (element) => {
+        const dataId = element.attributes['data-id'].value;
+        handleClickDoubleClick(dataId, () => options.select(dataId), () => options.activate(dataId));
+    }
 }
 
 mouse.onClick = (event) => {

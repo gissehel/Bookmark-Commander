@@ -8,5 +8,5 @@ data.shouldReplaceHBar = false;
 data.doubleBar = "═";
 data.screenHeight = data.panelHeight + 6;
 data.doubleClickTimeout = 200;
-data.simpleClickOnSelectedItemDelve = false;
+data.simpleClickOnSelectedItemToActivate = false;
 

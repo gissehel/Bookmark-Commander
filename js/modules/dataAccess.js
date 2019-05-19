@@ -11,18 +11,18 @@ dataAccess.reload = () => {
     if (localStorage.size) {
         dataAccess._setSize(localStorage.size);
     } else {
-        dataAccess._setSize("12");
+        dataAccess._setSize("18");
     }
-    if (localStorage.simpleClickOnSelectedItemDelve === 'true') {
-        data.simpleClickOnSelectedItemDelve = true;
+    if (localStorage.simpleClickOnSelectedItemToActivate === 'true') {
+        data.simpleClickOnSelectedItemToActivate = true;
     } else {
-        dataAccess.simpleClickOnSelectedItemDelve(false);
+        dataAccess.simpleClickOnSelectedItemToActivate(false);
     }
 };
 
-dataAccess.simpleClickOnSelectedItemDelve = (bool) => {
-    data.simpleClickOnSelectedItemDelve = bool;
-    localStorage.simpleClickOnSelectedItemDelve = `${data.simpleClickOnSelectedItemDelve}`;
+dataAccess.simpleClickOnSelectedItemToActivate = (bool) => {
+    data.simpleClickOnSelectedItemToActivate = bool;
+    localStorage.simpleClickOnSelectedItemToActivate = `${data.simpleClickOnSelectedItemToActivate}`;
 }
 
 dataAccess.onSizeChanged = () => {
@@ -40,7 +40,7 @@ dataAccess.onSizeChanged = () => {
     data.panelHeight = nLines - 6;
     data.calibreWidth = calibreWidth;
     data.calibreHeight = calibreHeight;
-    window.bodyRect=bodyRect;
+    // window.bodyRect = bodyRect;
 
     data.panelWidth = Math.floor((data.screenWidth - 4) / 2);
     data.screenHeight = data.panelHeight + 6;

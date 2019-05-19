@@ -899,7 +899,7 @@ commander.sortBookmarksByLength = (panel, ctrlKey) => sortBookmarks(panel.id, nu
 
 commander.onLeftClick = (n) => {
     menu.exitIfOut();
-    if (data.simpleClickOnSelectedItemDelve && commander.left.active && commander.left.selected == n) {
+    if (data.simpleClickOnSelectedItemToActivate && commander.left.active && commander.left.selected == n) {
         commander.delve();
     } else {
         commander.left.info = false;
@@ -912,7 +912,7 @@ commander.onLeftClick = (n) => {
 
 commander.onRightClick = (n) => {
     menu.exitIfOut();
-    if (data.simpleClickOnSelectedItemDelve && commander.right.active && commander.right.selected == n) {
+    if (data.simpleClickOnSelectedItemToActivate && commander.right.active && commander.right.selected == n) {
         commander.delve();
     } else {
         commander.right.info = false;

@@ -77,7 +77,7 @@ const pairToObject = function (array) {
     }, {});
 }
 
-const sum = function (array) {
+const sum = (array) => {
     return array.reduce((acc, elem) => acc + elem);
 }
 

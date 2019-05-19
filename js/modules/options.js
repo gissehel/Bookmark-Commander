@@ -1,110 +1,202 @@
-/*
-  Bookmark Commander by Tom J Demuyt is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
-  Permissions beyond the scope of this license are available by contacting konijn@gmail.com
-*/
+const options = {};
 
-/*
-Removed from bc.html as it doesn't work anyway
-    <!--
-    <div id="options" class="options"
-        style="position: absolute; top: 0px ; left : 0px;margin: 0px 0px 0px 0px; display: none;z-index:4">
-        <pre id='popupOption' style='margin: 0px 0px 0px 0px'>╔═ Options ══════════════════════════════════╗
-║                   Always   Ask   Ctrl Key  ║
-║ Recursive Sorting  ( )     ( )      (x)    ║
-║ Recursive Copying  ( )     ( )      (x)    ║
-╠════════════════════════════════════════════╣
-║ Use Trashcan       [ ]                     ║
-╠════════════════════════════════════════════╣
-║          [&lt;OK&gt;]         [ Cancel ]         ║
-╚════════════════════════════════════════════╝</pre>
-    </div>
-    -->
-*/
-
-/*
-
-$("#menu")[0].offsetWidth
-$(".border")[0].offsetHeight
-
-width: 20px;
-border: 0px;
-background-color: silver;
-height: 16px;
-padding-top: 0px;
-
-<BLINK> to blink ;]
-
-
-$("#options")[0].innerHTML = $("#options")[0].innerHTML.replace( "[ ]" , "<input id='blah' lenght='1' width='32px'/>")
-
-outline: none;
-}
-
-*/
-
-options = {};
-
-
-/*
-	Fairly evil, would totally fail any code review
-	due to coupling UI and control so tightly
-	Feel free to submit a patch
-*/
 options.init = () => {
-    let s = $("#options")[0].innerHTML;
-
-    s = s.replace("( )", "(<span id='always_sort_recursively'  class='underblink'> </span>)");
-    s = s.replace("( )", "(<span id='ask_sort_recursively'    > </span>)")
-    s = s.replace("(x)", "(<span id='control_sort_recursively'>x</span>)")
-
-    s = s.replace("( )", "(<span id='always_copy_recursively' > </span>)");
-    s = s.replace("( )", "(<span id='ask_copy_recursively'    > </span>)")
-    s = s.replace("(x)", "(<span id='control_copy_recursively'>x</span>)")
-
-    s = s.replace("[ ]", "[<span id='trashcan'> </span>]")
-
-    s = s.replace("&lt;OK&gt;", "<span id='ok'>&lt;OK&gt;</span>")
-
-    s = s.replace("Cancel", "<span id='cancel'>Cancel</span>")
-
-
-    $("#options")[0].innerHTML = s;
+    options.popup = createElement(
+        'div',
+        { id: 'popup' },
+        { appendTo: document.body }
+    );
+    options.popupContent = createElement(
+        'pre',
+        {
+            id: 'popupContent',
+            innerHTML: '',
+        },
+        { appendTo: options.popup }
+    );
+    options.formIds = {};
+    options.currentId = 0;
+    options.selected = null;
 }
 
-options.show = () => {
-    const div = options.div = $("#options")[0];
-    const commanderWidth = $("#menu")[0].offsetWidth
-    const commanderHeight = $("#menu")[0].offsetHeight + $(".border")[0].offsetHeight;
+options.setPopupContent = (popup) => {
+    options.popups = options.popups || {};
+    options.popups[popup.id] = popup;
+}
 
-    div.style.left = (commanderWidth - div.offsetWidth) / 2 + 2;
-    div.style.top = (commanderHeight - div.offsetHeight) / 2 + 2;
 
-    if (options.init) {
-        options.init();
-        delete options.init;
+options.show = (popupId) => {
+    options.current = options.popups[popupId];
+    const formContent = options.getFormContent();
+    if (formContent) {
+        let offsetX = Math.floor((data.screenWidth - formContent.width) / 2);
+        let offsetY = Math.floor((data.screenHeight - formContent.height) / 2);
+        options.popupContent.style.left = offsetX * data.calibreWidth;
+        options.popupContent.style.top = offsetY * data.calibreHeight;
+        options.popupContent.innerHTML = formContent.content;
+        options.popup.classList.add('displayed');
+
+        Object.keys(options.formIds).forEach((dataId) => {
+            const formId = options.formIds[dataId];
+            formId.element = document.getElementById(`formItem-item-${dataId}`);
+            switch (formId.type) {
+                case 'checkbox':
+                    formId.elementValues = formId.element.getElementsByClassName('formItem-checkbox-value');
+                    break;
+            }
+        });
+        options.selected = null;
+        options.select(Object.keys(options.formIds)[0]);
+        options.key_mapping_builder.activate();
+    } else {
+        options.close();
+    }
+}
+
+options.close = () => {
+    options.popup.classList.remove('displayed')
+    options.formIds = {};
+    options.current = null;
+    commander.key_mapping_builder.activate();
+}
+
+options.validate = () => {
+    Object.keys(options.formIds).forEach((dataId) => {
+        options.formIds[dataId].widget.validate();
+    });
+    options.close();
+}
+
+
+options.cancel = () => {
+    options.close();
+}
+
+options.getFormContent = () => {
+    if (options.current) {
+        options.formIds = {};
+
+        const formWidget = new FramedTitleDualWidget()
+            .setTitle(options.current.name)
+            .setChildTop(
+                new StackDownWidget()
+                    .addMap(options.current.groups, (group) => {
+                        return new FramedTitleWidget()
+                            .setTitle(group.title)
+                            .setChild(
+                                new StackDownWidget()
+                                    .addMap(group.items, (item) => {
+                                        switch (item.type) {
+                                            case 'checkbox':
+                                                return new CheckboxWidget()
+                                                    .setTitle(item.title)
+                                                    .setId(options.getNextId())
+                                                    .setGetter(item.getter)
+                                                    .setSetter(item.setter)
+                                                    .register(options.formIds);
+                                        }
+                                        return null;
+                                    })
+                            );
+                    })
+            )
+            .setChildBottom(
+                new CenteredWidget()
+                    .setChild(
+                        new StackRightWidget()
+                            .setChildSpace(0)
+                            .add(
+                                new ButtonWidget()
+                                    .setTitle('Ok')
+                                    .setId(options.getNextId())
+                                    .setDefault(true)
+                                    .setOnClick(() => options.validate())
+                                    .register(options.formIds)
+                            )
+                            .add(
+                                new ButtonWidget()
+                                    .setTitle('Cancel')
+                                    .setId(options.getNextId())
+                                    .setOnClick(() => options.cancel())
+                                    .register(options.formIds)
+                            )
+                    )
+            )
+            ;
+
+        // window.formWidget = formWidget;
+        return {
+            width: formWidget.width,
+            height: formWidget.height,
+            content: formWidget.html,
+        }
+    }
+    return null;
+}
+
+options.getNextId = () => {
+    options.currentId += 1;
+    return options.currentId;
+}
+
+options.select = (dataId) => {
+    if (data.simpleClickOnSelectedItemToActivate && dataId !== undefined && options.selected === dataId) {
+        options.activate(dataId);
+        return;
+    }
+    const formInfo = options.formIds[dataId];
+    let element = formInfo && formInfo.element;
+    if (element && formInfo) {
+        options.selected = dataId;
+        Object.keys(options.formIds)
+            .map(dataId => options.formIds[dataId].element)
+            .filter(element => element && element.classList)
+            .filter(element => [...element.classList].filter((c) => c === 'fcode').length)
+            .forEach(element => element.classList.remove('fcode'))
+            ;
+        element.classList.add('fcode');
+    }
+}
+
+options.goNext = () => {
+    let selected = options.selected;
+    let dataIds = Object.keys(options.formIds);
+    let index = dataIds.indexOf(selected);
+    options.select(dataIds[(index + 1) % (dataIds.length)]);
+}
+
+options.goPrev = () => {
+    let selected = options.selected;
+    let dataIds = Object.keys(options.formIds);
+    let index = dataIds.indexOf(selected);
+    if (index < 0) {
+        index = 0;
+    }
+    options.select(dataIds[(index + dataIds.length - 1) % (dataIds.length)]);
+}
+
+options.activate = (dataId) => {
+    if (dataId === undefined) {
+        dataId = options.selected;
+    } else {
+        if (options.selected !== dataId) {
+            options.select(dataId);
+        }
     }
 
-    //Initial the options if they were not set yet
-    if (!localStorage.options) {
-        options.setDefaults();
+
+    const formInfo = options.formIds[dataId];
+    if (formInfo) {
+        switch (formInfo.type) {
+            case 'checkbox':
+                formInfo.widget.changeDisplayedValue();
+                break;
+            case 'button':
+                formInfo.widget.execute();
+                break;
+        }
     }
+};
 
-    options.setRecursiveSorting();
-}
 
-options.setRecursiveSorting = (newValue) => {
-    //Take care of new value if any
-    if (newValue) {
-        localStorage.options.recursiveSorting = newValue;
-    }
-    //recursive
-}
-
-options.setDefaults = () => {
-    var defaults = { recursiveSorting: 'control', recursiveCopying: 'control', trashcan: false }
-    localStorage.options = defaults;
-}
-
-options.hide = () => {
-    options.div.style.display = options.pane.style.display = "none";
-}
+options.newForm = (id, name) => new FormBuilder().setName(id, name);

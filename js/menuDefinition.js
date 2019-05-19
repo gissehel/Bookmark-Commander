@@ -1,16 +1,16 @@
 const addSideMenuItems = (menuItemBuilder) =>
     menuItemBuilder
         .addItem('&List', ({ panel }) => commander.setList(panel))
-        .addItem("&Info",({ panel }) => commander.setInfo(panel))
-        .addItem("&Tree",({ panel }) => commander.setTree(panel))
+        .addItem("&Info", ({ panel }) => commander.setInfo(panel))
+        .addItem("&Tree", ({ panel }) => commander.setTree(panel))
         .addSep()
-        .addItem("Sort by &Date",({ panel, ctrlKey }) => commander.sortBookmarksByDate(panel, ctrlKey))
-        .addItem("&Sort by Length",({ panel, ctrlKey }) => commander.sortBookmarksByLength(panel, ctrlKey))
-        .addItem("Sort &Alphabetically",({ panel, ctrlKey }) => commander.sortBookmarksAlphabetically(panel, ctrlKey))
+        .addItem("Sort by &Date", ({ panel, ctrlKey }) => commander.sortBookmarksByDate(panel, ctrlKey))
+        .addItem("&Sort by Length", ({ panel, ctrlKey }) => commander.sortBookmarksByLength(panel, ctrlKey))
+        .addItem("Sort &Alphabetically", ({ panel, ctrlKey }) => commander.sortBookmarksAlphabetically(panel, ctrlKey))
         .addSep()
-        .addItem("&Filter","/",({ panel }) => commander.filter(panel))
-        .addItem("Select","*",({ panel }) => commander.selector(panel))
-        .addItem("&Rescan","C-r",()=>{})
+        .addItem("&Filter", "/", ({ panel }) => commander.filter(panel))
+        .addItem("Select", "*", ({ panel }) => commander.selector(panel))
+        .addItem("&Rescan", "C-r", () => { })
         .endMenu()
 
     ;
@@ -40,13 +40,15 @@ menu
 menu
     .build()
     .addMenu('Command')
-    .addItem('&Search',commander.search)
-    .addItem('S&wap panels',commander.swapPanels)
+    .addItem('&Search', commander.search)
+    .addItem('S&wap panels', commander.swapPanels)
     .endMenu()
 
 menu
     .build()
     .addMenu('Options')
+    .addItem('&Options', () => options.show('options'))
+    .addSep()
     .addItems([...Array(11).keys()].map(x => 10 + x).map(size => ({
         title: `${size}px`,
         command: () => dataAccess.setSize(size),
