@@ -78,6 +78,7 @@ keyboard
     .add('ArrowRight', options.goNext)
     .add('ArrowUp', options.goPrev)
     .add('ArrowDown', options.goNext)
+    .add('Tab', options.goNext)
     ;
 
 
