@@ -70,6 +70,10 @@ mouse.onClickActions = {
     '.formItem': (element) => {
         const dataId = element.attributes['data-id'].value;
         handleClickDoubleClick(dataId, () => options.select(dataId), () => options.activate(dataId));
+    },
+    '.shortcut': (element) => {
+        const dataIndex = element.attributes['data-index'].value;
+        shortcutBar.processShortcut(`F${dataIndex}`)
     }
 }
 

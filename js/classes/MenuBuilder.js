@@ -35,18 +35,22 @@ class MenuItemBuilder {
 }
 
 class MenuBuilder {
-    constructor(menu) {
-        this._menu = menu
+    constructor(contextBuilder) {
         this._current = null;
-        this._definition = [];
-        this._menu.setDefinition(this._definition);
+        this._definition = {};
+        this._definition.mainItems = [];
+        this._contextBuilder = contextBuilder;
+    }
+
+    get definition() {
+        return this._definition;
     }
 
     addMenu(caption) {
         let topMenu = { caption, itemsData: [] };
         this._current = topMenu;
-        this._definition.push(topMenu);
-        return new MenuItemBuilder(this, topMenu.itemsData);
+        this._definition.mainItems.push(topMenu);
+        return new MenuItemBuilder(this._contextBuilder, topMenu.itemsData);
     }
 
     setPanelGetter(getter) {

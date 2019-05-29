@@ -63,10 +63,6 @@ commander.setPanel = (panelConfig) => {
 
     let o = findBookmarkId(commander.bookmarks, panelConfig.id);
 
-    //Are we clear ?
-    if (!document.getElementById("end")) {
-        return;
-    }
     //Deal with trouble
     if (!o || !o.children) {
         //If we are looking at a dead folder by any chance, just go to the root
@@ -215,11 +211,6 @@ commander.setPanel = (panelConfig) => {
  ****/
 commander.setInfoPanel = (panelConfig) => {
     const o = findBookmarkId(commander.bookmarks, panelConfig.other.selectedBookmark);
-
-    //Are we clear ?
-    if (!document.getElementById("end")) {
-        return;
-    }
 
     //Deal with trouble
     if (!o) {
@@ -417,7 +408,7 @@ commander.view = () => {
         //we require it for decorating the elements, kludgy, I know
         commander.draw();
 
-        commander.key_mapping_builder.activate();
+        commander.context.activate();
     }
 }
 
@@ -442,7 +433,7 @@ commander.edit = () => {
 /* MENU */
 commander.menu = () => {
     [...document.getElementsByClassName('selected')].forEach(element => element.classList.remove('selected'));
-    menu.key_mapping_builder.activate();
+    menu.context.activate();
     menu.show();
 }
 

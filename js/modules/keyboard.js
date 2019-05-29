@@ -37,18 +37,27 @@ keyboard.onKeyDown = async (event) => {
         keyboard.escape = (code === 'Escape');
     }
 
-    if (keyboard.key_mapping[code]) {
+    if (keyboard.keyMapping[code]) {
+        keyboard.processKey(code, event);
+    } else if (keyboard.keyMapping[key]) {
+        keyboard.processKey(key, event);
+    } else if (shortcutBar.keys.indexOf(key)>=0) {
         event.preventDefault();
         event.stopPropagation();
-        await delay(1);
-        keyboard.key_mapping[code](event);
-    } else if (keyboard.key_mapping[key]) {
-        event.preventDefault();
-        event.stopPropagation();
-        await delay(1);
-        keyboard.key_mapping[key](event);
+        shortcutBar.processShortcut(key);
     }
 };
+
+keyboard.processKey = async (name, event) => {
+    if (keyboard.keyMapping[name]) {
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        await delay(1);
+        keyboard.keyMapping[name](event);
+    }
+}
 
 keyboard.onKeyUp = (event) => {
     if (commander.editing) {
@@ -56,11 +65,7 @@ keyboard.onKeyUp = (event) => {
     }
 };
 
-keyboard.addMapping = (obj) => {
-    const builder = new KeyboardMappingBuilder();
-    obj.key_mapping_builder = builder;
-    return builder;
-};
+keyboard.addMapping = () => new ContextBuilder();
 
 keyboard.escape_mapping = {};
 

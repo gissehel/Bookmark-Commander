@@ -34,22 +34,5 @@ options
     .register(options)
     ;
 
-options
-    .newForm('options', 'Options')
-    .addGroup(null)
-    .addCheckbox('Double click to activate', () => (!data.simpleClickOnSelectedItemToActivate), (value) => { dataAccess.simpleClickOnSelectedItemToActivate(!value) })
-    .endGroup()
-    .register(options)
-    ;
 
-options
-    .newForm('about', 'About')
-    .addGroup(null)
-    .addLabel(' Orthodox Bookmark Manager ')
-    .addLabel(() => ` Version ${commander.getVersion()} `)
-    .addLabel('')
-    .addButton('Help', commander.help)
-    .endGroup()
-    .disableCancel()
-    .register(options)
-    ;
+    

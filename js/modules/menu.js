@@ -66,12 +66,12 @@ menu.itemize = (item) => {
 const fontSizes = [...Array(11).keys()].map(x => 10 + x);
 
 menu.assignLeftRights = (definition) => {
-    const len = definition.length;
+    const len = definition.mainItems.length;
     for (let index = 0; index < len; index++) {
         leftIndex = (index + len - 1) % len;
         rightIndex = (index + 1) % len;
-        definition[index].left = definition[leftIndex];
-        definition[index].right = definition[rightIndex];
+        definition.mainItems[index].left = definition.mainItems[leftIndex];
+        definition.mainItems[index].right = definition.mainItems[rightIndex];
     }
 }
 
@@ -79,39 +79,40 @@ menu.assignIndent = (definition) => {
     let titleText = "";
     let titleHtml = "";
 
-    definition.forEach((item, itemIndex) => {
+    definition.mainItems.forEach((item, itemIndex) => {
         item.indent = titleText.length + 1;
 
         titleHtml += ` <span class="topMenuItem" id="menu_${item.caption}" data-index='${itemIndex}'> ${item.caption} </span>  `;
         titleText += `  ${item.caption}   `;
     });
 
-    menu.titleHtml = titleHtml;
-    menu.titleText = titleText;
+    definition.titleHtml = titleHtml;
+    definition.titleText = titleText;
 }
 
 menu.init = () => {
     menu.dropdown = createElement('div', { id: 'dropdown' }, { appendTo: document.body });
+    menu.bar = createElement('pre', { id: 'menu', className:'menu' }, { appendTo: document.body });
 
-    const definition = menu.definition || [{caption:'None', itemsData:[{title:'None', command:()=>{}}]}];
-    menu.definition = definition;
-
-    menu.assignIndent(definition);
-    menu.assignLeftRights(definition);
-
-    definition.forEach(item => menu.itemize(item));
-
-    menu.current = definition[0];
-    menu.selection = 0;
-
-    menu.isOut = false;
+    menu.definition = menu.definition || {mainItems: [{caption:'None', itemsData:[{title:'None', command:()=>{}}]}]};
 
     menu.refresh();
 }
 
+menu.initDefinition = (definition) => {
+    if (! definition.isInit){
+        menu.assignIndent(definition);
+        menu.assignLeftRights(definition);
+
+        definition.mainItems.forEach(item => menu.itemize(item));
+        definition.isInit = true;
+    }
+}
+
+
 menu.refresh = () => {
-    if (menu.titleHtml) {
-        document.getElementById('menu').innerHTML = menu.titleHtml + ''.extend(data.screenWidth - menu.titleText.length);
+    if (menu.definition && menu.definition.titleHtml) {
+        document.getElementById('menu').innerHTML = menu.definition.titleHtml + ''.extend(data.screenWidth - menu.definition.titleText.length);
     }
 }
 
@@ -211,7 +212,7 @@ menu.exit = () => {
     [...document.getElementsByClassName('menuItem')].forEach(element => element.classList.remove('fcode'));
 
     commander.reInit();
-    commander.key_mapping_builder.activate();
+    commander.context.activate();
 }
 
 menu.exitIfOut = () => {
@@ -239,12 +240,29 @@ menu.dispatch = ({ shiftKey, ctrlKey, altKey }, n) => {
     }
 }
 
-menu.setDefinition = (definition) => menu.definition = definition;
+menu.setDefinition = (definition) => {
+    menu.bar.classList.remove('hidden');
+    if (definition !== menu.definition) {
+        menu.initDefinition(definition);
+
+        menu.definition = definition
+        menu.current = definition.mainItems[0];
+        menu.selection = 0;
+    
+        menu.isOut = false;
+
+        menu.refresh();
+    }
+};
 
 menu.open = (menuIndex) => {
-    menu.current = menu.definition[menuIndex];
+    menu.current = menu.definition.mainItems[menuIndex];
     menu.selection = 0;
     commander.menu();
+}
+
+menu.hide = () => {
+    menu.bar.classList.add('hidden');
 }
 
 menu.build = () => {

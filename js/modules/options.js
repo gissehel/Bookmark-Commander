@@ -52,7 +52,7 @@ options.show = (popupId) => {
         } else {
             options.select(Object.keys(options.formIds)[0]);
         }
-        options.key_mapping_builder.activate();
+        options.context.activate();
     } else {
         options.close();
     }
@@ -62,7 +62,7 @@ options.close = () => {
     options.popup.classList.remove('displayed')
     options.formIds = {};
     options.current = null;
-    commander.key_mapping_builder.activate();
+    commander.context.activate();
 }
 
 options.validate = () => {

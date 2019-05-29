@@ -45,6 +45,7 @@ dataAccess.onSizeChanged = () => {
     data.panelWidth = Math.floor((data.screenWidth - 4) / 2);
     data.screenHeight = data.panelHeight + 6;
     dualPanel.redraw();
+    shortcutBar.redraw();
 };
 
 const _setSize = (size) => {

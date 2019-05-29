@@ -81,6 +81,21 @@ body.help {
     position: relative;
 }
 
+#menu {
+    position:fixed;
+    z-index:2;
+}
+
+#shortcutBar {
+    position:fixed;
+    z-index:103;
+}
+
+#statusEnd {
+    position:relative;
+    right: 0;
+}
+
 .hidden {
     display: none;
 }

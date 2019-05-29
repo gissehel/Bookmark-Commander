@@ -6,21 +6,6 @@ const editor = {};
 
 //This is where the magic happens, so to say
 editor.view = (id) => {
-    //Function keys
-    editor.function_keys =
-        [
-            { id: 1, description: "Help  " },
-            { id: 2, description: "Save  " },
-            { id: 3, description: "Quit  " },
-            { id: 4, description: "Quit  " },
-            { id: 5, description: "Test  " },
-            { id: 6, description: "      " },
-            { id: 7, description: "      " },
-            { id: 8, description: "      " },
-            { id: 9, description: "      " },
-            { id: 10, description: "Quit  " },
-        ];
-
     let bookmark = findBookmarkId(commander.bookmarks, id);
 
     if (!bookmark) {
@@ -35,7 +20,6 @@ editor.view = (id) => {
         //Avoid the dreaded undefined ;]
         bookmark.url = '';
         //Dont show test for folders
-        editor.function_keys[4].description = '      ';
         editor.urlReadOnly = "readonly='readonly'";
     } else {
         editor.urlReadOnly = "";
@@ -60,16 +44,12 @@ editor.view = (id) => {
             `<textarea class='blue' cols='${data.screenWidth}' rows='3' id='editorTitle'>${bookmark.title}</textarea>\n`,
             `<span class='menu'>${("  URL").extend()}</span>\n`,
             `<textarea class='blue' cols='${(data.screenWidth)}' rows='${(data.panelHeight)}' id='editorUrl'${editor.urlReadOnly}>${content}</textarea>\n`,
-            `<span class='editorShortcutBar'>`,
-            ...editor.function_keys.map(f => `<span class='fcode'> F${f.id}</span><span class='menu'>${f.description}</span><span class='fcode'></span>`),
-            `<span id='editorEnd' class='fcode'>${" ".repeat(data.screenWidth - 91)}</span>\n`,
-            `</span>`,
         ]),
     }, { appendTo: document.body });
 
-    editor.menu = document.getElementById('editorMenu');
+    // editor.menu = document.getElementById('editorMenu');
     editor.url = document.getElementById('editorUrl');
-    editor.end = document.getElementById('editorEnd');
+    // editor.end = document.getElementById('editorEnd');
     editor.title = document.getElementById('editorTitle');
 
     // Ugly quirk, because width in columns for a textarea isn't enought
@@ -79,7 +59,7 @@ editor.view = (id) => {
     editor.url.style.width = data.screenWidth * data.calibreWidth;
     editor.url.style.height = data.panelHeight * data.calibreHeight;
 
-    editor.key_mapping_builder.activate();
+    editor.context.activate();
 
     //Put focus on the title, at the end
     const title = editor.title;
@@ -118,6 +98,9 @@ editor.considerTextAreas = () => {
     }
 
     editor.changed = _changed;
+    if (editor.changed) {
+        shortcutBar.redraw();
+    }
 }
 
 editor.test = () => {
@@ -136,7 +119,7 @@ editor.save = () => {
 
     editor.saved = true;
 
-    editor.end.innerHTML = ("<span class='statusWarning'>" + ("SAVED!").extend(data.screenWidth - 91) + "</span>");
+    shortcutBar.redraw('  SAVED !')
 
     editor.bookmark = o;
 
@@ -178,7 +161,7 @@ editor.quit = () => {
     } else {
         commander.draw();
     }
-    commander.key_mapping_builder.activate();
+    commander.context.activate();
     commander.editing = false;
 
     dualPanel.show();
