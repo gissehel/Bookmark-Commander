@@ -26,6 +26,26 @@ dualPanel.show = () => {
     dualPanel.element.classList.remove('hidden');
 }
 
+dualPanel.setRootText = (prefix, title, active) => {
+    const root = dualPanel[prefix].root;
+
+    if (title === null) {
+        root.innerText = "╔" + data.doubleBar.repeat(data.panelWidth) + "╗";
+    } else {
+        let text = ` ${title} `;
+        let postText = '';
+        if (text.length > data.panelWidth) {
+            text = "..." + text.right(data.panelWidth - 3);
+        } else {
+            postText = data.doubleBar.repeat(data.panelWidth - text.length);
+        }
+        root.innerHTML = "╔" + (active ? "<span class='active-title'>" : "") + text + (active ? "</span>" : "") + postText + "╗";
+    }
+
+};
+dualPanel.getCommanderId = (prefix, n) => dualPanel[prefix].lines[n].commander.id;
+dualPanel.getLineText = (prefix, n) => dualPanel[prefix].lines[n].innerText.trim();
+
 dualPanel.redraw = () => {
     const panelIds = [...Array(data.panelHeight).keys()];
 
@@ -43,6 +63,12 @@ dualPanel.redraw = () => {
         "</span>",
     ]);
     dualPanel.url = document.getElementById("url");
+    ['left', 'rite'].forEach((prefix) => {
+        dualPanel[prefix] = {};
+        const panel = dualPanel[prefix];
+        panel.root = document.getElementById(prefix + 'root');
+        panel.lines = panelIds.map((counter) => document.getElementById(`${prefix}${counter}`));
+    });
     dualPanel.element.style.top = data.calibreHeight;
 
     menu.refresh();

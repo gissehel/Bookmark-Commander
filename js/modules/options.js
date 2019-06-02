@@ -73,9 +73,7 @@ options.validate = () => {
 }
 
 
-options.cancel = () => {
-    options.close();
-}
+options.cancel = () => options.close();
 
 options.getFormContent = () => {
     if (options.current) {

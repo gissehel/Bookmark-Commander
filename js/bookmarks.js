@@ -145,14 +145,7 @@ const findBookmarkTitle = (id) => {
         title = "/" + parent.title + title;
         parent = findBookmarkId(commander.bookmarks, parent.parentId);
     }
-    //Prefix & postfix to make it look even better
-    title = " " + title + " ";
-    //Cut off at the right size
-    if (title.length > data.panelWidth) {
-        title = "..." + title.right(data.panelWidth - 3);
-    }
-    //Give it back
-    return title
+    return title;
 }
 
 /*

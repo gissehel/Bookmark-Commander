@@ -78,16 +78,17 @@ commander.setPanel = (panelConfig) => {
 
     //Set the folder structure on top
     const title = findBookmarkTitle(panelConfig.id);
+    console.log({title});
 
-    document.getElementById(panelConfig.prefix + "root").innerHTML = "╔" + (title + data.doubleBar.repeat(data.panelWidth)).left(data.panelWidth) + "╗";
+    // dualPanel[panelConfig.prefix].root.innerText = "╔" + (title + data.doubleBar.repeat(data.panelWidth)).left(data.panelWidth) + "╗";
+    dualPanel.setRootText(panelConfig.prefix, title, panelConfig.active);
 
     //Clear out the children
     for (let counter = 0; counter < data.panelHeight; counter++) {
-        let line = document.getElementById(panelConfig.prefix + counter);
+        const line = dualPanel[panelConfig.prefix].lines[counter];
         if (line) {
-            line.innerHTML = (" ".repeat(data.panelWidth));
+            line.innerText = (" ".repeat(data.panelWidth));
             line.classList.remove("selected");
-            line.classList.add("border");
         }
     }
 
@@ -150,18 +151,18 @@ commander.setPanel = (panelConfig) => {
             //Lets also show the url
             if (child.url) {
                 let url = child.url.left(((data.panelWidth + 1) * 2)).extend((data.panelWidth + 1) * 2);
-                dualPanel.url.innerHTML = url;
+                dualPanel.url.innerText = url;
             } else if (panelConfig.id == "tree") {
                 let url = findBookmarkTitle(child.id).left(((data.panelWidth + 1) * 2)).extend((data.panelWidth + 1) * 2);
-                dualPanel.url.innerHTML = url;
+                dualPanel.url.innerText = url;
             } else {
-                dualPanel.url.innerHTML = " ".repeat((data.panelWidth + 1) * 2);
+                dualPanel.url.innerText = " ".repeat((data.panelWidth + 1) * 2);
             }
             panelConfig.selectedBookmark = child.id;
         }
 
         //Get the element
-        const element = document.getElementById(panelConfig.prefix + counter);
+        const element = dualPanel[panelConfig.prefix].lines[counter];
 
         //set the style
         if (isJs) {
@@ -231,13 +232,14 @@ commander.setInfoPanel = (panelConfig) => {
     }
 
     //Do not set the folder structure on top
-    document.getElementById(panelConfig.prefix + "root").innerHTML = "╔" + data.doubleBar.repeat(data.panelWidth) + "╗";
+    // dualPanel[panelConfig.prefix].root.innerText = "╔" + data.doubleBar.repeat(data.panelWidth) + "╗";
+    dualPanel.setRootText(panelConfig.prefix, null, panelConfig.active);
 
     //Clear out the children
     for (let counter = 0; counter < data.panelHeight; counter++) {
-        const line = document.getElementById(panelConfig.prefix + counter);
+        const line = dualPanel[panelConfig.prefix].lines[counter];
         if (line) {
-            line.innerHTML = (" ".repeat(data.panelWidth));
+            line.innerText = (" ".repeat(data.panelWidth));
             line.classList.remove('selected');
         }
     }
@@ -251,7 +253,8 @@ commander.setInfoPanel = (panelConfig) => {
 
     let line = 0;
 
-    let element = document.getElementById(panelConfig.prefix + line++);
+    const lines = dualPanel[panelConfig.prefix].lines;
+    let element = lines[line++];
 
     if (o.title) {
         element.innerHTML = (o.title).extend(data.panelWidth);
@@ -260,29 +263,29 @@ commander.setInfoPanel = (panelConfig) => {
     line++;
 
     if (o.dateAdded) {
-        element = document.getElementById(panelConfig.prefix + line++);
+        element = lines[line++];
         let d = new Date()
         d.setTime(o.dateAdded);
         element.innerHTML = ("  added:    " + d.format()).extend(data.panelWidth);
     }
 
     if (o.dateGroupModified) {
-        element = document.getElementById(panelConfig.prefix + line++);
+        element = lines[line++];
         let d = new Date()
         d.setTime(o.dateGroupModified);
         element.innerHTML = ("  changed:  " + d.format()).extend(data.panelWidth);
     }
 
-    element = document.getElementById(panelConfig.prefix + line++);
+    element = lines[line++];
     element.innerHTML = ("  id:       " + o.id).extend(data.panelWidth);
 
-    element = document.getElementById(panelConfig.prefix + line++);
+    element = lines[line++];
     element.innerHTML = ("  index:    " + o.index).extend(data.panelWidth);
 
-    element = document.getElementById(panelConfig.prefix + line++);
+    element = lines[line++];
     element.innerHTML = ("  parent:   " + o.parentId).extend(data.panelWidth);
 
-    element = document.getElementById(panelConfig.prefix + line++);
+    element = lines[line++];
     if (o.children) {
         element.innerHTML = ("  children: " + o.children.length).extend(data.panelWidth);
     } else {
@@ -291,7 +294,7 @@ commander.setInfoPanel = (panelConfig) => {
 
         while (url.length > data.panelWidth) {
             //Get the victim, leave implicit space for first entry
-            element = document.getElementById(panelConfig.prefix + line++);
+            element = lines[line++];
             //content
             element.innerHTML = url.left(data.panelWidth);
             //remainder
@@ -299,7 +302,7 @@ commander.setInfoPanel = (panelConfig) => {
         }
         if (url.length > 0) {
             //Get the victim
-            element = document.getElementById(panelConfig.prefix + line++);
+            element = lines[line++];
             //content
             element.innerHTML = url.extend(data.panelWidth);
         }
@@ -332,7 +335,7 @@ commander.swapPanels = () => {
 /* Prelude to SELECT, ENTER */
 commander.delve = () => {
     const panel = commander.getActivePanel();
-    const id = document.getElementById(panel.prefix + panel.selected).commander.id;
+    const id = dualPanel.getCommanderId(panel.prefix, panel.selected);
 
     if (panel.id != "tree") {
         return commander.select(id);
@@ -394,7 +397,7 @@ commander.view = () => {
         dualPanel.hide();
 
         const panel = commander.getActivePanel();
-        const id = document.getElementById(panel.prefix + panel.selected).commander.id;
+        const id = dualPanel.getCommanderId(panel.prefix, panel.selected);
 
         if (id != "0") {
             viewer.view(id);
@@ -422,7 +425,7 @@ commander.edit = () => {
         return;
     }
 
-    const id = document.getElementById(panel.prefix + panel.selected).commander.id;
+    const id = dualPanel.getCommanderId(panel.prefix, panel.selected);
 
     if (id != "0") {
         commander.editing = true;
@@ -444,12 +447,11 @@ commander.back = () => {
     if (panel.id == "search") {
         return commander.select("0");
     }
-
-    const element = document.getElementById(panel.prefix + "0");
-    const text = element.innerHTML.trim();
+    
+    const text = dualPanel.getLineText(panel.prefix, 0);
 
     if (text == "/..") {
-        commander.select(element.commander.id);
+        commander.select(dualPanel.getCommanderId(panel.prefix, 0));
     }
 }
 
@@ -576,7 +578,7 @@ commander.copy = () => {
     }
 
     //Copying from
-    const from_id = document.getElementById(from.prefix + from.selected).commander.id;
+    const from_id = dualPanel.getCommanderId(from.prefix, from.selected);
     const bookmark = findBookmarkId(commander.bookmarks, from_id);
 
     const newBookmark = { parentId: to.id };
@@ -621,7 +623,7 @@ commander.copySelection = (from, to) => {
 /* MOVE */
 commander.move = () => {
     const panel = commander.getActivePanel();
-    const id = document.getElementById(panel.prefix + panel.selected).commander.id;
+    const id = dualPanel.getCommanderId(panel.prefix, panel.selected);
     const bookmark = findBookmarkId(commander.bookmarks, id);
 
     const to = commander.getInactivePanel();
@@ -674,7 +676,7 @@ commander.moveSelection = (from, to) => {
 /* DELETE */
 commander.delete = () => {
     const panel = commander.getActivePanel();
-    const id = document.getElementById(panel.prefix + panel.selected).commander.id;
+    const id = dualPanel.getCommanderId(panel.prefix, panel.selected);
     const bookmark = findBookmarkId(commander.bookmarks, id);
 
     //Are we copying a selection ?
@@ -761,7 +763,7 @@ commander.equalize = () => {
 /* PLUS , MOVE UP */
 commander.moveUp = () => {
     const panel = commander.getActivePanel();
-    const id = document.getElementById(panel.prefix + panel.selected).commander.id;
+    const id = dualPanel.getCommanderId(panel.prefix, panel.selected);
     const bookmark = findBookmarkId(commander.bookmarks, id);
 
     if (panel.id == 0) {
@@ -789,7 +791,7 @@ commander.moveUp = () => {
 /* DOWN, MOVE DOWN */
 commander.moveDown = () => {
     const panel = commander.getActivePanel();
-    const id = document.getElementById(panel.prefix + panel.selected).commander.id;
+    const id = dualPanel.getCommanderId(panel.prefix, panel.selected);
     let bookmark = findBookmarkId(commander.bookmarks, id);
 
     if (panel.id == 0) {
@@ -879,7 +881,7 @@ commander.setList = (panel) => {
     panel.info = false;
 
     if (panel.id == "tree") {
-        const id = document.getElementById(panel.prefix + panel.selected).commander.id;
+        const id = dualPanel.getCommanderId(panel.prefix, panel.selected);
         commander.select(id);
     }
 }
