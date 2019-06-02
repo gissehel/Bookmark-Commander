@@ -78,7 +78,6 @@ commander.setPanel = (panelConfig) => {
 
     //Set the folder structure on top
     const title = findBookmarkTitle(panelConfig.id);
-    console.log({title});
 
     // dualPanel[panelConfig.prefix].root.innerText = "╔" + (title + data.doubleBar.repeat(data.panelWidth)).left(data.panelWidth) + "╗";
     dualPanel.setRootText(panelConfig.prefix, title, panelConfig.active);
