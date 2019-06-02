@@ -53,7 +53,7 @@ class FormGroupBuilder {
 
     addCombo(title, getValues, getter, setter) {
         const item = {
-            type: 'checkbox',
+            type: 'combo',
             title,
             getValues,
             getter,

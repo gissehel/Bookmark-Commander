@@ -89,4 +89,14 @@ class FramedTitleDualWidget extends Widget {
         ]
     }
 
+    setScreenOffset(offsetX, offsetY, width, height) {
+        super.setScreenOffset(offsetX, offsetY, width, height);
+        if (this.childTop) {
+            const childBottomHeight = this._childBottom ? this._childBottom.height : 0;
+            this.childTop.setScreenOffset(offsetX + 1, offsetY + 1, width - 2, height - 3 - childBottomHeight);
+        }
+        if (this.childBottom) {
+            this.childBottom.setScreenOffset(offsetX + 1, offsetY + height - 1 - this.childBottom.height, width - 2, this.childBottom.height);
+        }
+    }
 }

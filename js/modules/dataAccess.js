@@ -55,6 +55,15 @@ const _setSize = (size) => {
     dataAccess.onSizeChanged();
 };
 
+dataAccess.getSizes = () => ([...Array(11).keys()].map(x => 10 + x).map(size => ({
+    title: `${size}px`,
+    value: size,
+})));
+
+dataAccess.getSize = () => {
+    return localStorage.size * 1;
+};
+
 dataAccess.setSize = (size) => {
     localStorage.size = size;
     _setSize(size);

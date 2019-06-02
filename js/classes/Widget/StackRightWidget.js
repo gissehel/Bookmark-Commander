@@ -51,4 +51,26 @@ class StackRightWidget extends Widget {
         });
         return result;
     }
+
+    setScreenOffset(offsetX, offsetY, width, height) {
+        super.setScreenOffset(offsetX, offsetY, width, height);
+        let index = 0;
+        let localOffset = this._childSpace;
+        width -= this._childSpace;
+        while (index < this._children.length - 1) {
+            let widget = this._children[index];
+            widget.setScreenOffset(offsetX + localOffset, offsetY, widget.width, height);
+            localOffset += widget.width;
+            localOffset += this._childSpace;
+            width -= widget.width;
+            width -= this._childSpace;
+            index += 1;
+        }
+        if (this._children.length > 0) {
+            index = this._children.length - 1;
+            let widget = this._children[index];
+            width -= this._childSpace;
+            widget.setScreenOffset(offsetX + localOffset, offsetY, width, height);
+        }
+    }
 }

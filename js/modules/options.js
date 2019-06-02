@@ -11,7 +11,7 @@ options.init = () => {
         {
             id: 'popupContent',
         },
-        { text:'', appendTo: options.popup }
+        { text: '', appendTo: options.popup }
     );
     options.formIds = {};
     options.currentId = 0;
@@ -30,6 +30,8 @@ options.show = (popupId) => {
     if (formContent) {
         let offsetX = Math.floor((data.screenWidth - formContent.width) / 2);
         let offsetY = Math.floor((data.screenHeight - formContent.height) / 2);
+        formContent.formWidget.setScreenOffset(offsetX, offsetY, formContent.width, formContent.height);
+        window.w = formContent.formWidget;
         options.popupContent.style.left = offsetX * data.calibreWidth;
         options.popupContent.style.top = offsetY * data.calibreHeight;
         options.popupContent.innerHTML = formContent.content;
@@ -42,10 +44,13 @@ options.show = (popupId) => {
                 case 'checkbox':
                     formId.elementValues = formId.element.getElementsByClassName('formItem-checkbox-value');
                     break;
+                case 'combo':
+                    formId.elementValues = formId.element.getElementsByClassName('formItem-combo-value');
+                    break;
             }
         });
         options.selected = null;
-        const defaultIds = Object.keys(options.formIds).filter((dataId)=>options.formIds[dataId] && options.formIds[dataId].type === 'button' && options.formIds[dataId].default);
+        const defaultIds = Object.keys(options.formIds).filter((dataId) => options.formIds[dataId] && options.formIds[dataId].type === 'button' && options.formIds[dataId].default);
         if (defaultIds.length === 1) {
             options.select(defaultIds[0]);
         } else {
@@ -93,6 +98,14 @@ options.getFormContent = () => {
                                                 return new CheckboxWidget()
                                                     .setTitle(item.title)
                                                     .setId(options.getNextId())
+                                                    .setGetter(item.getter)
+                                                    .setSetter(item.setter)
+                                                    .register(options.formIds);
+                                            case 'combo':
+                                                return new ComboWidget()
+                                                    .setTitle(item.title)
+                                                    .setId(options.getNextId())
+                                                    .setGetValues(item.getValues)
                                                     .setGetter(item.getter)
                                                     .setSetter(item.setter)
                                                     .register(options.formIds);
@@ -150,6 +163,7 @@ options.getFormContent = () => {
             width: formWidget.width,
             height: formWidget.height,
             content: formWidget.html,
+            formWidget,
         }
     }
     return null;
@@ -214,9 +228,26 @@ options.activate = (dataId) => {
             case 'button':
                 formInfo.widget.execute();
                 break;
+            case 'combo':
+                {
+                    const values = formInfo.widget.values.map((item) => item.title);
+                    const currentIndex = formInfo.widget.index;
+                    const onSuccess = (value, index) => {
+                        formInfo.widget.index = index;
+                    };
+                    const onCancel = () => { };
+                    const offsetX = formInfo.widget.offsetValue;
+                    const offsetY = formInfo.widget.ScreenOffsetY;
+                    combo.show({ values, currentIndex, onSuccess, onCancel, offsetX, offsetY });
+                }
+
+                formInfo.widget.values;
+                break;
         }
     }
 };
 
 
 options.newForm = (id, name) => new FormBuilder().setName(id, name);
+
+

@@ -4,6 +4,25 @@ class CenteredWidget extends Widget {
         this._child;
     }
 
+    setScreenOffset(offsetX, offsetY, width, height) {
+        super.setScreenOffset(offsetX, offsetY, width, height);
+        if (this._child) {
+            const childWidth = this._child.width;
+            const childHeight = this._child.height;
+
+            let leftPad = 0;
+            let topPad = 0;
+            if (width > childWidth) {
+                leftPad = Math.floor((width - childWidth) / 2);
+            }
+
+            if (height > childHeight) {
+                topPad = Math.floor((height - childHeight) / 2);
+            }
+            this._child.setScreenOffset(offsetX + leftPad, offsetY + topPad, childWidth, childHeight);
+        }
+    }
+
     get width() {
         return this._child ? this._child.width : 0;
     }

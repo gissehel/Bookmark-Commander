@@ -45,4 +45,22 @@ class StackDownWidget extends Widget {
 
         return result;
     }
+
+    setScreenOffset(offsetX, offsetY, width, height) {
+        super.setScreenOffset(offsetX, offsetY, width, height);
+        let index = 0;
+        let localOffset = 0;
+        while (index < this._children.length - 1) {
+            let widget = this._children[index];
+            widget.setScreenOffset(offsetX, offsetY+localOffset, width, widget.height);
+            localOffset += widget.height;
+            index += 1;
+            height -= widget.height;
+        }
+        if (this._children.length > 0) {
+            index = this._children.length - 1;
+            let widget = this._children[index];
+            widget.setScreenOffset(offsetX, offsetY+localOffset, width, height);
+        }
+    }
 }

@@ -81,6 +81,36 @@ body.help {
     position: relative;
 }
 
+#comboPanelClickBait,
+#comboPanel {
+    display: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 105;
+}
+
+#comboPanelClickBait {
+    z-index: 106;
+    display: block;
+    position: absolute;
+}
+#comboPanelContent {
+    z-index: 107;
+}
+
+#comboPanel.displayed {
+    display: block;
+}
+
+#comboPanelContent {
+    background-color: aqua;
+    display: inline-block;
+    position: relative;
+}
+
 #menu {
     position:fixed;
     z-index:2;
@@ -88,7 +118,7 @@ body.help {
 
 #shortcutBar {
     position:fixed;
-    z-index:103;
+    z-index:110;
 }
 
 #statusEnd {
@@ -100,6 +130,7 @@ body.help {
     display: none;
 }
 
+#comboPanel,
 #popup,
 .border,
 .menu,
@@ -112,6 +143,7 @@ body.help {
     font-weight: bold;
 }
 
+.comboItem,
 .leftItem,
 .riteItem,
 .topMenuItem,
@@ -185,6 +217,7 @@ pre {
 .formItem.fcode,
 .menu,
 .options,
+#comboPanelContent,
 #popupContent,
 .border.selected {
     color: rgb(0, 0, 0);
@@ -194,6 +227,7 @@ pre {
     color: rgb(0, 0, 128);
 }
 
+.formItem-combo-zone,
 .border,
 .fcode {
     color: rgb(192, 192, 192);
@@ -217,10 +251,12 @@ pre {
 
 .active-title,
 .options,
+#comboPanelContent,
 #popupContent {
     background: rgb(192, 192, 192);
 }
 
+.formItem-combo-zone,
 #editorScreen,
 #viewerScreen,
 #dualPanel,

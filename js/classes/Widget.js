@@ -6,6 +6,33 @@ class Widget {
     constructor() {
         this._minWidth = undefined;
         this._minHeight = undefined;
+        this._screenOffsetX = 0;
+        this._screenOffsetY = 0;
+        this._actualWidth = 0;
+        this._actualHeight = 0;
+    }
+
+    setScreenOffset(offsetX, offsetY, width, height) {
+        this._screenOffsetX = offsetX;
+        this._screenOffsetY = offsetY;
+        this._actualWidth = width;
+        this._actualHeight = height;
+    }
+
+    get ActualWidth() {
+        return this._actualWidth || 0;
+    }
+
+    get ActualHeight() {
+        return this._actualHeight || 0;
+    }
+
+    get ScreenOffsetX() {
+        return this._screenOffsetX || 0;
+    }
+
+    get ScreenOffsetY() {
+        return this._screenOffsetY || 0;
     }
 
     get width() {

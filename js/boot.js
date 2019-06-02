@@ -6,5 +6,6 @@ readyPromise.then(() => {
     options.init();
     shortcutBar.init();
     menu.init();
+    combo.init();
     commander.context.activate();
 })

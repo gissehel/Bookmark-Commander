@@ -71,4 +71,15 @@ class FramedTitleWidget extends Widget {
         ]
     }
 
+    setScreenOffset(offsetX, offsetY, width, height) {
+        super.setScreenOffset(offsetX, offsetY, width, height);
+        if (this.child) {
+            if (this._title === null) {
+                this.child.setScreenOffset(offsetX, offsetY, width, height);
+            } else {
+                this.child.setScreenOffset(offsetX + 1, offsetY + 1, width - 2, height - 2);
+            }
+                
+        }
+    }
 }

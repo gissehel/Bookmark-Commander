@@ -114,11 +114,6 @@ commander.context
 commander.context
     .addMenu('Options')
     .addItem('&Options', () => options.show('options'))
-    .addSep()
-    .addItems([...Array(11).keys()].map(x => 10 + x).map(size => ({
-        title: `${size}px`,
-        command: () => dataAccess.setSize(size),
-    })))
     .endMenu()
 
 addSideMenuItems(commander.context.addMenu('Right'))
@@ -127,7 +122,7 @@ addSideMenuItems(commander.context.addMenu('Right'))
 context.create()
     .bindTo(options)
     .addKey('Escape', options.cancel)
-    .addKey('Enter', options.validate)
+    .addKey('Enter', () => options.activate())
     .addKey('Space', () => options.activate())
     .addKey('ArrowLeft', options.goPrev)
     .addKey('ArrowRight', options.goNext)
@@ -138,10 +133,25 @@ context.create()
     .addShortcut(10, 'Cancel', options.cancel)
     ;
 
+context.create()
+    .bindTo(combo)
+    .addKey('Escape', combo.cancel)
+    .addKey('Enter', combo.validate)
+    .addKey('Space', combo.validate)
+    .addKey('ArrowLeft', combo.goUp)
+    .addKey('ArrowRight', combo.goDown)
+    .addKey('ArrowUp', combo.goUp)
+    .addKey('ArrowDown', combo.goDown)
+    .addKey('Tab', combo.goDown)
+    .addShortcut(2, 'Select', combo.validate)
+    .addShortcut(10, 'Cancel', combo.cancel)
+    ;
+
 options
     .newForm('options', 'Options')
     .addGroup(null)
     .addCheckbox('Double click to activate', () => (!data.simpleClickOnSelectedItemToActivate), (value) => { dataAccess.simpleClickOnSelectedItemToActivate(!value) })
+    .addCombo('Font size :', dataAccess.getSizes, dataAccess.getSize, dataAccess.setSize)
     .endGroup()
     .register(options)
     ;

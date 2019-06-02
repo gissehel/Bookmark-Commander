@@ -74,12 +74,19 @@ mouse.onClickActions = {
     '.shortcut': (element) => {
         const dataIndex = element.attributes['data-index'].value;
         shortcutBar.processShortcut(`F${dataIndex}`)
-    }
+    },
+    '.comboItem': (element) => {
+        const dataIndex = element.attributes['dataIndex'].value * 1;
+        handleClickDoubleClick(element, () => combo.select(dataIndex), () => combo.selectValidate(dataIndex));
+    },
+    '#comboPanelClickBait': () => {
+        combo.cancel();
+    },
 }
 
 mouse.onClick = (event) => {
     const { srcElement } = event;
-    Object.keys(mouse.onClickActions).forEach((selector)=>{
+    Object.keys(mouse.onClickActions).forEach((selector) => {
         let element = srcElement.closest(selector);
         if (element) {
             mouse.onClickActions[selector](element);
