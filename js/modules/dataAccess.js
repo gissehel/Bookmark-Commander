@@ -1,7 +1,7 @@
 const dataAccess = {};
 
 dataAccess.init = () => {
-    dataAccess.calibre = createElement('pre', { id: 'calibre', textContent: ' ' }, { appendTo: document.body });
+    dataAccess.calibre = createElement('pre', { id: 'calibre' }, { text: ' ', appendTo: document.body });
 
     window.addEventListener('resize', (e) => dataAccess.onSizeChanged());
     dataAccess.reload();

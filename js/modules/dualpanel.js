@@ -48,29 +48,89 @@ dualPanel.getLineText = (prefix, n) => dualPanel[prefix].lines[n].innerText.trim
 
 dualPanel.redraw = () => {
     const panelIds = [...Array(data.panelHeight).keys()];
+    dualPanel.panelIds = panelIds;
 
-    dualPanel.element.innerHTML = sum([
-        "<span class='border'>",
-        "<span id='h1'><span id='leftroot'></span><span id='riteroot'></span></span>\n",
-        ...panelIds.map((counter) => sum([
-            `║<span id='left${counter}' class='leftItem border' data-index='${counter}'>${" ".repeat(data.panelWidth)}</span>║`,
-            `║<span id='rite${counter}' class='riteItem border' data-index='${counter}'>${" ".repeat(data.panelWidth)}</span>║`,
-            "\n",
-        ])),
-        `<span>╠${data.doubleBar.repeat(data.panelWidth)}╩╩${data.doubleBar.repeat(data.panelWidth)}╣</span>\n`,
-        `║<span id='url'>${" ".repeat((data.panelWidth + 1) * 2)}</span>║\n`,
-        `<span>╚${data.doubleBar.repeat((data.panelWidth + 1) * 2)}╝</span>\n`,
-        "</span>",
-    ]);
-    dualPanel.url = document.getElementById("url");
-    ['left', 'rite'].forEach((prefix) => {
-        dualPanel[prefix] = {};
-        const panel = dualPanel[prefix];
-        panel.root = document.getElementById(prefix + 'root');
-        panel.lines = panelIds.map((counter) => document.getElementById(`${prefix}${counter}`));
+    dualPanel.element.innerText = '';
+
+    const mainSpan = createElement('span', { className: 'border' }, { appendTo: dualPanel.element });
+    const titleSpan = createElement('span', null, { appendTo: mainSpan });
+    const left = dualPanel.left = {};
+    const right = dualPanel.rite = {};
+    left.root = createElement('span', null, { appendTo: titleSpan });
+    right.root = createElement('span', null, { appendTo: titleSpan });
+    createElement('span', null, { text: '\n', appendTo: titleSpan });
+    left.lines={};
+    right.lines={};
+    panelIds.forEach((counter) => {
+        const lineSpan = createElement('span', null, { appendTo: mainSpan });
+        createElement('span', null, { text: '║', appendTo: lineSpan });
+        left.lines[counter] = createElement('span', {className:'leftItem border', dataIndex: counter}, { appendTo: lineSpan });
+        createElement('span', null, { text: '║║', appendTo: lineSpan });
+        right.lines[counter] = createElement('span', {className:'riteItem border', dataIndex: counter}, { appendTo: lineSpan });
+        createElement('span', null, { text: '║\n', appendTo: lineSpan });
     });
+    createElement('span', null, { text: `╠${data.doubleBar.repeat(data.panelWidth)}╩╩${data.doubleBar.repeat(data.panelWidth)}╣\n`, appendTo: mainSpan });
+    createElement('span', null, { text: '║', appendTo: mainSpan });
+    dualPanel.url = createElement('span', null, { appendTo: mainSpan });
+    createElement('span', null, { text: '║\n', appendTo: mainSpan });
+    createElement('span', null, { text: `╚${data.doubleBar.repeat((data.panelWidth + 1) * 2)}╝`, appendTo: mainSpan });
+
     dualPanel.element.style.top = data.calibreHeight;
 
     menu.refresh();
     commander.init();
 }
+
+dualPanel.unselectItems = () => [...document.getElementsByClassName('selected')].forEach(element => element.classList.remove('selected'));
+
+dualPanel.setLine = (prefix, n, text, props) => {
+    props = props || {};
+    const isJs = props.isJs;
+    const isSelected = props.isSelected;
+    const id = props.id || null;
+    const filter = props.filter || null;
+    const highlighted = props.highlighted;
+
+    const element = dualPanel[prefix].lines[n];
+
+    if (!element) {
+        return;
+    }
+
+    if (isJs) {
+        element.classList.add('js');
+    } else {
+        element.classList.remove('js');
+    }
+
+    if (isSelected) {
+        element.classList.add('selected');
+    } else {
+        element.classList.remove('selected');
+    }
+
+    let innerHTML = (text).extend(data.panelWidth);
+
+    if (filter) {
+        innerHTML = innerHTML.replaceAll(filter, "\u2604");
+        innerHTML = innerHTML.replaceAll("\u2604", "<span class='paars'>" + filter + "</span>");
+    }
+
+    if (highlighted) {
+        innerHTML = "<span class='yellow'>" + innerHTML + "</span>";
+    }
+
+    element.innerHTML = innerHTML
+    element.commander = { id };
+};
+
+dualPanel.setUrl = (url) => {
+    const width = (data.panelWidth + 1) * 2;
+    let text = url;
+    if (url.length > width) {
+        text = url.substring(0, width);
+    } else {
+        text = url + ' '.repeat(width - url.length);
+    };
+    dualPanel.url.innerText = text;
+};

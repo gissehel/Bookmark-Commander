@@ -83,19 +83,30 @@ const sum = (array) => {
 
 const createElement = (name, properties, args) => {
     const element = document.createElement(name);
+    properties = properties || {};
     Object.keys(properties).forEach(key => {
-        element[key] = properties[key];
+        const value = properties[key];
+        if (key === 'className') {
+            key = 'class';
+        }
+        element.setAttribute(key, value);
     })
     args = args || {};
     if (args.appendTo && args.appendTo.appendChild) {
         args.appendTo.appendChild(element);
     }
+    if (args.text) {
+        element.innerText = args.text;
+    }
+    if (args.html) {
+        element.innerHTML = args.html;
+    }
     return element;
 }
 
-const readyPromise = new Promise((resolve, reject)=>{
+const readyPromise = new Promise((resolve, reject) => {
     if (document.readyState === 'complete' || (document.readyState !== 'loading' && !document.documentElement.doScroll)) {
-        setTimeout(()=>resolve(), 1);
+        setTimeout(() => resolve(), 1);
     } else {
         const onContentLoaded = () => {
             resolve();
@@ -105,7 +116,7 @@ const readyPromise = new Promise((resolve, reject)=>{
     }
 })
 
-const delay = (delay, data) => new Promise((resolve,reject) => setTimeout(()=>{resolve(data)}, delay));
+const delay = (delay, data) => new Promise((resolve, reject) => setTimeout(() => { resolve(data) }, delay));
 
 const iconURL = chrome.extension.getURL("/bc-16x16-l.png");
 const link = createElement("link", { type: 'image/x-icon', rel: 'shortcut icon', href: iconURL }, { appendTo: this.document.head });

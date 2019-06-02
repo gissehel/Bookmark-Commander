@@ -50,11 +50,11 @@ const handleClickDoubleClick = (() => {
 
 mouse.onClickActions = {
     '.leftItem': (element) => {
-        const n = element.attributes['data-index'].value * 1;
+        const n = element.attributes['dataIndex'].value * 1;
         handleClickDoubleClick(element, () => commander.onLeftClick(n), () => commander.onLeftDoubleClick(n));
     },
     '.riteItem': (element) => {
-        const n = element.attributes['data-index'].value * 1;
+        const n = element.attributes['dataIndex'].value * 1;
         handleClickDoubleClick(element, () => commander.onRightClick(n), () => commander.onRightDoubleClick(n));
     },
     '.topMenuItem': (element) => {

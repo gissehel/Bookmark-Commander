@@ -10,9 +10,8 @@ options.init = () => {
         'pre',
         {
             id: 'popupContent',
-            innerHTML: '',
         },
-        { appendTo: options.popup }
+        { text:'', appendTo: options.popup }
     );
     options.formIds = {};
     options.currentId = 0;

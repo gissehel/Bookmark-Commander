@@ -30,23 +30,28 @@ viewer.view = (id) => {
         content = js_beautify(content, { 'indent_size': 2 });
     }
 
-    viewer.element = createElement('pre', {
-        id: 'viewerScreen',
-        innerHTML: sum([
-            `<span id='viewerMenu' class='menu'>${findBookmarkTitle(id).extend()}</span>\n`,
-            `<textarea class='blue' cols='${data.screenWidth}' rows='3' id='viewerTitle' readonly='readonly'>${bookmark.title}</textarea>\n`,
-            `<span class='menu'>${"  URL".extend()}</span>\n`,
-            `<textarea class='blue' cols='${data.screenWidth}' rows='${data.panelHeight}' id='viewerUrl' readonly='readonly'>${content}</textarea>\n`,
-        ]),
-    }, { appendTo: document.body });
+    viewer.element = createElement(
+        'pre', {
+            id: 'viewerScreen',
+        }, {
+            html: sum([
+                `<span id='viewerMenu' class='menu'>${findBookmarkTitle(id).extend()}</span>\n`,
+                `<textarea class='blue' cols='${data.screenWidth}' rows='3' id='viewerTitle' readonly='readonly'>${bookmark.title}</textarea>\n`,
+                `<span class='menu'>${"  URL".extend()}</span>\n`,
+                `<textarea class='blue' cols='${data.screenWidth}' rows='${data.panelHeight}' id='viewerUrl' readonly='readonly'>${content}</textarea>\n`,
+            ]),
+            appendTo: document.body
+        }
+    );
 
     viewer.url = document.getElementById('viewerUrl');
     viewer.title = document.getElementById('viewerTitle');
 
+    console.log({ title: viewer.title })
     // Ugly quirk, because width in columns for a textarea isn't enought
     viewer.title.style.width = data.screenWidth * data.calibreWidth;
     viewer.title.style.height = 3 * data.calibreHeight;
-    
+
     viewer.url.style.width = data.screenWidth * data.calibreWidth;
     viewer.url.style.height = data.panelHeight * data.calibreHeight;
 

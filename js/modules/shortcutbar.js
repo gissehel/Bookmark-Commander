@@ -13,8 +13,8 @@ shortcutBar.init = () => {
         const shortcut = createElement('span', { className: 'shortcut', id: `shortcut-${index}` }, { appendTo: shortcutBar.dropdown });
         shortcut.setAttribute('data-index', index);
         shortcutBar.shortcuts[index] = shortcut;
-        createElement('span', { className: 'fcode', innerText: `F${index}`.padStart(3, ' ') }, { appendTo: shortcut });
-        shortcutBar.names[index] = createElement('span', { className: 'menu', innerText: "".padEnd(6, ' ') }, { appendTo: shortcut });
+        createElement('span', { className: 'fcode' }, { text: `F${index}`.padStart(3, ' '), appendTo: shortcut });
+        shortcutBar.names[index] = createElement('span', { className: 'menu' }, { text: "".padEnd(6, ' '), appendTo: shortcut });
     })
     shortcutBar.statusEnd = createElement('span', { className: 'fcode' }, { appendTo: shortcutBar.dropdown });
     shortcutBar.statusWarning = createElement('span', { className: 'statusWarning' }, { appendTo: shortcutBar.statusEnd });

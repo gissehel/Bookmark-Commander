@@ -79,17 +79,10 @@ commander.setPanel = (panelConfig) => {
     //Set the folder structure on top
     const title = findBookmarkTitle(panelConfig.id);
 
-    // dualPanel[panelConfig.prefix].root.innerText = "╔" + (title + data.doubleBar.repeat(data.panelWidth)).left(data.panelWidth) + "╗";
     dualPanel.setRootText(panelConfig.prefix, title, panelConfig.active);
 
     //Clear out the children
-    for (let counter = 0; counter < data.panelHeight; counter++) {
-        const line = dualPanel[panelConfig.prefix].lines[counter];
-        if (line) {
-            line.innerText = (" ".repeat(data.panelWidth));
-            line.classList.remove("selected");
-        }
-    }
+    // dualPanel.panelIds.forEach((counter) => dualPanel.setLine(panelConfig.prefix, counter, '', {}));
 
     //We merely do this to facilitate the following trick
     const children = [].concat(filterBookmarks(o.children, panelConfig.filter));
@@ -111,95 +104,68 @@ commander.setPanel = (panelConfig) => {
     delete panelConfig.selectedBookmark;
 
     //Go over the children ( folders + bookmarks )
-    for (counter = 0; counter < data.panelHeight && counter + panelConfig.scroll < children.length; counter++) {
-        //Get the child
-        let child = children[counter + panelConfig.scroll];
-        //Default bookmark prefix and style
-        let prefix = " ";
-        let isJs = false;
-        let isSelected = false;
+    dualPanel.panelIds.forEach((counter) => {
+        if (counter + panelConfig.scroll < children.length) {
+            //Get the child
+            let child = children[counter + panelConfig.scroll];
+            //Default bookmark prefix and style
+            let prefix = " ";
+            let isJs = false;
+            let isSelected = false;
 
-        //This should never happen ™
-        if (!child) {
-            child = { url: '', title: '' }
-        }
-
-        //If there are no children though, take out the slash
-        if (child.children) {
-            prefix = "/";
-        }
-
-        //Are we dealing with a tree ? Then we have a slightly more complicated prefix
-        if (panelConfig.id == "tree") {
-            if (!child.depth & child.depth !== 0) {
-                prefix = "!ERROR(no depth)"
-            } else if (child.depth === 0) {
-                prefix = "/"
-            } else {
-                prefix = " ".repeat(child.depth - 2) + "|-"
+            //This should never happen ™
+            if (!child) {
+                child = { url: '', title: '' }
             }
-        }
 
-        //Are we looking at a javascript ?
-        if (child.url && child.url.startsWith("javascript")) {
-            isJs = true;
-        }
-        //If we look at the selected one the style is different
-        if (counter == panelConfig.selected && panelConfig.active) {
-            isSelected = true;
-            //Lets also show the url
-            if (child.url) {
-                let url = child.url.left(((data.panelWidth + 1) * 2)).extend((data.panelWidth + 1) * 2);
-                dualPanel.url.innerText = url;
-            } else if (panelConfig.id == "tree") {
-                let url = findBookmarkTitle(child.id).left(((data.panelWidth + 1) * 2)).extend((data.panelWidth + 1) * 2);
-                dualPanel.url.innerText = url;
-            } else {
-                dualPanel.url.innerText = " ".repeat((data.panelWidth + 1) * 2);
+            //If there are no children though, take out the slash
+            if (child.children) {
+                prefix = "/";
             }
-            panelConfig.selectedBookmark = child.id;
-        }
 
-        //Get the element
-        const element = dualPanel[panelConfig.prefix].lines[counter];
+            //Are we dealing with a tree ? Then we have a slightly more complicated prefix
+            if (panelConfig.id == "tree") {
+                if (!child.depth & child.depth !== 0) {
+                    prefix = "!ERROR(no depth)"
+                } else if (child.depth === 0) {
+                    prefix = "/"
+                } else {
+                    prefix = " ".repeat(child.depth - 2) + "|-"
+                }
+            }
 
-        //set the style
-        if (isJs) {
-            element.classList.add('js');
+            //Are we looking at a javascript ?
+            if (child.url && child.url.startsWith("javascript")) {
+                isJs = true;
+            }
+            //If we look at the selected one the style is different
+            if (counter == panelConfig.selected && panelConfig.active) {
+                isSelected = true;
+                //Lets also show the url
+                if (child.url) {
+                    dualPanel.setUrl(child.url);
+                } else if (panelConfig.id == "tree") {
+                    dualPanel.setUrl(findBookmarkTitle(child.id));
+                } else {
+                    dualPanel.setUrl('');
+                }
+                panelConfig.selectedBookmark = child.id;
+            }
+
+            dualPanel.setLine(panelConfig.prefix, counter, prefix + child.title, {
+                isJs,
+                isSelected,
+                id: child.id,
+                filter: panelConfig.filter,
+                highlighted: panelConfig.selector && ((child.title.has(panelConfig.selector) || panelConfig.selector == "*") && child.title != ".."),
+            });
         } else {
-            element.classList.remove('js');
+            dualPanel.setLine(panelConfig.prefix, counter, '', {});
         }
-        if (isSelected) {
-            element.classList.add('selected');
-        } else {
-            element.classList.remove('selected');
-        }
-
-        //Set the content
-        let innerHTML = (prefix + child.title).extend(data.panelWidth);
-
-        //Highlight filter if any
-        if (panelConfig.filter) {
-            innerHTML = innerHTML.replaceAll(panelConfig.filter, "\u2604");
-            innerHTML = innerHTML.replaceAll("\u2604", "<span class='paars'>" + panelConfig.filter + "</span>");
-        }
-
-        //Highlight filter if any
-        if (panelConfig.selector) {
-            if ((innerHTML.has(panelConfig.selector) || panelConfig.selector == "*") && child.title != "..") {
-                innerHTML = "<span class='yellow'>" + innerHTML + "</span>";
-            }
-        }
-
-        //Set the final innerHTML only now to prevent potential flickering
-        element.innerHTML = innerHTML
-
-        //Set the new index
-        element.commander = { id: child.id };
-    }
+    });
 
     //Since speed is of no concern, I just redraw the screen if we missed the selected item due to deletion ;)
-    if (panelConfig.selected >= counter) {
+    if (panelConfig.selected >= Math.min(children.length - panelConfig.scroll, data.panelHeight)) {
         commander.end();
     }
 }
@@ -231,17 +197,10 @@ commander.setInfoPanel = (panelConfig) => {
     }
 
     //Do not set the folder structure on top
-    // dualPanel[panelConfig.prefix].root.innerText = "╔" + data.doubleBar.repeat(data.panelWidth) + "╗";
     dualPanel.setRootText(panelConfig.prefix, null, panelConfig.active);
 
     //Clear out the children
-    for (let counter = 0; counter < data.panelHeight; counter++) {
-        const line = dualPanel[panelConfig.prefix].lines[counter];
-        if (line) {
-            line.innerText = (" ".repeat(data.panelWidth));
-            line.classList.remove('selected');
-        }
-    }
+    dualPanel.panelIds.forEach((counter) => dualPanel.setLine(panelConfig.prefix, counter, '', {}));
 
     //Deal with root, put some arbitrary value
     if (o.id == "0") {
@@ -252,58 +211,43 @@ commander.setInfoPanel = (panelConfig) => {
 
     let line = 0;
 
-    const lines = dualPanel[panelConfig.prefix].lines;
-    let element = lines[line++];
-
     if (o.title) {
-        element.innerHTML = (o.title).extend(data.panelWidth);
+        dualPanel.setLine(panelConfig.prefix, line, o.title, {});
     }
 
     line++;
+    line++;
 
     if (o.dateAdded) {
-        element = lines[line++];
         let d = new Date()
         d.setTime(o.dateAdded);
-        element.innerHTML = ("  added:    " + d.format()).extend(data.panelWidth);
+        dualPanel.setLine(panelConfig.prefix, line++, "  added:    " + d.format(), {});
     }
 
     if (o.dateGroupModified) {
-        element = lines[line++];
         let d = new Date()
         d.setTime(o.dateGroupModified);
-        element.innerHTML = ("  changed:  " + d.format()).extend(data.panelWidth);
+        dualPanel.setLine(panelConfig.prefix, line++, "  changed:  " + d.format(), {});
     }
 
-    element = lines[line++];
-    element.innerHTML = ("  id:       " + o.id).extend(data.panelWidth);
+    dualPanel.setLine(panelConfig.prefix, line++, "  id:       " + o.id, {});
+    dualPanel.setLine(panelConfig.prefix, line++, "  index:    " + o.index, {});
+    dualPanel.setLine(panelConfig.prefix, line++, "  parent:   " + o.parentId, {});
 
-    element = lines[line++];
-    element.innerHTML = ("  index:    " + o.index).extend(data.panelWidth);
-
-    element = lines[line++];
-    element.innerHTML = ("  parent:   " + o.parentId).extend(data.panelWidth);
-
-    element = lines[line++];
     if (o.children) {
-        element.innerHTML = ("  children: " + o.children.length).extend(data.panelWidth);
+        dualPanel.setLine(panelConfig.prefix, line++, "  children: " + o.children.length, {});
     } else {
         //Sugar
         let url = o.url;
 
+        dualPanel.setLine(panelConfig.prefix, line++, '', {});
+
         while (url.length > data.panelWidth) {
-            //Get the victim, leave implicit space for first entry
-            element = lines[line++];
-            //content
-            element.innerHTML = url.left(data.panelWidth);
-            //remainder
+            dualPanel.setLine(panelConfig.prefix, line++, url.left(data.panelWidth), {});
             url = url.substring(data.panelWidth);
         }
         if (url.length > 0) {
-            //Get the victim
-            element = lines[line++];
-            //content
-            element.innerHTML = url.extend(data.panelWidth);
+            dualPanel.setLine(panelConfig.prefix, line++, url, {});
         }
     }
 }
@@ -434,7 +378,7 @@ commander.edit = () => {
 
 /* MENU */
 commander.menu = () => {
-    [...document.getElementsByClassName('selected')].forEach(element => element.classList.remove('selected'));
+    dualPanel.unselectItems();
     menu.context.activate();
     menu.show();
 }
@@ -446,7 +390,7 @@ commander.back = () => {
     if (panel.id == "search") {
         return commander.select("0");
     }
-    
+
     const text = dualPanel.getLineText(panel.prefix, 0);
 
     if (text == "/..") {

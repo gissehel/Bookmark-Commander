@@ -37,15 +37,19 @@ editor.view = (id) => {
     }
     editor.bookmark.content = content;
 
-    editor.element = createElement('pre', {
-        id: 'editorScreen',
-        innerHTML: sum([
-            `<span id='editorMenu' class='menu'>${("  Folder/Bookmark").extend()}</span>\n`,
-            `<textarea class='blue' cols='${data.screenWidth}' rows='3' id='editorTitle'>${bookmark.title}</textarea>\n`,
-            `<span class='menu'>${("  URL").extend()}</span>\n`,
-            `<textarea class='blue' cols='${(data.screenWidth)}' rows='${(data.panelHeight)}' id='editorUrl'${editor.urlReadOnly}>${content}</textarea>\n`,
-        ]),
-    }, { appendTo: document.body });
+    editor.element = createElement(
+        'pre', {
+            id: 'editorScreen',
+        }, {
+            html: sum([
+                `<span id='editorMenu' class='menu'>${("  Folder/Bookmark").extend()}</span>\n`,
+                `<textarea class='blue' cols='${data.screenWidth}' rows='3' id='editorTitle'>${bookmark.title}</textarea>\n`,
+                `<span class='menu'>${("  URL").extend()}</span>\n`,
+                `<textarea class='blue' cols='${(data.screenWidth)}' rows='${(data.panelHeight)}' id='editorUrl'${editor.urlReadOnly}>${content}</textarea>\n`,
+            ]),
+            appendTo: document.body
+        }
+    );
 
     // editor.menu = document.getElementById('editorMenu');
     editor.url = document.getElementById('editorUrl');

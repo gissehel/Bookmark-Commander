@@ -80,7 +80,7 @@ menu.assignIndent = (definition) => {
     let titleHtml = "";
 
     definition.mainItems.forEach((item, itemIndex) => {
-        item.indent = titleText.length + 1;
+        item.indent = titleText.length;
 
         titleHtml += ` <span class="topMenuItem" id="menu_${item.caption}" data-index='${itemIndex}'> ${item.caption} </span>  `;
         titleText += `  ${item.caption}   `;
