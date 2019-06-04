@@ -72,6 +72,7 @@ menu.assignLeftRights = (definition) => {
         rightIndex = (index + 1) % len;
         definition.mainItems[index].left = definition.mainItems[leftIndex];
         definition.mainItems[index].right = definition.mainItems[rightIndex];
+        definition.mainItems[index].index = index;
     }
 }
 
@@ -112,7 +113,9 @@ menu.initDefinition = (definition) => {
 
 menu.refresh = () => {
     if (menu.definition && menu.definition.titleHtml) {
-        document.getElementById('menu').innerHTML = menu.definition.titleHtml + ''.extend(data.screenWidth - menu.definition.titleText.length);
+        menu.bar.innerHTML = menu.definition.titleHtml + ''.extend(data.screenWidth - menu.definition.titleText.length);
+        menu.highlightedTopMenuItem = null;
+        menu.highlightedMenuItem = null;
     }
 }
 
@@ -137,15 +140,8 @@ menu.show = (n) => {
     menu.isOut = true;
 
     //Color the name of the menu
-    [...document.getElementsByClassName('menuItem')].forEach(element => element.classList.remove('fcode'));
-    [...document.getElementsByClassName('topMenuItem')].forEach(element => element.classList.remove('fcode'));
-    document.getElementById('menu_' + menu.current.caption).classList.add('fcode');
-
-    //Highlight the selected menu entry
-    const menuItem = document.getElementById('menuItem_' + menu.selection);
-    if (menuItem) {
-        menuItem.classList.add('fcode');
-    }
+    menu.highlightTopMenuItem(menu.bar.children[menu.current.index]);
+    menu.highlightMenuItem(document.getElementById('menuItem_' + menu.selection));
 }
 
 menu.select = (keys, n) => {
@@ -159,12 +155,36 @@ menu.select = (keys, n) => {
         }
         menu.selection = n;
     }
-    const current = menu.current;
-    [...document.getElementsByClassName('menuItem')].forEach(element => element.classList.remove('fcode'));
+    menu.highlightMenuItem(document.getElementById('menuItem_' + menu.selection));
+}
 
-    const menuItem = document.getElementById('menuItem_' + menu.selection);
-    if (menuItem) {
-        menuItem.classList.add('fcode');
+menu.unhighlightMenuItem = () => {
+    if (menu.highlightedMenuItem) {
+        menu.highlightedMenuItem.classList.remove('fcode');
+        menu.highlightedMenuItem = null;
+    }
+}
+
+menu.highlightMenuItem = (element) => {
+    menu.unhighlightMenuItem();
+    if (element) {
+        menu.highlightedMenuItem = element;
+        menu.highlightedMenuItem.classList.add('fcode');
+    }
+}
+
+menu.unhighlightTopMenuItem = () => {
+    if (menu.highlightedTopMenuItem) {
+        menu.highlightedTopMenuItem.classList.remove('fcode');
+        menu.highlightedTopMenuItem = null;
+    }
+}
+
+menu.highlightTopMenuItem = (element) => {
+    menu.unhighlightTopMenuItem();
+    if (element) {
+        menu.highlightedTopMenuItem = element;
+        menu.highlightedTopMenuItem.classList.add('fcode');
     }
 }
 
@@ -208,8 +228,8 @@ menu.exit = () => {
     menu.dropdown.classList.remove('on');
     menu.dropdown.classList.add('off');
     menu.isOut = false;
-    [...document.getElementsByClassName('topMenuItem')].forEach(element => element.classList.remove('fcode'));
-    [...document.getElementsByClassName('menuItem')].forEach(element => element.classList.remove('fcode'));
+    menu.unhighlightMenuItem();
+    menu.unhighlightTopMenuItem();
 
     commander.reInit();
     commander.context.activate();
