@@ -43,7 +43,11 @@ dualPanel.setRootText = (prefix, title, active) => {
     }
 
 };
+
 dualPanel.getCommanderId = (prefix, n) => dualPanel[prefix].lines[n].commander.id;
+
+dualPanel.getCommanderIdFromPanel = (panel) => dualPanel.getCommanderId(panel.prefix, panel.selected);
+
 dualPanel.getLineText = (prefix, n) => dualPanel[prefix].lines[n].innerText.trim();
 
 dualPanel.redraw = () => {

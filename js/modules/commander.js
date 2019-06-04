@@ -278,7 +278,7 @@ commander.swapPanels = () => {
 /* Prelude to SELECT, ENTER */
 commander.delve = () => {
     const panel = commander.getActivePanel();
-    const id = dualPanel.getCommanderId(panel.prefix, panel.selected);
+    const id = dualPanel.getCommanderIdFromPanel(panel);
 
     if (panel.id != "tree") {
         return commander.select(id);
@@ -340,7 +340,7 @@ commander.view = () => {
         dualPanel.hide();
 
         const panel = commander.getActivePanel();
-        const id = dualPanel.getCommanderId(panel.prefix, panel.selected);
+        const id = dualPanel.getCommanderIdFromPanel(panel);
 
         if (id != "0") {
             viewer.view(id);
@@ -368,7 +368,7 @@ commander.edit = () => {
         return;
     }
 
-    const id = dualPanel.getCommanderId(panel.prefix, panel.selected);
+    const id = dualPanel.getCommanderIdFromPanel(panel);
 
     if (id != "0") {
         commander.editing = true;
@@ -521,7 +521,7 @@ commander.copy = () => {
     }
 
     //Copying from
-    const from_id = dualPanel.getCommanderId(from.prefix, from.selected);
+    const from_id = dualPanel.getCommanderIdFromPanel(from.prefix);
     const bookmark = findBookmarkId(commander.bookmarks, from_id);
 
     const newBookmark = { parentId: to.id };
@@ -566,7 +566,7 @@ commander.copySelection = (from, to) => {
 /* MOVE */
 commander.move = () => {
     const panel = commander.getActivePanel();
-    const id = dualPanel.getCommanderId(panel.prefix, panel.selected);
+    const id = dualPanel.getCommanderIdFromPanel(panel);
     const bookmark = findBookmarkId(commander.bookmarks, id);
 
     const to = commander.getInactivePanel();
@@ -619,7 +619,7 @@ commander.moveSelection = (from, to) => {
 /* DELETE */
 commander.delete = () => {
     const panel = commander.getActivePanel();
-    const id = dualPanel.getCommanderId(panel.prefix, panel.selected);
+    const id = dualPanel.getCommanderIdFromPanel(panel);
     const bookmark = findBookmarkId(commander.bookmarks, id);
 
     //Are we copying a selection ?
@@ -706,7 +706,7 @@ commander.equalize = () => {
 /* PLUS , MOVE UP */
 commander.moveUp = () => {
     const panel = commander.getActivePanel();
-    const id = dualPanel.getCommanderId(panel.prefix, panel.selected);
+    const id = dualPanel.getCommanderIdFromPanel(panel);
     const bookmark = findBookmarkId(commander.bookmarks, id);
 
     if (panel.id == 0) {
@@ -734,7 +734,7 @@ commander.moveUp = () => {
 /* DOWN, MOVE DOWN */
 commander.moveDown = () => {
     const panel = commander.getActivePanel();
-    const id = dualPanel.getCommanderId(panel.prefix, panel.selected);
+    const id = dualPanel.getCommanderIdFromPanel(panel);
     let bookmark = findBookmarkId(commander.bookmarks, id);
 
     if (panel.id == 0) {
@@ -824,7 +824,7 @@ commander.setList = (panel) => {
     panel.info = false;
 
     if (panel.id == "tree") {
-        const id = dualPanel.getCommanderId(panel.prefix, panel.selected);
+        const id = dualPanel.getCommanderIdFromPanel(panel);
         commander.select(id);
     }
 }
