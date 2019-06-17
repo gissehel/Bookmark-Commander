@@ -59,9 +59,9 @@ commander.setPanel = async (panelConfig) => {
         return commander.setInfoPanel(panelConfig);
     }
 
-    const bookmark = await vfs.findItemById(panelConfig.id);
+    const item = await vfs.findItemById(panelConfig.id);
     //Deal with trouble
-    if (!bookmark || !bookmark.children) {
+    if (!item || !item.children) {
         //If we are looking at a dead folder by any chance, just go to the root
         if (panelConfig.id != "0") {
             panelConfig.id = "0";
@@ -82,12 +82,12 @@ commander.setPanel = async (panelConfig) => {
     // dualPanel.panelIds.forEach((counter) => dualPanel.setLine(panelConfig.prefix, counter, '', {}));
 
     //We merely do this to facilitate the following trick
-    const children = [...await vfs.filter(bookmark.children, panelConfig.filter)];
+    const children = [...await vfs.filter(item.children, panelConfig.filter)];
 
     //Do we have a parent ?, if so top the entries with '..'
-    if (bookmark.parentId) {
+    if (item.parentId) {
         children.reverse();
-        children.push({ children: true, title: "..", id: bookmark.parentId });
+        children.push({ children: true, title: "..", id: item.parentId });
         children.reverse();
     }
 
@@ -175,10 +175,10 @@ commander.setPanel = async (panelConfig) => {
  **
  ****/
 commander.setInfoPanel = async (panelConfig) => {
-    const bookmark = await vfs.findItemById(panelConfig.other.selectedBookmark)
+    const item = await vfs.findItemById(panelConfig.other.selectedBookmark)
 
     //Deal with trouble
-    if (!bookmark) {
+    if (!item) {
         //If we are looking at a dead folder by any chance, just go to the root
         if (panelConfig.id != "0") {
             panelConfig.id = "0";
@@ -202,42 +202,42 @@ commander.setInfoPanel = async (panelConfig) => {
     dualPanel.panelIds.forEach((counter) => dualPanel.setLine(panelConfig.prefix, counter, '', {}));
 
     //Deal with root, put some arbitrary value
-    if (bookmark.id == "0") {
-        bookmark.title = "root";
-        bookmark.index = 0;
-        bookmark.parentId = 0;
+    if (item.id == "0") {
+        item.title = "root";
+        item.index = 0;
+        item.parentId = 0;
     }
 
     let line = 0;
 
-    if (bookmark.title) {
-        dualPanel.setLine(panelConfig.prefix, line, bookmark.title, {});
+    if (item.title) {
+        dualPanel.setLine(panelConfig.prefix, line, item.title, {});
     }
 
     line++;
     line++;
 
-    if (bookmark.dateAdded) {
+    if (item.dateAdded) {
         let d = new Date()
-        d.setTime(bookmark.dateAdded);
+        d.setTime(item.dateAdded);
         dualPanel.setLine(panelConfig.prefix, line++, "  added:    " + d.format(), {});
     }
 
-    if (bookmark.dateGroupModified) {
+    if (item.dateGroupModified) {
         let d = new Date()
-        d.setTime(bookmark.dateGroupModified);
+        d.setTime(item.dateGroupModified);
         dualPanel.setLine(panelConfig.prefix, line++, "  changed:  " + d.format(), {});
     }
 
-    dualPanel.setLine(panelConfig.prefix, line++, "  id:       " + bookmark.id, {});
-    dualPanel.setLine(panelConfig.prefix, line++, "  index:    " + bookmark.index, {});
-    dualPanel.setLine(panelConfig.prefix, line++, "  parent:   " + bookmark.parentId, {});
+    dualPanel.setLine(panelConfig.prefix, line++, "  id:       " + item.id, {});
+    dualPanel.setLine(panelConfig.prefix, line++, "  index:    " + item.index, {});
+    dualPanel.setLine(panelConfig.prefix, line++, "  parent:   " + item.parentId, {});
 
-    if (bookmark.children) {
-        dualPanel.setLine(panelConfig.prefix, line++, "  children: " + bookmark.children.length, {});
+    if (item.children) {
+        dualPanel.setLine(panelConfig.prefix, line++, "  children: " + item.children.length, {});
     } else {
         //Sugar
-        let url = bookmark.url;
+        let url = item.url;
 
         dualPanel.setLine(panelConfig.prefix, line++, '', {});
 
@@ -298,12 +298,12 @@ commander.select = async (index) => {
     const panel = commander.getActivePanel();
 
     //Do we want to select this for real ?
-    const bookmark = await vfs.findItemById(index);
+    const item = await vfs.findItemById(index);
 
     //Go deeper if its a folder, or as the case may be, higher
-    if (bookmark.children) {
+    if (item.children) {
         let nextSelected = 0;
-        bookmark.children.map(child => child.id).forEach((id, pos) => {
+        item.children.map(child => child.id).forEach((id, pos) => {
             if (panel.id === id) {
                 nextSelected = pos + (index === "0" ? 0 : 1);
             }
@@ -313,9 +313,9 @@ commander.select = async (index) => {
         panel.scroll = 0;
         panel.selector = "";
         await commander.draw();
-    } else if (bookmark.url && bookmark.url.startsWith(["http", "file"])) {
+    } else if (item.url && item.url.startsWith(["http", "file"])) {
         //Open if its a bookmark
-        chrome.tabs.getCurrent((tab) => chrome.tabs.create({ 'url': bookmark.url, 'index': tab.index }, null));
+        chrome.tabs.getCurrent((tab) => chrome.tabs.create({ 'url': item.url, 'index': tab.index }, null));
     }
     //Yes, do nuttin if its js, them evil hackers cannought be trusted
 }
@@ -527,13 +527,13 @@ commander.copy = async () => {
     //Copying from
     const from_id = dualPanel.getCommanderIdFromPanel(from);
 
-    const bookmark = await vfs.findItemById(from_id);
-    await vfs.createItem(to.id, (newBookmark) => {
-        if (bookmark.title) {
-            newBookmark.title = bookmark.title;
+    const item = await vfs.findItemById(from_id);
+    await vfs.createItem(to.id, (newItem) => {
+        if (item.title) {
+            newItem.title = item.title;
         }
-        if (bookmark.url) {
-            newBookmark.url = bookmark.url;
+        if (item.url) {
+            newItem.url = item.url;
         }
     });
     await commander.reInit();
@@ -541,22 +541,22 @@ commander.copy = async () => {
 
 /* COPY SELECTION */
 commander.copySelection = async (from, to) => {
-    const bookmark = await vfs.findItemById(from.id);
+    const item = await vfs.findItemById(from.id);
 
     //Minimal paranoia
-    if (!bookmark || !bookmark.children) {
+    if (!item || !item.children) {
         return
     }
 
-    const children = [...await vfs.filter(bookmark.children, from.filter)];
+    const children = [...await vfs.filter(item.children, from.filter)];
 
     for (let counter = 0; counter < children.length; counter++) {
         if (children[counter].url && children[counter].url.has(from.selector) || from.selector == "*") {
-            let bookmark = children[counter];
+            let item = children[counter];
             await vfs.createItem(to.id, (newBookmark) => {
-                newBookmark.title = bookmark.title;
-                if (bookmark.url) {
-                    newBookmark.url = bookmark.url;
+                newBookmark.title = item.title;
+                if (item.url) {
+                    newBookmark.url = item.url;
                 }
             });
         }
@@ -569,7 +569,7 @@ commander.copySelection = async (from, to) => {
 commander.move = async () => {
     const panel = commander.getActivePanel();
     const id = dualPanel.getCommanderIdFromPanel(panel);
-    const bookmark = await vfs.findItemById(id);
+    const item = await vfs.findItemById(id);
     const to = commander.getInactivePanel();
 
     if (to.id == "0") {
@@ -592,19 +592,19 @@ commander.move = async () => {
         return await commander.moveSelection(panel, to);
     }
 
-    await vfs.move(bookmark.id, to.id);
+    await vfs.move(item.id, to.id);
     await commander.reInit();
 }
 
 /* MOVE SELECTION */
 commander.moveSelection = async (from, to) => {
-    const bookmark = await vfs.findItemById(from.id)
+    const item = await vfs.findItemById(from.id)
     //Minimal paranoia
-    if (!bookmark || !bookmark.children) {
+    if (!item || !item.children) {
         return
     }
 
-    const children = [... await vfs.filter(bookmark.children, from.filter)];
+    const children = [... await vfs.filter(item.children, from.filter)];
 
     for (let counter = 0; counter < children.length; counter++) {
         if (children[counter].url && children[counter].url.has(from.selector) || from.selector == "*") {
@@ -633,14 +633,14 @@ commander.delete = async () => {
 
 /* DELETE SELECTION */
 commander.deleteSelection = async (from) => {
-    const bookmark = await vfs.findItemById(from.id);
+    const item = await vfs.findItemById(from.id);
 
     //Minimal paranoia
-    if (!bookmark || !bookmark.children) {
+    if (!item || !item.children) {
         return
     }
 
-    const children = [...await vfs.filter(bookmark.children, from.filter)];
+    const children = [...await vfs.filter(item.children, from.filter)];
 
     for (let counter = 0; counter < children.length; counter++) {
         if (children[counter].url && children[counter].url.has(from.selector) || from.selector == "*") {
@@ -658,7 +658,7 @@ commander.createFolder = async () => {
     const folderText = prompt("Enter folder name", "");
 
     if (folderText) {
-        const { bookmark, finalPos } = await vfs.createFolder(folderText, panel.id);
+        const { item, finalPos } = await vfs.createFolder(folderText, panel.id);
         if (pos !== null) {
             panel.selected = finalPos + (panel.id === "0" ? 0 : 1);
             panel.scroll = 0;
@@ -684,7 +684,7 @@ commander.equalize = async () => {
 commander.moveUp = async () => {
     const panel = commander.getActivePanel();
     const id = dualPanel.getCommanderIdFromPanel(panel);
-    const bookmark = await vfs.findItemById(id);
+    const item = await vfs.findItemById(id);
     if (panel.id == 0) {
         return;
     }
@@ -693,7 +693,7 @@ commander.moveUp = async () => {
         return;
     }
 
-    if (bookmark.index == 0) {
+    if (item.index == 0) {
         return;
     }
 
@@ -703,7 +703,7 @@ commander.moveUp = async () => {
         panel.selected--;
     }
 
-    await vfs.move(id, panel.id, bookmark.index - 1);
+    await vfs.move(id, panel.id, item.index - 1);
     await commander.reInit();
 }
 
@@ -711,7 +711,7 @@ commander.moveUp = async () => {
 commander.moveDown = async () => {
     const panel = commander.getActivePanel();
     const id = dualPanel.getCommanderIdFromPanel(panel);
-    let bookmark = await vfs.findItemById(id);
+    let item = await vfs.findItemById(id);
     if (panel.id == 0) {
         return;
     }
@@ -722,8 +722,8 @@ commander.moveDown = async () => {
 
     //now see who is under their
     const parent = await vfs.findItemById(panel.id);
-    bookmark = parent.children[bookmark.index + 1];
-    if (bookmark) {
+    item = parent.children[item.index + 1];
+    if (item) {
         //We are evilly counting on the 'hmmm I think this got deleted feature', muhaha is in order
         if (panel.selected == data.panelHeight - 1) {
             panel.scroll++;
@@ -731,7 +731,7 @@ commander.moveDown = async () => {
             panel.selected++;
         }
 
-        await vfs.move(bookmark.id, panel.id, bookmark.index - 1);
+        await vfs.move(item.id, panel.id, item.index - 1);
         await commander.reInit();
     }
 }

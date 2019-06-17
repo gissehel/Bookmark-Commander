@@ -9,15 +9,29 @@ vfs.init = () => {
     });
 }
 
+/**
+ * @param {string} query
+ * @returns {Promise<Item>}
+ */
 vfs.search = (query) => {
     return new Promise((resolve, reject) => {
         chrome.bookmarks.search(query, (result) => resolve(result));
     });
 };
 
+/**
+ * @callback onInitCallback
+ * @param {Item} item;
+ */
+
+/**
+ * @param {number} parentId
+ * @param {onInitCallback} onInit
+ */
 vfs.createItem = (parentId, onInit) => {
     return new Promise((resolve, reject) => {
-        const newBookmark = { parentId };
+        const newBookmark = new BookmarkItem({});
+        newBookmark.parentId = parentId;        
         if (onInit) {
             onInit(newBookmark);
         }
@@ -25,30 +39,50 @@ vfs.createItem = (parentId, onInit) => {
     });
 }
 
+/**
+ * @typedef {Object} CreateFolderResult
+ * @property {Item} item
+ * @property {number} finalPos
+ */
+
+/**
+ * @param {string} name
+ * @param {number} parentId
+ * @param {onInitCallback} onInit
+ * @returns {Promise<CreateFolderResult>}
+ */
 vfs.createFolder = (name, parentId, onInit) => {
     return new Promise((resolve, reject) => {
-        const newBookmark = { parentId, title: name };
+        const newBookmark = new BookmarkItem({});
+        newBookmark.parentId = parentId;
+        newBookmark.title = name;
         if (onInit) {
             onInit(newBookmark);
         }
         chrome.bookmarks.create(newBookmark, (newItem) => {
             chrome.bookmarks.getTree((bookmarks) => {
                 vfs.bookmarks = bookmarks;
-                const bookmark = findBookmarkId(bookmarks, parentId);
+                const item = findBookmarkId(bookmarks, parentId);
                 let finalPos = null;
-                bookmark.children.map(child => child.id).forEach((id, pos) => {
+                item.children.map(child => child.id).forEach((id, pos) => {
                     if (id === newItem.id) {
                         if (finalPos === null) {
                             finalPos = pos;
                         }
                     }
                 });
-                resolve({ bookmark, finalPos });
+                resolve({ item, finalPos });
             });
         });
     });
 }
 
+/**
+ * @param {number} itemId
+ * @param {number} destinationId
+ * @param {number} index
+ * @returns {Promise}
+ */
 vfs.move = (itemId, destinationId, index) => {
     return new Promise((resolve, reject) => {
         chrome.bookmarks.move(itemId, { parentId: destinationId, index }, resolve);
