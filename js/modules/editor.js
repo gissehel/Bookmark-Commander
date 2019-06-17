@@ -6,70 +6,70 @@ const editor = {};
 
 //This is where the magic happens, so to say
 editor.view = (id) => {
-    let bookmark = findBookmarkId(commander.bookmarks, id);
-
-    if (!bookmark) {
-        bookmark = { title: 'Something went terribly wrong', url: '' };
-    }
-
-    if (!bookmark.title) {
-        bookmark.title = 'Something went terribly wrong';
-    }
-
-    if (!bookmark.url) {
-        //Avoid the dreaded undefined ;]
-        bookmark.url = '';
-        //Dont show test for folders
-        editor.urlReadOnly = "readonly='readonly'";
-    } else {
-        editor.urlReadOnly = "";
-    }
-
-    editor.id = id;
-    editor.bookmark = bookmark;
-    editor.changed = false;
-    editor.saved = false;
-
-    //Show javascript nicely, clone into content as to not mess up the original object, this is view after all
-    let content = bookmark.url;
-    if (content.startsWith("j")) {
-        content = js_beautify(content, { 'indent_size': 2 });
-    }
-    editor.bookmark.content = content;
-
-    editor.element = createElement(
-        'pre', {
-            id: 'editorScreen',
-        }, {
-            html: sum([
-                `<span id='editorMenu' class='menu'>${("  Folder/Bookmark").extend()}</span>\n`,
-                `<textarea class='blue' cols='${data.screenWidth}' rows='3' id='editorTitle'>${bookmark.title}</textarea>\n`,
-                `<span class='menu'>${("  URL").extend()}</span>\n`,
-                `<textarea class='blue' cols='${(data.screenWidth)}' rows='${(data.panelHeight)}' id='editorUrl'${editor.urlReadOnly}>${content}</textarea>\n`,
-            ]),
-            appendTo: document.body
+    vfs.findItemById(id).then((bookmark) => {
+        if (!bookmark) {
+            bookmark = { title: 'Something went terribly wrong', url: '' };
         }
-    );
 
-    // editor.menu = document.getElementById('editorMenu');
-    editor.url = document.getElementById('editorUrl');
-    // editor.end = document.getElementById('editorEnd');
-    editor.title = document.getElementById('editorTitle');
+        if (!bookmark.title) {
+            bookmark.title = 'Something went terribly wrong';
+        }
 
-    // Ugly quirk, because width in columns for a textarea isn't enought
-    editor.title.style.width = data.screenWidth * data.calibreWidth;
-    editor.title.style.height = 3 * data.calibreHeight;
+        if (!bookmark.url) {
+            //Avoid the dreaded undefined ;]
+            bookmark.url = '';
+            //Dont show test for folders
+            editor.urlReadOnly = "readonly='readonly'";
+        } else {
+            editor.urlReadOnly = "";
+        }
 
-    editor.url.style.width = data.screenWidth * data.calibreWidth;
-    editor.url.style.height = data.panelHeight * data.calibreHeight;
+        editor.id = id;
+        editor.bookmark = bookmark;
+        editor.changed = false;
+        editor.saved = false;
 
-    editor.context.activate();
+        //Show javascript nicely, clone into content as to not mess up the original object, this is view after all
+        let content = bookmark.url;
+        if (content.startsWith("j")) {
+            content = js_beautify(content, { 'indent_size': 2 });
+        }
+        editor.bookmark.content = content;
 
-    //Put focus on the title, at the end
-    const title = editor.title;
-    title.focus();
-    const position = title.value.length * 2;
-    title.setSelectionRange(position, position);
+        editor.element = createElement(
+            'pre', {
+                id: 'editorScreen',
+            }, {
+                html: sum([
+                    `<span id='editorMenu' class='menu'>${("  Folder/Bookmark").extend()}</span>\n`,
+                    `<textarea class='blue' cols='${data.screenWidth}' rows='3' id='editorTitle'>${bookmark.title}</textarea>\n`,
+                    `<span class='menu'>${("  URL").extend()}</span>\n`,
+                    `<textarea class='blue' cols='${(data.screenWidth)}' rows='${(data.panelHeight)}' id='editorUrl'${editor.urlReadOnly}>${content}</textarea>\n`,
+                ]),
+                appendTo: document.body
+            }
+        );
+
+        // editor.menu = document.getElementById('editorMenu');
+        editor.url = document.getElementById('editorUrl');
+        // editor.end = document.getElementById('editorEnd');
+        editor.title = document.getElementById('editorTitle');
+
+        // Ugly quirk, because width in columns for a textarea isn't enought
+        editor.title.style.width = data.screenWidth * data.calibreWidth;
+        editor.title.style.height = 3 * data.calibreHeight;
+
+        editor.url.style.width = data.screenWidth * data.calibreWidth;
+        editor.url.style.height = data.panelHeight * data.calibreHeight;
+
+        editor.context.activate();
+
+        //Put focus on the title, at the end
+        const title = editor.title;
+        title.focus();
+        const position = title.value.length * 2;
+        title.setSelectionRange(position, position);
+    });
 }
 
 editor.remove = () => {

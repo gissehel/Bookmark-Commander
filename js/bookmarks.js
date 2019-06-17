@@ -131,7 +131,7 @@ const findBookmarkTitle = (id) => {
     }
 
     //This is not entirely true, sue me
-    let parent = findBookmarkId(commander.bookmarks, id);
+    let parent = findBookmarkId(vfs.bookmarks, id);
     //Start from scratch
     let title = "";
 
@@ -143,7 +143,7 @@ const findBookmarkTitle = (id) => {
     //Do some recursive magic
     while (parent.parentId) {
         title = "/" + parent.title + title;
-        parent = findBookmarkId(commander.bookmarks, parent.parentId);
+        parent = findBookmarkId(vfs.bookmarks, parent.parentId);
     }
     return title;
 }
@@ -152,7 +152,7 @@ const findBookmarkTitle = (id) => {
   Multifunctional sorter
 */
 const sortBookmarks = (id, foldersTop, f, recursive) => {
-    const folder = findBookmarkId(commander.bookmarks, id);
+    const folder = findBookmarkId(vfs.bookmarks, id);
 
     if (!folder.children) {
         return;
