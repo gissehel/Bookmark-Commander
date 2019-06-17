@@ -528,7 +528,7 @@ commander.copy = async () => {
     const from_id = dualPanel.getCommanderIdFromPanel(from.prefix);
 
     const bookmark = await vfs.findItemById(from_id);
-    await vfs.createItem(to, (newBookmark) => {
+    await vfs.createItem(to.id, (newBookmark) => {
         if (bookmark.title) {
             newBookmark.title = bookmark.title;
         }
@@ -553,7 +553,7 @@ commander.copySelection = async (from, to) => {
     for (let counter = 0; counter < children.length; counter++) {
         if (children[counter].url && children[counter].url.has(from.selector) || from.selector == "*") {
             let bookmark = children[counter];
-            await vfs.createItem(to, (newBookmark) => {
+            await vfs.createItem(to.id, (newBookmark) => {
                 newBookmark.title = bookmark.title;
                 if (bookmark.url) {
                     newBookmark.url = bookmark.url;
@@ -592,7 +592,7 @@ commander.move = async () => {
         return await commander.moveSelection(panel, to);
     }
 
-    await vfs.move(bookmark, to);
+    await vfs.move(bookmark.id, to.id);
     await commander.reInit();
 }
 
@@ -610,7 +610,7 @@ commander.moveSelection = async (from, to) => {
         if (children[counter].url && children[counter].url.has(from.selector) || from.selector == "*") {
             const subBookmark = children[counter];
 
-            await vfs.move(subBookmark, to);
+            await vfs.move(subBookmark.id, to.id);
             await commander.reInit();
         }
     }
@@ -622,13 +622,12 @@ commander.moveSelection = async (from, to) => {
 commander.delete = async () => {
     const panel = commander.getActivePanel();
     const id = dualPanel.getCommanderIdFromPanel(panel);
-    const bookmark = await vfs.findItemById(id);
     //Are we copying a selection ?
     if (panel.selector && panel.selector != "") {
         return await commander.deleteSelection(panel);
     }
 
-    await vfs.remove(bookmark);
+    await vfs.remove(id);
     await commander.reInit();
 }
 
@@ -645,9 +644,7 @@ commander.deleteSelection = async (from) => {
 
     for (let counter = 0; counter < children.length; counter++) {
         if (children[counter].url && children[counter].url.has(from.selector) || from.selector == "*") {
-            const subBookmark = children[counter];
-
-            await vfs.remove(subBookmark);
+            await vfs.remove(children[counter].id);
             await commander.reInit();
         }
     }
@@ -661,7 +658,7 @@ commander.createFolder = async () => {
     const folderText = prompt("Enter folder name", "");
 
     if (folderText) {
-        const { bookmark, finalPos } = await vfs.createFolder(folderText, { id: panel.id });
+        const { bookmark, finalPos } = await vfs.createFolder(folderText, panel.id);
         if (pos !== null) {
             panel.selected = finalPos + (panel.id === "0" ? 0 : 1);
             panel.scroll = 0;
@@ -706,7 +703,7 @@ commander.moveUp = async () => {
         panel.selected--;
     }
 
-    await vfs.move({ id }, { id: panel.id }, bookmark.index - 1);
+    await vfs.move(id, panel.id, bookmark.index - 1);
     await commander.reInit();
 }
 
@@ -734,7 +731,7 @@ commander.moveDown = async () => {
             panel.selected++;
         }
 
-        await vfs.move(bookmark, { id: panel.id }, bookmark.index - 1);
+        await vfs.move(bookmark.id, panel.id, bookmark.index - 1);
         await commander.reInit();
     }
 }
@@ -811,9 +808,9 @@ commander.setTree = (panel) => {
     panel.id = "tree"
 }
 
-commander.sortBookmarksByDate = async (panel, ctrlKey) => await vfs.sortByDate({ id: panel.id }, ctrlKey);
-commander.sortBookmarksAlphabetically = async (panel, ctrlKey) => await vfs.sortAlphabetically({ id: panel.id }, ctrlKey);
-commander.sortBookmarksByLength = async (panel, ctrlKey) => await vfs.sortByLength({ id: panel.id }, ctrlKey);
+commander.sortBookmarksByDate = async (panel, ctrlKey) => await vfs.sortByDate(panel.id, ctrlKey);
+commander.sortBookmarksAlphabetically = async (panel, ctrlKey) => await vfs.sortAlphabetically(panel.id, ctrlKey);
+commander.sortBookmarksByLength = async (panel, ctrlKey) => await vfs.sortByLength(panel.id, ctrlKey);
 
 commander.getVersion = () => (commander.manifest && commander.manifest.version) || '...';
 

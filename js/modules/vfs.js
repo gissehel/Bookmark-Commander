@@ -15,9 +15,9 @@ vfs.search = (query) => {
     });
 };
 
-vfs.createItem = (parent, onInit) => {
+vfs.createItem = (parentId, onInit) => {
     return new Promise((resolve, reject) => {
-        const newBookmark = { parentId: parent.id };
+        const newBookmark = { parentId };
         if (onInit) {
             onInit(newBookmark);
         }
@@ -25,16 +25,16 @@ vfs.createItem = (parent, onInit) => {
     });
 }
 
-vfs.createFolder = (name, parent, onInit) => {
+vfs.createFolder = (name, parentId, onInit) => {
     return new Promise((resolve, reject) => {
-        const newBookmark = { parentId: parent.id, title: name };
+        const newBookmark = { parentId, title: name };
         if (onInit) {
             onInit(newBookmark);
         }
         chrome.bookmarks.create(newBookmark, (newItem) => {
             chrome.bookmarks.getTree((bookmarks) => {
                 vfs.bookmarks = bookmarks;
-                const bookmark = findBookmarkId(bookmarks, parent.id);
+                const bookmark = findBookmarkId(bookmarks, parentId);
                 let finalPos = null;
                 bookmark.children.map(child => child.id).forEach((id, pos) => {
                     if (id === newItem.id) {
@@ -49,20 +49,19 @@ vfs.createFolder = (name, parent, onInit) => {
     });
 }
 
-vfs.move = (item, destination, index) => {
+vfs.move = (itemId, destinationId, index) => {
     return new Promise((resolve, reject) => {
-        chrome.bookmarks.move(item.id, { parentId: destination.id, index }, resolve);
+        chrome.bookmarks.move(itemId, { parentId: destinationId, index }, resolve);
     });
 }
 
-vfs.remove = (item) => {
-    return new Promise((resolve, reject) => {
-        if (bookmark.children) {
-            chrome.bookmarks.removeTree(item.id, resolve);
-        } else {
-            chrome.bookmarks.remove(item.id, resolve);
-        }
-    });
+vfs.remove = async (itemId) => {
+    const bookmark = await vfs.findItemById(itemId);
+    if (bookmark.children) {
+        chrome.bookmarks.removeTree(itemId, resolve);
+    } else {
+        chrome.bookmarks.remove(itemId, resolve);
+    }
 }
 
 vfs.findItemById = (id) => {
@@ -72,17 +71,10 @@ vfs.findItemById = (id) => {
     });
 }
 
-vfs.sortByDate = async (bookmark, recursive) => {
-    return sortBookmarks(bookmark.id, sortByDateFunction, recursive);
-};
+vfs.sortByDate = async (bookmarkId, recursive) => sortBookmarks(bookmarkId, sortByDateFunction, recursive);
+vfs.sortAlphabetically = async (bookmarkId, recursive) => sortBookmarks(bookmarkId, sortByNameFunction, recursive);
+vfs.sortByLength = async (bookmarkId, recursive) => sortBookmarks(bookmarkId, sortByLengthFunction, recursive);
 
-vfs.sortAlphabetically = async (bookmark, recursive) => {
-    return sortBookmarks(bookmark.id, sortByNameFunction, recursive);
-};
-
-vfs.sortByLength = async (bookmark, recursive) => {
-    return sortBookmarks(bookmark.id, sortByLengthFunction, recursive);
-};
 
 vfs.filter = async (children, filter) => {
     return filterBookmarks(children, filter);
