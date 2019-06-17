@@ -102,7 +102,7 @@ const filterBookmarks = (children, filter) => {
         return children;
     }
 
-    const a = [];
+    const result = [];
 
     for (let i = 0; i < children.length; i++) {
         let push = true;
@@ -113,11 +113,11 @@ const filterBookmarks = (children, filter) => {
         }
 
         if (push) {
-            a.push(children[i]);
+            result.push(children[i]);
         }
     }
 
-    return a;
+    return result;
 }
 
 /*
@@ -151,20 +151,20 @@ const findBookmarkTitle = (id) => {
 /*
   Multifunctional sorter
 */
-const sortBookmarks = (id, foldersTop, f, recursive) => {
+const sortBookmarks = (id, sortingMethod, recursive) => {
     const folder = findBookmarkId(vfs.bookmarks, id);
 
     if (!folder.children) {
         return;
     }
 
-    folder.children.sort(f);
+    folder.children.sort(sortingMethod);
 
     for (let counter = folder.children.length - 1; counter > -1; counter--) {
         chrome.bookmarks.move(folder.children[counter].id, { parentId: id, index: counter });
 
         if (recursive) {
-            sortBookmarks(folder.children[counter].id, null, f, recursive);
+            sortBookmarks(folder.children[counter].id, sortingMethod, recursive);
         }
     }
     commander.reInit();
@@ -172,7 +172,7 @@ const sortBookmarks = (id, foldersTop, f, recursive) => {
 
 const catchLogAndReturnDefault = (def, code) => {
     try {
-        return code(a, b);
+        return code();
     } catch (e) {
         console.log(e);
         return def;

@@ -231,8 +231,7 @@ menu.exit = () => {
     menu.unhighlightMenuItem();
     menu.unhighlightTopMenuItem();
 
-    commander.reInit();
-    commander.context.activate();
+    commander.reInit().then(()=>commander.context.activate());
 }
 
 menu.exitIfOut = () => {

@@ -43,7 +43,7 @@ vfs.createFolder = (name, parent, onInit) => {
                         }
                     }
                 });
-                resolve(bookmark, finalPos);
+                resolve({ bookmark, finalPos });
             });
         });
     });
@@ -70,4 +70,24 @@ vfs.findItemById = (id) => {
         const bookmark = findBookmarkId(vfs.bookmarks, id);
         resolve(bookmark);
     });
+}
+
+vfs.sortByDate = async (bookmark, recursive) => {
+    return sortBookmarks(bookmark.id, sortByDateFunction, recursive);
+};
+
+vfs.sortAlphabetically = async (bookmark, recursive) => {
+    return sortBookmarks(bookmark.id, sortByNameFunction, recursive);
+};
+
+vfs.sortByLength = async (bookmark, recursive) => {
+    return sortBookmarks(bookmark.id, sortByLengthFunction, recursive);
+};
+
+vfs.filter = async (children, filter) => {
+    return filterBookmarks(children, filter);
+};
+
+vfs.getFullTitle = async (id) => {
+    return findBookmarkTitle(id);
 }

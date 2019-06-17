@@ -159,15 +159,18 @@ editor.condense = (url) => {
 editor.quit = () => {
     editor.remove();
 
+    let promise = null;
     //We need to reinit (reread bookmarks from Chome ) if we changed something
     if (editor.saved) {
-        commander.reInit();
+        promise = commander.reInit();
     } else {
-        commander.draw();
+        promise = commander.draw();
     }
-    commander.context.activate();
-    commander.editing = false;
+    promise.then(() => {
+        commander.context.activate();
+        commander.editing = false;
 
-    dualPanel.show();
+        dualPanel.show();
+    });
 }
 

@@ -19,149 +19,154 @@ commander.manifest = null;
  ****/
 
 /* INIT, RE-INIT */
-commander.init = () => commander.initOrReInit();
+commander.init = async () => {
+    await commander.initOrReInit();
+}
 
-commander.reInit = () => commander.initOrReInit();
+commander.reInit = async () => {
+    await commander.initOrReInit();
+}
 
-commander.initOrReInit = () => {
-    vfs.init().then(() => commander.draw());
+commander.initOrReInit = async () => {
+    await vfs.init();
+    await commander.draw();
 }
 
 commander.getActivePanel = () => commander.left.active ? commander.left : commander.right;
 commander.getInactivePanel = () => !commander.left.active ? commander.left : commander.right;
 
 /* HELPER, DRAW IT */
-commander.draw = () => {
+commander.draw = async () => {
     if (commander.left.id == "search") {
-        vfs.search(commander.query).then((result) => {
-            commander.results = result;
-            commander.setPanel(commander.left);
-            commander.setPanel(commander.right);
-        });
+        const result = await vfs.search(commander.query);
+        commander.results = result;
+        await commander.setPanel(commander.left);
+        await commander.setPanel(commander.right);
         return;
     }
 
     //First draw the active one
     const panel = commander.getActivePanel();
-    commander.setPanel(panel);
-    commander.setPanel(panel.other);
+    await commander.setPanel(panel);
+    await commander.setPanel(panel.other);
     //mouse.init();
 }
 
 /* Core wild magic */
-commander.setPanel = (panelConfig) => {
+commander.setPanel = async (panelConfig) => {
     //Show we be here ?
     if (panelConfig.info) {
         return commander.setInfoPanel(panelConfig);
     }
 
-    vfs.findItemById(panelConfig.id).then((o) => {
-        //Deal with trouble
-        if (!o || !o.children) {
-            //If we are looking at a dead folder by any chance, just go to the root
-            if (panelConfig.id != "0") {
-                panelConfig.id = "0";
-                commander.setPanel(panelConfig);
-                return;
-            } else {
-                //This should never happen as well
-                alert("Orthodox Bookmark Manager regrets to inform you that it cannot display your bookmarks,\n please hit refresh and try again.");
-            }
+    const bookmark = await vfs.findItemById(panelConfig.id);
+    //Deal with trouble
+    if (!bookmark || !bookmark.children) {
+        //If we are looking at a dead folder by any chance, just go to the root
+        if (panelConfig.id != "0") {
+            panelConfig.id = "0";
+            commander.setPanel(panelConfig);
+            return;
+        } else {
+            //This should never happen as well
+            alert("Orthodox Bookmark Manager regrets to inform you that it cannot display your bookmarks,\n please hit refresh and try again.");
         }
+    }
 
-        //Set the folder structure on top
-        const title = findBookmarkTitle(panelConfig.id);
+    //Set the folder structure on top
+    const title = await vfs.getFullTitle(panelConfig.id);
 
-        dualPanel.setRootText(panelConfig.prefix, title, panelConfig.active);
+    dualPanel.setRootText(panelConfig.prefix, title, panelConfig.active);
 
-        //Clear out the children
-        // dualPanel.panelIds.forEach((counter) => dualPanel.setLine(panelConfig.prefix, counter, '', {}));
+    //Clear out the children
+    // dualPanel.panelIds.forEach((counter) => dualPanel.setLine(panelConfig.prefix, counter, '', {}));
 
-        //We merely do this to facilitate the following trick
-        const children = [].concat(filterBookmarks(o.children, panelConfig.filter));
+    //We merely do this to facilitate the following trick
+    const children = [...await vfs.filter(bookmark.children, panelConfig.filter)];
 
-        //Do we have a parent ?, if so top the entries with '..'
-        if (o.parentId) {
-            children.reverse();
-            children.push({ children: true, title: "..", id: o.parentId });
-            children.reverse();
-        }
+    //Do we have a parent ?, if so top the entries with '..'
+    if (bookmark.parentId) {
+        children.reverse();
+        children.push({ children: true, title: "..", id: bookmark.parentId });
+        children.reverse();
+    }
 
-        //Other parties are interested in how many items there really are
-        panelConfig.itemCount = children.length;
+    //Other parties are interested in how many items there really are
+    panelConfig.itemCount = children.length;
 
-        //Keep counter post-loop for sanity checks
-        let counter;
+    //Keep counter post-loop for sanity checks
+    let counter;
 
-        //Delete any reference to selectedBookmark, it might just go wrong with the info panel
-        delete panelConfig.selectedBookmark;
+    //Delete any reference to selectedBookmark, it might just go wrong with the info panel
+    delete panelConfig.selectedBookmark;
 
-        //Go over the children ( folders + bookmarks )
-        dualPanel.panelIds.forEach((counter) => {
-            if (counter + panelConfig.scroll < children.length) {
-                //Get the child
-                let child = children[counter + panelConfig.scroll];
-                //Default bookmark prefix and style
-                let prefix = " ";
-                let isJs = false;
-                let isSelected = false;
+    //Go over the children ( folders + bookmarks )
+    dualPanel.panelIds.forEach(async (counter) => {
+        if (counter + panelConfig.scroll < children.length) {
+            //Get the child
+            let child = children[counter + panelConfig.scroll];
+            //Default bookmark prefix and style
+            let prefix = " ";
+            let isJs = false;
+            let isSelected = false;
 
-                //This should never happen ™
-                if (!child) {
-                    child = { url: '', title: '' }
-                }
-
-                //If there are no children though, take out the slash
-                if (child.children) {
-                    prefix = "/";
-                }
-
-                //Are we dealing with a tree ? Then we have a slightly more complicated prefix
-                if (panelConfig.id == "tree") {
-                    if (!child.depth & child.depth !== 0) {
-                        prefix = "!ERROR(no depth)"
-                    } else if (child.depth === 0) {
-                        prefix = "/"
-                    } else {
-                        prefix = " ".repeat(child.depth - 2) + "|-"
-                    }
-                }
-
-                //Are we looking at a javascript ?
-                if (child.url && child.url.startsWith("javascript")) {
-                    isJs = true;
-                }
-                //If we look at the selected one the style is different
-                if (counter == panelConfig.selected && panelConfig.active) {
-                    isSelected = true;
-                    //Lets also show the url
-                    if (child.url) {
-                        dualPanel.setUrl(child.url);
-                    } else if (panelConfig.id == "tree") {
-                        dualPanel.setUrl(findBookmarkTitle(child.id));
-                    } else {
-                        dualPanel.setUrl('');
-                    }
-                    panelConfig.selectedBookmark = child.id;
-                }
-
-                dualPanel.setLine(panelConfig.prefix, counter, prefix + child.title, {
-                    isJs,
-                    isSelected,
-                    id: child.id,
-                    filter: panelConfig.filter,
-                    highlighted: panelConfig.selector && ((child.title.has(panelConfig.selector) || panelConfig.selector == "*") && child.title != ".."),
-                });
-            } else {
-                dualPanel.setLine(panelConfig.prefix, counter, '', {});
+            //This should never happen ™
+            if (!child) {
+                child = { url: '', title: '' }
             }
-        });
 
-        //Since speed is of no concern, I just redraw the screen if we missed the selected item due to deletion ;)
-        if (panelConfig.selected >= Math.min(children.length - panelConfig.scroll, data.panelHeight)) {
-            commander.end();
+            //If there are no children though, take out the slash
+            if (child.children) {
+                prefix = "/";
+            }
+
+            //Are we dealing with a tree ? Then we have a slightly more complicated prefix
+            if (panelConfig.id == "tree") {
+                if (!child.depth & child.depth !== 0) {
+                    prefix = "!ERROR(no depth)"
+                } else if (child.depth === 0) {
+                    prefix = "/"
+                } else {
+                    prefix = " ".repeat(child.depth - 2) + "|-"
+                }
+            }
+
+            //Are we looking at a javascript ?
+            if (child.url && child.url.startsWith("javascript")) {
+                isJs = true;
+            }
+            //If we look at the selected one the style is different
+            if (counter == panelConfig.selected && panelConfig.active) {
+                isSelected = true;
+                //Lets also show the url
+                if (child.url) {
+                    dualPanel.setUrl(child.url);
+                } else if (panelConfig.id == "tree") {
+                    const title = await vfs.getFullTitle(child.id);
+                    dualPanel.setUrl(title);
+                } else {
+                    dualPanel.setUrl('');
+                }
+                panelConfig.selectedBookmark = child.id;
+            }
+
+            dualPanel.setLine(panelConfig.prefix, counter, prefix + child.title, {
+                isJs,
+                isSelected,
+                id: child.id,
+                filter: panelConfig.filter,
+                highlighted: panelConfig.selector && ((child.title.has(panelConfig.selector) || panelConfig.selector == "*") && child.title != ".."),
+            });
+        } else {
+            dualPanel.setLine(panelConfig.prefix, counter, '', {});
         }
     });
+
+    //Since speed is of no concern, I just redraw the screen if we missed the selected item due to deletion ;)
+    if (panelConfig.selected >= Math.min(children.length - panelConfig.scroll, data.panelHeight)) {
+        await commander.end();
+    }
+
 }
 
 /****
@@ -169,86 +174,86 @@ commander.setPanel = (panelConfig) => {
  * Info panel
  **
  ****/
-commander.setInfoPanel = (panelConfig) => {
-    vfs.findItemById(panelConfig.other.selectedBookmark).then((o) => {
+commander.setInfoPanel = async (panelConfig) => {
+    const bookmark = await vfs.findItemById(panelConfig.other.selectedBookmark)
 
-        //Deal with trouble
-        if (!o) {
-            //If we are looking at a dead folder by any chance, just go to the root
-            if (panelConfig.id != "0") {
-                panelConfig.id = "0";
-                commander.setPanel(panelConfig);
+    //Deal with trouble
+    if (!bookmark) {
+        //If we are looking at a dead folder by any chance, just go to the root
+        if (panelConfig.id != "0") {
+            panelConfig.id = "0";
+            commander.setPanel(panelConfig);
+            return;
+        }
+        else {
+            //This should never happen as well, except if we are in the menu ( other panel is inactive as well )
+            if (!panelConfig.other.active) {
                 return;
-            }
-            else {
-                //This should never happen as well, except if we are in the menu ( other panel is inactive as well )
-                if (!panelConfig.other.active) {
-                    return;
-                } else {
-                    alert("Orthodox Bookmark Manager regrets to inform you that it cannot display the info on this bookmark,\n please hit refresh and try again.");
-                }
+            } else {
+                alert("Orthodox Bookmark Manager regrets to inform you that it cannot display the info on this bookmark,\n please hit refresh and try again.");
             }
         }
+    }
 
-        //Do not set the folder structure on top
-        dualPanel.setRootText(panelConfig.prefix, null, panelConfig.active);
+    //Do not set the folder structure on top
+    dualPanel.setRootText(panelConfig.prefix, null, panelConfig.active);
 
-        //Clear out the children
-        dualPanel.panelIds.forEach((counter) => dualPanel.setLine(panelConfig.prefix, counter, '', {}));
+    //Clear out the children
+    dualPanel.panelIds.forEach((counter) => dualPanel.setLine(panelConfig.prefix, counter, '', {}));
 
-        //Deal with root, put some arbitrary value
-        if (o.id == "0") {
-            o.title = "root";
-            o.index = 0;
-            o.parentId = 0;
+    //Deal with root, put some arbitrary value
+    if (bookmark.id == "0") {
+        bookmark.title = "root";
+        bookmark.index = 0;
+        bookmark.parentId = 0;
+    }
+
+    let line = 0;
+
+    if (bookmark.title) {
+        dualPanel.setLine(panelConfig.prefix, line, bookmark.title, {});
+    }
+
+    line++;
+    line++;
+
+    if (bookmark.dateAdded) {
+        let d = new Date()
+        d.setTime(bookmark.dateAdded);
+        dualPanel.setLine(panelConfig.prefix, line++, "  added:    " + d.format(), {});
+    }
+
+    if (bookmark.dateGroupModified) {
+        let d = new Date()
+        d.setTime(bookmark.dateGroupModified);
+        dualPanel.setLine(panelConfig.prefix, line++, "  changed:  " + d.format(), {});
+    }
+
+    dualPanel.setLine(panelConfig.prefix, line++, "  id:       " + bookmark.id, {});
+    dualPanel.setLine(panelConfig.prefix, line++, "  index:    " + bookmark.index, {});
+    dualPanel.setLine(panelConfig.prefix, line++, "  parent:   " + bookmark.parentId, {});
+
+    if (bookmark.children) {
+        dualPanel.setLine(panelConfig.prefix, line++, "  children: " + bookmark.children.length, {});
+    } else {
+        //Sugar
+        let url = bookmark.url;
+
+        dualPanel.setLine(panelConfig.prefix, line++, '', {});
+
+        while (url.length > data.panelWidth) {
+            dualPanel.setLine(panelConfig.prefix, line++, url.left(data.panelWidth), {});
+            url = url.substring(data.panelWidth);
         }
-
-        let line = 0;
-
-        if (o.title) {
-            dualPanel.setLine(panelConfig.prefix, line, o.title, {});
+        if (url.length > 0) {
+            dualPanel.setLine(panelConfig.prefix, line++, url, {});
         }
+    }
 
-        line++;
-        line++;
-
-        if (o.dateAdded) {
-            let d = new Date()
-            d.setTime(o.dateAdded);
-            dualPanel.setLine(panelConfig.prefix, line++, "  added:    " + d.format(), {});
-        }
-
-        if (o.dateGroupModified) {
-            let d = new Date()
-            d.setTime(o.dateGroupModified);
-            dualPanel.setLine(panelConfig.prefix, line++, "  changed:  " + d.format(), {});
-        }
-
-        dualPanel.setLine(panelConfig.prefix, line++, "  id:       " + o.id, {});
-        dualPanel.setLine(panelConfig.prefix, line++, "  index:    " + o.index, {});
-        dualPanel.setLine(panelConfig.prefix, line++, "  parent:   " + o.parentId, {});
-
-        if (o.children) {
-            dualPanel.setLine(panelConfig.prefix, line++, "  children: " + o.children.length, {});
-        } else {
-            //Sugar
-            let url = o.url;
-
-            dualPanel.setLine(panelConfig.prefix, line++, '', {});
-
-            while (url.length > data.panelWidth) {
-                dualPanel.setLine(panelConfig.prefix, line++, url.left(data.panelWidth), {});
-                url = url.substring(data.panelWidth);
-            }
-            if (url.length > 0) {
-                dualPanel.setLine(panelConfig.prefix, line++, url, {});
-            }
-        }
-    });
 }
 
 /* TAB, SWAP */
-commander.swapPanel = () => {
+commander.swapPanel = async () => {
     let panel = commander.getActivePanel();
     //Dont make an info panel active
     if (panel.other.info) {
@@ -257,10 +262,10 @@ commander.swapPanel = () => {
 
     commander.left.active = !commander.left.active;
     commander.right.active = !commander.right.active;
-    commander.draw();
+    await commander.draw();
 }
 
-commander.swapPanels = () => {
+commander.swapPanels = async () => {
     const temp = commander.left;
     commander.left = commander.right;
     commander.right = temp;
@@ -271,12 +276,12 @@ commander.swapPanels = () => {
 }
 
 /* Prelude to SELECT, ENTER */
-commander.delve = () => {
+commander.delve = async () => {
     const panel = commander.getActivePanel();
     const id = dualPanel.getCommanderIdFromPanel(panel);
 
     if (panel.id != "tree") {
-        return commander.select(id);
+        return await commander.select(id);
     }
 
     //So, we are dealing with a tree
@@ -284,35 +289,35 @@ commander.delve = () => {
     commander.right.active = !commander.right.active;
     panel.other.info = false;
     panel.other.id = id;
-    commander.select(id);
+    await commander.select(id);
 
 }
 
 /* SELECT, ENTER */
-commander.select = (index) => {
+commander.select = async (index) => {
     const panel = commander.getActivePanel();
 
     //Do we want to select this for real ?
-    vfs.findItemById(index).then((bookmark) => {
-        //Go deeper if its a folder, or as the case may be, higher
-        if (bookmark.children) {
-            let nextSelected = 0;
-            bookmark.children.map(child => child.id).forEach((id, pos) => {
-                if (panel.id === id) {
-                    nextSelected = pos + (index === "0" ? 0 : 1);
-                }
-            });
-            panel.id = index;
-            panel.selected = nextSelected;
-            panel.scroll = 0;
-            panel.selector = "";
-            commander.draw();
-        } else if (bookmark.url && bookmark.url.startsWith(["http", "file"])) {
-            //Open if its a bookmark
-            chrome.tabs.getCurrent((tab) => chrome.tabs.create({ 'url': bookmark.url, 'index': tab.index }, null));
-        }
-        //Yes, do nuttin if its js, them evil hackers cannought be trusted
-    });
+    const bookmark = await vfs.findItemById(index);
+
+    //Go deeper if its a folder, or as the case may be, higher
+    if (bookmark.children) {
+        let nextSelected = 0;
+        bookmark.children.map(child => child.id).forEach((id, pos) => {
+            if (panel.id === id) {
+                nextSelected = pos + (index === "0" ? 0 : 1);
+            }
+        });
+        panel.id = index;
+        panel.selected = nextSelected;
+        panel.scroll = 0;
+        panel.selector = "";
+        await commander.draw();
+    } else if (bookmark.url && bookmark.url.startsWith(["http", "file"])) {
+        //Open if its a bookmark
+        chrome.tabs.getCurrent((tab) => chrome.tabs.create({ 'url': bookmark.url, 'index': tab.index }, null));
+    }
+    //Yes, do nuttin if its js, them evil hackers cannought be trusted
 }
 
 /* HELP */
@@ -332,7 +337,7 @@ commander.quit = () => {
 }
 
 /* VIEW */
-commander.view = () => {
+commander.view = async () => {
     commander.viewing = !commander.viewing;
 
     if (commander.viewing) {
@@ -342,7 +347,7 @@ commander.view = () => {
         const id = dualPanel.getCommanderIdFromPanel(panel);
 
         if (id != "0") {
-            viewer.view(id);
+            await viewer.view(id);
         } else {
             commander.viewing = false;
         }
@@ -351,7 +356,7 @@ commander.view = () => {
         viewer.remove();
 
         //we require it for decorating the elements, kludgy, I know
-        commander.draw();
+        await commander.draw();
 
         commander.context.activate();
     }
@@ -383,22 +388,22 @@ commander.menu = () => {
 }
 
 /* BACKSPACE */
-commander.back = () => {
+commander.back = async () => {
     const panel = commander.getActivePanel();
 
     if (panel.id == "search") {
-        return commander.select("0");
+        return await commander.select("0");
     }
 
     const text = dualPanel.getLineText(panel.prefix, 0);
 
     if (text == "/..") {
-        commander.select(dualPanel.getCommanderId(panel.prefix, 0));
+        await commander.select(dualPanel.getCommanderId(panel.prefix, 0));
     }
 }
 
 /* DOWN */
-commander.down = () => {
+commander.down = async () => {
     const panel = commander.getActivePanel();
 
     if (panel.selected == data.panelHeight - 1) {
@@ -408,14 +413,14 @@ commander.down = () => {
     }
 
     if (!(panel.scroll + panel.selected < panel.itemCount)) {
-        return commander.end();
+        return await commander.end();
     }
 
-    commander.draw();
+    await commander.draw();
 }
 
 /* PAGE DOWN */
-commander.pageDown = () => {
+commander.pageDown = async () => {
     const panel = commander.getActivePanel();
 
     if (panel.selected < data.panelHeight - 1) {
@@ -425,15 +430,15 @@ commander.pageDown = () => {
     }
 
     if (!(panel.scroll + panel.selected < panel.itemCount)) {
-        return commander.end();
+        return await commander.end();
     }
 
-    commander.draw();
+    await commander.draw();
 }
 
 
 /* UP */
-commander.up = () => {
+commander.up = async () => {
     //Get active panel
     const panel = commander.getActivePanel();
     //if we are already physically in slot 0, see if we can still scroll up
@@ -449,11 +454,11 @@ commander.up = () => {
         panel.scroll = 0
     }
     //Draw the commander again
-    commander.draw();
+    await commander.draw();
 }
 
 /* PAGE UP */
-commander.pageUp = () => {
+commander.pageUp = async () => {
     //Get active panel
     const panel = commander.getActivePanel();
     //if we are already physically in slot 0, see if we can still scroll up
@@ -469,19 +474,19 @@ commander.pageUp = () => {
         panel.scroll = 0
     }
     //Draw the commander again
-    commander.draw();
+    await commander.draw();
 }
 
 /* HOME */
-commander.home = () => {
+commander.home = async () => {
     const panel = commander.getActivePanel();
     panel.selected = 0;
     panel.scroll = 0;
-    commander.draw();
+    await commander.draw();
 }
 
 /* END */
-commander.end = () => {
+commander.end = async () => {
     const panel = commander.getActivePanel();
 
     if (panel.itemCount < data.panelHeight + 1) {
@@ -491,11 +496,11 @@ commander.end = () => {
         panel.scroll = panel.itemCount - data.panelHeight;
         panel.selected = data.panelHeight - 1;
     }
-    commander.draw();
+    await commander.draw();
 }
 
 /* COPY */
-commander.copy = () => {
+commander.copy = async () => {
     const from = commander.getActivePanel();
     const to = commander.getInactivePanel();
 
@@ -516,160 +521,158 @@ commander.copy = () => {
 
     //Are we copying a selection ?
     if (from.selector && from.selector != "") {
-        return commander.copySelection(from, to);
+        return await commander.copySelection(from, to);
     }
 
     //Copying from
     const from_id = dualPanel.getCommanderIdFromPanel(from.prefix);
 
-    vfs.findItemById(from_id).then((bookmark) => {
-        vfs.createItem(to, (newBookmark) => {
-            if (bookmark.title) {
-                newBookmark.title = bookmark.title;
-            }
-            if (bookmark.url) {
-                newBookmark.url = bookmark.url;
-            }
-        }).then(() => {
-            commander.reInit();
-        });
+    const bookmark = await vfs.findItemById(from_id);
+    await vfs.createItem(to, (newBookmark) => {
+        if (bookmark.title) {
+            newBookmark.title = bookmark.title;
+        }
+        if (bookmark.url) {
+            newBookmark.url = bookmark.url;
+        }
     });
+    await commander.reInit();
 }
 
 /* COPY SELECTION */
-commander.copySelection = (from, to) => {
-    vfs.findItemById(from.id).then((o) => {
-        //Minimal paranoia
-        if (!o || !o.children) {
-            return
+commander.copySelection = async (from, to) => {
+    const bookmark = await vfs.findItemById(from.id);
+
+    //Minimal paranoia
+    if (!bookmark || !bookmark.children) {
+        return
+    }
+
+    const children = [...await vfs.filter(bookmark.children, from.filter)];
+
+    for (let counter = 0; counter < children.length; counter++) {
+        if (children[counter].url && children[counter].url.has(from.selector) || from.selector == "*") {
+            let bookmark = children[counter];
+            await vfs.createItem(to, (newBookmark) => {
+                newBookmark.title = bookmark.title;
+                if (bookmark.url) {
+                    newBookmark.url = bookmark.url;
+                }
+            });
         }
+    }
 
-        const children = [].concat(filterBookmarks(o.children, from.filter));
-
-        for (let counter = 0; counter < children.length; counter++) {
-            if (children[counter].url && children[counter].url.has(from.selector) || from.selector == "*") {
-                let bookmark = children[counter];
-                vfs.createItem(to, (newBookmark) => {
-                    newBookmark.title = bookmark.title;
-                    if (bookmark.url) {
-                        newBookmark.url = bookmark.url;
-                    }
-                });
-            }
-        }
-
-        commander.reInit();
-    });
+    await commander.reInit();
 }
 
 /* MOVE */
-commander.move = () => {
+commander.move = async () => {
     const panel = commander.getActivePanel();
     const id = dualPanel.getCommanderIdFromPanel(panel);
-    vfs.findItemById(id).then((bookmark) => {
-        const to = commander.getInactivePanel();
+    const bookmark = await vfs.findItemById(id);
+    const to = commander.getInactivePanel();
 
-        if (to.id == "0") {
-            alert("Can not copy bookmarks into the root")
-            return false
-        }
+    if (to.id == "0") {
+        alert("Can not copy bookmarks into the root")
+        return false
+    }
 
-        if (to.id == "search") {
-            alert("Can not move bookmarks into search results")
-            return false
-        }
+    if (to.id == "search") {
+        alert("Can not move bookmarks into search results")
+        return false
+    }
 
-        if (to.id == "tree") {
-            alert("Can not move bookmarks into the tree")
-            return false
-        }
+    if (to.id == "tree") {
+        alert("Can not move bookmarks into the tree")
+        return false
+    }
 
-        //Are we copying a selection ?
-        if (panel.selector && panel.selector != "") {
-            return commander.moveSelection(panel, to);
-        }
+    //Are we copying a selection ?
+    if (panel.selector && panel.selector != "") {
+        return await commander.moveSelection(panel, to);
+    }
 
-        vfs.move(bookmark, to).then(commander.reInit);
-    });
+    await vfs.move(bookmark, to);
+    await commander.reInit();
 }
 
 /* MOVE SELECTION */
-commander.moveSelection = (from, to) => {
-    vfs.findItemById(from.id).then((o) => {
-        //Minimal paranoia
-        if (!o || !o.children) {
-            return
+commander.moveSelection = async (from, to) => {
+    const bookmark = await vfs.findItemById(from.id)
+    //Minimal paranoia
+    if (!bookmark || !bookmark.children) {
+        return
+    }
+
+    const children = [... await vfs.filter(bookmark.children, from.filter)];
+
+    for (let counter = 0; counter < children.length; counter++) {
+        if (children[counter].url && children[counter].url.has(from.selector) || from.selector == "*") {
+            const subBookmark = children[counter];
+
+            await vfs.move(subBookmark, to);
+            await commander.reInit();
         }
+    }
 
-        const children = [].concat(filterBookmarks(o.children, from.filter));
-
-        for (let counter = 0; counter < children.length; counter++) {
-            if (children[counter].url && children[counter].url.has(from.selector) || from.selector == "*") {
-                const bookmark = children[counter];
-
-                vfs.move(bookmark, to).then(commander.reInit);
-            }
-        }
-
-        commander.reInit();
-    });
+    await commander.reInit();
 }
 
 /* DELETE */
-commander.delete = () => {
+commander.delete = async () => {
     const panel = commander.getActivePanel();
     const id = dualPanel.getCommanderIdFromPanel(panel);
-    vfs.findItemById(id).then((bookmark) => {
-        //Are we copying a selection ?
-        if (panel.selector && panel.selector != "") {
-            return commander.deleteSelection(panel);
-        }
+    const bookmark = await vfs.findItemById(id);
+    //Are we copying a selection ?
+    if (panel.selector && panel.selector != "") {
+        return await commander.deleteSelection(panel);
+    }
 
-        vfs.remove(bookmark).then(commander.reInit);
-    });
+    await vfs.remove(bookmark);
+    await commander.reInit();
 }
 
 /* DELETE SELECTION */
-commander.deleteSelection = (from) => {
-    vfs.findItemById(from.id).then((o) => {
-        //Minimal paranoia
-        if (!o || !o.children) {
-            return
+commander.deleteSelection = async (from) => {
+    const bookmark = await vfs.findItemById(from.id);
+
+    //Minimal paranoia
+    if (!bookmark || !bookmark.children) {
+        return
+    }
+
+    const children = [...await vfs.filter(bookmark.children, from.filter)];
+
+    for (let counter = 0; counter < children.length; counter++) {
+        if (children[counter].url && children[counter].url.has(from.selector) || from.selector == "*") {
+            const subBookmark = children[counter];
+
+            await vfs.remove(subBookmark);
+            await commander.reInit();
         }
-
-        const children = [].concat(filterBookmarks(o.children, from.filter));
-
-        for (let counter = 0; counter < children.length; counter++) {
-            if (children[counter].url && children[counter].url.has(from.selector) || from.selector == "*") {
-                const bookmark = children[counter];
-
-                vfs.remove(bookmark).then(commander.reInit);
-            }
-        }
-        commander.reInit();
-    });
+    }
+    await commander.reInit();
 }
 
 
 /* CREATE FOLDER */
-commander.createFolder = () => {
+commander.createFolder = async () => {
     const panel = commander.getActivePanel();
     const folderText = prompt("Enter folder name", "");
 
     if (folderText) {
-        vfs.createFolder(folderText, { id: panel.id }).then((bookmark, pos) => {
-            if (pos !== null) {
-                panel.selected = pos + (panel.id === "0" ? 0 : 1);
-                panel.scroll = 0;
-                panel.selector = "";
-            }
-            commander.draw();
-        })
+        const { bookmark, finalPos } = await vfs.createFolder(folderText, { id: panel.id });
+        if (pos !== null) {
+            panel.selected = finalPos + (panel.id === "0" ? 0 : 1);
+            panel.scroll = 0;
+            panel.selector = "";
+        }
+        await commander.draw();
     }
 }
 
 /* EQUALIZE */
-commander.equalize = () => {
+commander.equalize = async () => {
     const active = commander.getActivePanel();
     const sleepy = commander.getInactivePanel();
 
@@ -677,89 +680,87 @@ commander.equalize = () => {
     sleepy.selected = 0;
     sleepy.scroll = 0;
 
-    commander.draw();
+    await commander.draw();
 }
 
 /* PLUS , MOVE UP */
-commander.moveUp = () => {
+commander.moveUp = async () => {
     const panel = commander.getActivePanel();
     const id = dualPanel.getCommanderIdFromPanel(panel);
-    vfs.findItemById(id).then((bookmark) => {
-        if (panel.id == 0) {
-            return;
-        }
+    const bookmark = await vfs.findItemById(id);
+    if (panel.id == 0) {
+        return;
+    }
 
-        if (panel.selected == 0 && panel.scroll == 0) {
-            return;
-        }
+    if (panel.selected == 0 && panel.scroll == 0) {
+        return;
+    }
 
-        if (bookmark.index == 0) {
-            return;
-        }
+    if (bookmark.index == 0) {
+        return;
+    }
 
-        if (panel.selected == 0) {
-            panel.scroll--;
-        } else {
-            panel.selected--;
-        }
+    if (panel.selected == 0) {
+        panel.scroll--;
+    } else {
+        panel.selected--;
+    }
 
-        vfs.move({ id }, { id: panel.id }, bookmark.index - 1).then(commander.reInit);
-    });
+    await vfs.move({ id }, { id: panel.id }, bookmark.index - 1);
+    await commander.reInit();
 }
 
 /* DOWN, MOVE DOWN */
-commander.moveDown = () => {
+commander.moveDown = async () => {
     const panel = commander.getActivePanel();
     const id = dualPanel.getCommanderIdFromPanel(panel);
-    vfs.findItemById(id).then((bookmark) => {
-        if (panel.id == 0) {
-            return;
+    let bookmark = await vfs.findItemById(id);
+    if (panel.id == 0) {
+        return;
+    }
+
+    if (panel.selected == 0 && panel.scroll == 0) {
+        return;
+    }
+
+    //now see who is under their
+    const parent = await vfs.findItemById(panel.id);
+    bookmark = parent.children[bookmark.index + 1];
+    if (bookmark) {
+        //We are evilly counting on the 'hmmm I think this got deleted feature', muhaha is in order
+        if (panel.selected == data.panelHeight - 1) {
+            panel.scroll++;
+        } else {
+            panel.selected++;
         }
 
-        if (panel.selected == 0 && panel.scroll == 0) {
-            return;
-        }
-
-        //now see who is under their
-        const parent = vfs.findItemById(panel.id);
-        bookmark = parent.children[bookmark.index + 1];
-        if (bookmark) {
-            //We are evilly counting on the 'hmmm I think this got deleted feature', muhaha is in order
-            if (panel.selected == data.panelHeight - 1) {
-                panel.scroll++;
-            } else {
-                panel.selected++;
-            }
-
-            vfs.move(bookmark, { id: panel.id }, bookmark.index - 1).then(commander.reInit);
-        }
-    });
+        await vfs.move(bookmark, { id: panel.id }, bookmark.index - 1);
+        await commander.reInit();
+    }
 }
 
 /* SEARCH */
-commander.search = (searchText) => {
-    delay(1).then(() => {
-        if (!searchText) {
-            if (commander.query) {
-                searchText = commander.query;
-            } else {
-                searchText = prompt("Enter search string", ""); //"" is the default
-            }
+commander.search = async (searchText) => {
+    await delay(1);
+    if (!searchText) {
+        if (commander.query) {
+            searchText = commander.query;
+        } else {
+            searchText = prompt("Enter search string", ""); //"" is the default
         }
-        if (searchText) {
-            vfs.search(searchText).then((results) => {
-                const panel = commander.getActivePanel();
-                panel.id = "search";
-                commander.results = results;
-                commander.query = searchText;
-                commander.draw();
-            });
-        }
-    });
+    }
+    if (searchText) {
+        const panel = commander.getActivePanel();
+        const results = await vfs.search(searchText);
+        panel.id = "search";
+        commander.results = results;
+        commander.query = searchText;
+        await commander.draw();
+    }
 }
 
 /* FILTER */
-commander.filter = (panel) => {
+commander.filter = async (panel) => {
     if (!panel) {
         panel = commander.getActivePanel();
     }
@@ -768,11 +769,11 @@ commander.filter = (panel) => {
 
     panel.filter.remove("*");
 
-    commander.draw();
+    await commander.draw();
 }
 
 /* SELECT */
-commander.selector = (panel) => {
+commander.selector = async (panel) => {
     //Panel will actually be an event when called via the '*' key
     if (panel instanceof KeyboardEvent) {
         panel = commander.getActivePanel();
@@ -786,7 +787,7 @@ commander.selector = (panel) => {
 
     panel.selector = prompt("Select", panel.selector); //"" is the default
 
-    commander.draw();
+    await commander.draw();
 }
 
 commander.setInfo = (panel) => {
@@ -796,12 +797,12 @@ commander.setInfo = (panel) => {
     panel.active = false;
 }
 
-commander.setList = (panel) => {
+commander.setList = async (panel) => {
     panel.info = false;
 
     if (panel.id == "tree") {
         const id = dualPanel.getCommanderIdFromPanel(panel);
-        commander.select(id);
+        await commander.select(id);
     }
 }
 
@@ -810,67 +811,70 @@ commander.setTree = (panel) => {
     panel.id = "tree"
 }
 
-commander.sortBookmarksByDate = (panel, ctrlKey) => sortBookmarks(panel.id, null, sortByDateFunction, ctrlKey)
-commander.sortBookmarksAlphabetically = (panel, ctrlKey) => sortBookmarks(panel.id, null, sortByNameFunction, ctrlKey)
-commander.sortBookmarksByLength = (panel, ctrlKey) => sortBookmarks(panel.id, null, sortByLengthFunction, ctrlKey)
+commander.sortBookmarksByDate = async (panel, ctrlKey) => await vfs.sortByDate({ id: panel.id }, ctrlKey);
+commander.sortBookmarksAlphabetically = async (panel, ctrlKey) => await vfs.sortAlphabetically({ id: panel.id }, ctrlKey);
+commander.sortBookmarksByLength = async (panel, ctrlKey) => await vfs.sortByLength({ id: panel.id }, ctrlKey);
 
 commander.getVersion = () => (commander.manifest && commander.manifest.version) || '...';
 
 commander.about = () => options.show('about');
 
 
-commander.onLeftClick = (n) => {
+commander.onLeftClick = async (n) => {
     menu.exitIfOut();
     if (data.simpleClickOnSelectedItemToActivate && commander.left.active && commander.left.selected == n) {
-        commander.delve();
+        await commander.delve();
     } else {
         commander.left.info = false;
         commander.left.active = true;
         commander.right.active = false;
         commander.left.selected = n;
-        commander.draw();
+        await commander.draw();
     }
 }
 
-commander.onRightClick = (n) => {
+commander.onRightClick = async (n) => {
     menu.exitIfOut();
     if (data.simpleClickOnSelectedItemToActivate && commander.right.active && commander.right.selected == n) {
-        commander.delve();
+        await commander.delve();
     } else {
         commander.right.info = false;
         commander.right.active = true;
         commander.left.active = false;
         commander.right.selected = n;
-        commander.draw();
+        await commander.draw();
     }
 }
 
-commander.onLeftDoubleClick = (n) => {
+commander.onLeftDoubleClick = async (n) => {
     menu.exitIfOut();
     commander.left.info = false;
     commander.left.active = true;
     commander.right.active = false;
     commander.left.selected = n;
-    commander.draw();
-    commander.delve();
+    await commander.draw();
+    await commander.delve();
 }
 
-commander.onRightDoubleClick = (n) => {
+commander.onRightDoubleClick = async (n) => {
     menu.exitIfOut();
     commander.right.info = false;
     commander.right.active = true;
     commander.left.active = false;
     commander.right.selected = n;
-    commander.draw();
-    commander.delve();
+    await commander.draw();
+    await commander.delve();
 }
 
-fetch('./manifest.json')
-    .then((response) => {
-        if (response.status != 200) {
-            throw new Error(`No 200 status : [${response.status}]`);
-        };
-        return response.json();
-    })
-    .then((manifest) => commander.manifest = manifest)
+commander.initManifest = async () => {
+    const response = await fetch('./manifest.json');
 
+    if (response.status != 200) {
+        throw new Error(`No 200 status : [${response.status}]`);
+    };
+    const manifest = await response.json();
+
+    commander.manifest = manifest;
+};
+
+commander.initManifestPromise = commander.initManifest();
