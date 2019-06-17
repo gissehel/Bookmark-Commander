@@ -525,7 +525,7 @@ commander.copy = async () => {
     }
 
     //Copying from
-    const from_id = dualPanel.getCommanderIdFromPanel(from.prefix);
+    const from_id = dualPanel.getCommanderIdFromPanel(from);
 
     const bookmark = await vfs.findItemById(from_id);
     await vfs.createItem(to.id, (newBookmark) => {

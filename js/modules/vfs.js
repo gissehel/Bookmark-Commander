@@ -57,11 +57,13 @@ vfs.move = (itemId, destinationId, index) => {
 
 vfs.remove = async (itemId) => {
     const bookmark = await vfs.findItemById(itemId);
-    if (bookmark.children) {
-        chrome.bookmarks.removeTree(itemId, resolve);
-    } else {
-        chrome.bookmarks.remove(itemId, resolve);
-    }
+    await new Promise((resolve, reject) => {
+        if (bookmark.children) {
+            chrome.bookmarks.removeTree(itemId, resolve);
+        } else {
+            chrome.bookmarks.remove(itemId, resolve);
+        }
+    })
 }
 
 vfs.findItemById = (id) => {
