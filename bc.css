@@ -266,9 +266,20 @@ pre {
     background: rgb(0, 0, 128);
 }
 
+.non-official-version .formItem-combo-zone,
+.non-official-version #editorScreen,
+.non-official-version #viewerScreen,
+.non-official-version #dualPanel,
+.non-official-version .blue,
+.non-official-version .border,
+.non-official-version .js {
+    background: rgb(128, 32, 0);
+}
+
 .formItem.fcode,
 .menu,
 .selected,
+.non-official-version .selected,
 .white {
     background: rgb(0, 128, 128);
 }

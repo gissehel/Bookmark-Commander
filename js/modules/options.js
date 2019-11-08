@@ -1,6 +1,9 @@
 const options = {};
 
 options.init = () => {
+    if (! isOfficial()) {
+        document.body.classList.add('non-official-version');
+    }
     options.popup = createElement(
         'div',
         { id: 'popup' },

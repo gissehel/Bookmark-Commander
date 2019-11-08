@@ -104,6 +104,10 @@ const createElement = (name, properties, args) => {
     return element;
 }
 
+const isOfficial = () => {
+    return window.location.href.split('/')[2] == "kgakeednpdpkibnfappaljjcfgcekiho";
+}
+
 const readyPromise = new Promise((resolve, reject) => {
     if (document.readyState === 'complete' || (document.readyState !== 'loading' && !document.documentElement.doScroll)) {
         setTimeout(() => resolve(), 1);
