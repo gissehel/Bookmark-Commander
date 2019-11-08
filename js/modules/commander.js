@@ -521,7 +521,7 @@ commander.copy = () => {
     }
 
     //Copying from
-    const from_id = dualPanel.getCommanderIdFromPanel(from.prefix);
+    const from_id = dualPanel.getCommanderIdFromPanel(from);
     const bookmark = findBookmarkId(commander.bookmarks, from_id);
 
     const newBookmark = { parentId: to.id };
