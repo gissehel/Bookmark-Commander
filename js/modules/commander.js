@@ -318,7 +318,7 @@ commander.select = (index) => {
 
 /* HELP */
 commander.help = () => {
-    chrome.tabs.create({ 'url': chrome.extension.getURL('help.html') }, null);
+    chrome.tabs.create({ 'url': chrome.runtime.getURL('help.html') }, null);
 }
 
 /* QUIT */
